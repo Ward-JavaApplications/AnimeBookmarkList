@@ -170,6 +170,22 @@ public class DataBaseManager {
 
 
     }
+    public void deleteAnimeEntry(String title){
+        //delete from anime where Title = "aaaaa"
+        try{
+            Class.forName("org.sqlite.JDBC");
+            String querry = "delete from anime where Title = \""+title+"\"";
+            System.out.println(querry);
+            System.out.println(querry);
+            Connection conn = DriverManager.getConnection("jdbc:sqlite:" + "Anime BookmarkList.db");
+            Statement stat = conn.createStatement();
+            stat.executeUpdate(querry);
+        }
+        catch (Exception e){
+            new ErrorMessage(e.getMessage());
+            e.printStackTrace();
+        }
+    }
 
 }
 

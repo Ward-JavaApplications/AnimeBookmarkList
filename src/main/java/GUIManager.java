@@ -260,6 +260,7 @@ public class GUIManager{
             public void actionPerformed(ActionEvent e) {
                 deleteAnime(title) ;
                 insertFrame.dispose();
+                refresh();
 
             }
         });
@@ -271,10 +272,9 @@ public class GUIManager{
     }
     private void setTitleStatus(String targetStatus, String animeName){
         dataBaseManager.changeAnimeStatus(animeName,targetStatus);
-        System.out.println(selectedMainFrame);
     }
     private void deleteAnime(String animeName){
-
+        dataBaseManager.deleteAnimeEntry(animeName);
     }
 
     private void changePriority(String animeName, int priority){
@@ -286,7 +286,6 @@ public class GUIManager{
         {
             case 0:
                 showAllTitlesAlphabetical(mainFrame);
-                System.out.println("sout naar mijn homies");
                 break;
             case 1:
                 showAllTitlesPriority(mainFrame);
