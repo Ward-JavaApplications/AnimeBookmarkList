@@ -1,8 +1,41 @@
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+import java.io.File;
+import java.io.FileInputStream;
 import java.sql.*;
 
 public class DataBaseManager {
     public DataBaseManager(){
+        populateDBFromExcel();
+    }
+    public void populateDBFromExcel(){
+        try {
 
+
+            File file = new File("C:\\Users\\wards\\OneDrive\\4docs\\Coding\\Java\\AnimeBookmarkList\\Anime BookmarkList.xlsx");
+            FileInputStream inputStream = new FileInputStream(file);
+            Workbook workbook = new XSSFWorkbook(inputStream);
+            Sheet sheet = workbook.getSheetAt(0);
+            int rowCount = sheet.getLastRowNum();
+            for (int i = 0;i<rowCount+1;i++){
+                Row row = sheet.getRow(i);
+                if(row != null) {
+                    for (int j = 0; j < row.getLastCellNum(); j++) {
+                        if (row.getCell(j) != null)
+                            System.out.println(row.getCell(j));
+                    }
+                }
+            }
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public void readDB(){
         Connection conn = null;
         try
         {
