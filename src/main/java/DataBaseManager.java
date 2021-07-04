@@ -10,7 +10,7 @@ import java.util.ArrayList;
 
 public class DataBaseManager {
     public DataBaseManager(){
-        populateDBFromExcel();
+
     }
     public void populateDBFromExcel(){
         ArrayList<AnimeTitle> animes = populateFromExcel();
@@ -78,9 +78,19 @@ public class DataBaseManager {
             return null;
         }
     }
+    public ArrayList<AnimeTitle> getDBStatus(){
+        return getFromDB("SELECT * from anime order by Status, Title");
+    }
 
+    public ArrayList<AnimeTitle> getDBPriority(){
+        return getFromDB("SELECT * from anime order by Priority, Title");
+    }
 
-    public void readDB(){
+    public ArrayList<AnimeTitle> getDBAlphabetical(){
+        return getFromDB("SELECT * from Anime order by Title");
+
+    }
+    private ArrayList<AnimeTitle> getFromDB(String querry){
         Connection conn = null;
         try
         {
@@ -92,25 +102,29 @@ public class DataBaseManager {
             // create the statement
             Statement stat = conn.createStatement();
 
-            String selectStatement = "SELECT * from Anime"; // put your SQL query here
+            String selectStatement = querry; // put your SQL query here
             // execute the statement on the selected DB and receive the data as a ResultSet
             ResultSet rs = stat.executeQuery(selectStatement);
             // iterate through the resultset row by row
+            ArrayList<AnimeTitle> animes = new ArrayList<>();
             while (rs.next())
             {
                 String title = rs.getString(1);
-                System.out.println(title);
+                String status = rs.getString(2);
+                int priority = rs.getInt(3);
+                animes.add(new AnimeTitle(title,status,priority));
             }
             rs.close();
             stat.close();
             conn.close();
+            return animes;
         }
         // in case something goes wrong, f.i. incorrect dbname, incorrect select query, driver not found, ...
         catch (Exception e)
         {
             e.printStackTrace();
+            return null;
         }
-
     }
 
 }
