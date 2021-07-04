@@ -278,7 +278,7 @@ public class GUIManager{
     }
 
     private void changePriority(String animeName, int priority){
-
+        dataBaseManager.changePriority(priority,animeName);
     }
 
     private void refresh(){

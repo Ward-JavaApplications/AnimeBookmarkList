@@ -176,6 +176,40 @@ public class DataBaseManager {
             Class.forName("org.sqlite.JDBC");
             String querry = "delete from anime where Title = \""+title+"\"";
             System.out.println(querry);
+            Connection conn = DriverManager.getConnection("jdbc:sqlite:" + "Anime BookmarkList.db");
+            Statement stat = conn.createStatement();
+            stat.executeUpdate(querry);
+        }
+        catch (Exception e){
+            new ErrorMessage(e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    public int getPriority(String anime){
+        //delete from anime where Title = "aaaaa"
+        try{
+            Class.forName("org.sqlite.JDBC");
+            String querry = "select Priority from anime where title = \"" + anime + "\"";
+            System.out.println(querry);
+            Connection conn = DriverManager.getConnection("jdbc:sqlite:" + "Anime BookmarkList.db");
+            Statement stat = conn.createStatement();
+            ResultSet rs =  stat.executeQuery(querry);
+
+            return rs.getInt(1);
+
+
+        }
+        catch (Exception e){
+            new ErrorMessage(e.getMessage());
+            e.printStackTrace();
+            return 0;
+        }
+    }
+    public void changePriority(int priority, String title){
+        try{
+            Class.forName("org.sqlite.JDBC");
+            String querry = "Update Anime set Priority = \"" + priority + "\" WHERE Title = \"" +title+"\"";
             System.out.println(querry);
             Connection conn = DriverManager.getConnection("jdbc:sqlite:" + "Anime BookmarkList.db");
             Statement stat = conn.createStatement();
@@ -186,6 +220,7 @@ public class DataBaseManager {
             e.printStackTrace();
         }
     }
+
 
 }
 
