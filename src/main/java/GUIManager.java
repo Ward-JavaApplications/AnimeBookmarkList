@@ -6,14 +6,14 @@ import java.util.ArrayList;
 
 public class GUIManager{
 
-    private DataBaseManager manager = new DataBaseManager();
+    private DataBaseManager dataBaseManager = new DataBaseManager();
     public GUIManager(){
         startGUI();
     }
     private void startGUI(){
         JFrame frame = new JFrame("Anime BookmarkList");
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        frame.setSize(1000,1000);
+        frame.setSize(500,500);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
 
@@ -69,24 +69,72 @@ public class GUIManager{
     private void insertNewTitleMenu(JFrame mainFrame){
         JFrame insertFrame = new JFrame("Insert new anime");
         insertFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        insertFrame.setSize(500,500);
+        insertFrame.setSize(300,200);
         insertFrame.setLocationRelativeTo(null);
         insertFrame.setVisible(true);
 
+        ///setup buttons
+        JPanel insertPanel = new JPanel(new SpringLayout());
+        insertPanel.setLayout(new BoxLayout(insertPanel, BoxLayout.Y_AXIS));
+        //title panel
+
+        JLabel titleLabel = new JLabel("Enter title",SwingConstants.CENTER);
+        JTextField titleField = new JTextField();
+        insertPanel.add(titleLabel);
+        insertPanel.add(titleField);
+        //status
+        JCheckBox checkBox = new JCheckBox("watched", false);
+        insertPanel.add(checkBox);
+        //priority
+        JLabel priorityLabel = new JLabel("Priority", SwingConstants.CENTER);
+        JTextField priorityField = new JTextField();
+        insertPanel.add(priorityLabel);
+        insertPanel.add(priorityField);
+        //save anime
+        JButton saveButton = new JButton("Save");
+        saveButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                    try{
+                        String status = new String();
+                        if(checkBox.isSelected()) status = "Watched";
+                        else status = "Unwatched";
+                        int priority = 0;
+                        if (!priorityField.getText().equals("")) priority = Integer.parseInt(priorityField.getText());
+                        else priority = 0;
+                        insertNewAnimeInDB(new AnimeTitle(titleField.getText(),status,priority));
+                        insertFrame.dispose();
+                    }
+                    catch (NumberFormatException numberFormatException)
+                    {
+                        new ErrorMessage("The given priority is not a valid number");
+                    }
+                }
+
+        });
+        insertPanel.add(saveButton);
+        insertFrame.setContentPane(insertPanel);
+        SwingUtilities.updateComponentTreeUI(insertFrame);
+
 
     }
 
+    private void insertNewAnimeInDB(AnimeTitle anime){
+        dataBaseManager.insertInDB(anime);
+
+    }
     private void showAllTitlesPriority(JFrame frame){
-        ArrayList<AnimeTitle> animeList = manager.getDBPriority();
+        ArrayList<AnimeTitle> animeList = dataBaseManager.getDBPriority();
         listToButtons(frame,animeList);
     }
     private void showAllTitlesStatus(JFrame frame){
-        ArrayList<AnimeTitle> animeList = manager.getDBStatus();
+        ArrayList<AnimeTitle> animeList = dataBaseManager.getDBStatus();
         listToButtons(frame, animeList);
     }
 
     private void showAllTitlesAlphabetical(JFrame frame) {
-        ArrayList<AnimeTitle> animeList = manager.getDBAlphabetical();
+        ArrayList<AnimeTitle> animeList = dataBaseManager.getDBAlphabetical();
         listToButtons(frame, animeList);
     }
 

@@ -78,6 +78,27 @@ public class DataBaseManager {
             return null;
         }
     }
+    public void insertInDB(AnimeTitle animeTitle){
+        Connection conn = null;
+        try {
+            Class.forName("org.sqlite.JDBC");
+            conn = DriverManager.getConnection("jdbc:sqlite:" + "Anime BookmarkList.db");
+
+            String querry = "insert into Anime (Title,Status,priority)" + " values (?,?,?)";
+            PreparedStatement preparedStatement = conn.prepareStatement(querry);
+            preparedStatement.setString(1,animeTitle.getTitle());
+            preparedStatement.setString(2,animeTitle.getStatus());
+            preparedStatement.setInt(3,animeTitle.getPriority());
+            preparedStatement.execute();
+            System.out.println(preparedStatement.toString());
+
+            conn.close();
+
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
     public ArrayList<AnimeTitle> getDBStatus(){
         return getFromDB("SELECT * from anime order by Status, Title");
     }
