@@ -36,6 +36,7 @@ public class DataBaseManager {
         }
         catch (Exception e) {
             e.printStackTrace();
+            new ErrorMessage(e.getMessage());
         }
 
     }
@@ -75,6 +76,7 @@ public class DataBaseManager {
         }
         catch (Exception e){
             e.printStackTrace();
+            new ErrorMessage(e.getMessage());
             return null;
         }
     }
@@ -96,23 +98,25 @@ public class DataBaseManager {
 
         }
         catch (Exception e) {
+            new ErrorMessage(e.getMessage());
             e.printStackTrace();
         }
     }
     public ArrayList<AnimeTitle> getDBStatus(){
-        return getFromDB("SELECT * from anime order by Status, Title");
+        return getFromDB("SELECT * from anime order by Status, Title COLLATE NOCASE");
     }
 
     public ArrayList<AnimeTitle> getDBPriority(){
-        return getFromDB("SELECT * from anime order by Priority, Title");
+        return getFromDB("SELECT * from anime order by Priority, Title COLLATE NOCASE");
     }
 
     public ArrayList<AnimeTitle> getDBAlphabetical(){
-        return getFromDB("SELECT * from Anime order by Title");
+        return getFromDB("SELECT * from Anime order by Title COLLATE NOCASE");
 
     }
     private ArrayList<AnimeTitle> getFromDB(String querry){
         Connection conn = null;
+        System.out.println(querry);
         try
         {
             // load the driver class for sqlite
@@ -144,8 +148,27 @@ public class DataBaseManager {
         catch (Exception e)
         {
             e.printStackTrace();
+            new ErrorMessage(e.getMessage());
             return null;
         }
+    }
+    public void changeAnimeStatus(String title, String status){
+        //Update Anime set Status = "mango" WHERE Title = "aaaa"
+        try{
+            Class.forName("org.sqlite.JDBC");
+            String querry = "Update Anime set Status = \"" + status + "\" WHERE Title = \"" +title+"\"";
+            System.out.println(querry);
+            Connection conn = DriverManager.getConnection("jdbc:sqlite:" + "Anime BookmarkList.db");
+            Statement stat = conn.createStatement();
+            stat.executeUpdate(querry);
+        }
+        catch (Exception e)
+        {
+            new ErrorMessage(e.getMessage());
+            e.printStackTrace();
+        }
+
+
     }
 
 }

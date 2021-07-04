@@ -7,17 +7,19 @@ import java.util.ArrayList;
 public class GUIManager{
 
     private DataBaseManager dataBaseManager = new DataBaseManager();
+    private int selectedMainFrame; //0=alpahbetical, 1 = priority, 2 = status
+    JFrame mainFrame;
     public GUIManager(){
         startGUI();
     }
     private void startGUI(){
-        JFrame frame = new JFrame("Anime BookmarkList");
-        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        frame.setSize(500,500);
-        frame.setLocationRelativeTo(null);
-        frame.setVisible(true);
+        mainFrame = new JFrame("Anime BookmarkList");
+        mainFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        mainFrame.setSize(500,500);
+        mainFrame.setLocationRelativeTo(null);
+        mainFrame.setVisible(true);
 
-        showStartMenu(frame);
+        showStartMenu(mainFrame);
 
     }
     private void showStartMenu(JFrame frame){
@@ -29,6 +31,7 @@ public class GUIManager{
             @Override
             public void actionPerformed(ActionEvent e) {
                 showAllTitlesAlphabetical(frame);
+                selectedMainFrame = 0;
             }
         });
         dataReceivePanel.add(showAllTitlesAlphabeticalButton);
@@ -38,6 +41,7 @@ public class GUIManager{
             @Override
             public void actionPerformed(ActionEvent e) {
                 showAllTitlesPriority(frame);
+                selectedMainFrame = 1;
             }
         });
         dataReceivePanel.add(showAllTitlesPriorityButton);
@@ -47,6 +51,7 @@ public class GUIManager{
             @Override
             public void actionPerformed(ActionEvent e) {
                 showAllTitlesStatus(frame);
+                selectedMainFrame = 2;
             }
         });
         dataReceivePanel.add(showAllTitlesStatusButton);
@@ -56,6 +61,7 @@ public class GUIManager{
             @Override
             public void actionPerformed(ActionEvent e) {
                 insertNewTitleMenu(frame);
+                refresh();
             }
         });
         dataInsertPanel.add(insertNewTitleButton);
@@ -105,6 +111,7 @@ public class GUIManager{
                         else priority = 0;
                         insertNewAnimeInDB(new AnimeTitle(titleField.getText(),status,priority));
                         insertFrame.dispose();
+                        refresh();
                     }
                     catch (NumberFormatException numberFormatException)
                     {
@@ -161,7 +168,7 @@ public class GUIManager{
             b.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    displayTitleInfo(b.getText());
+                    animeWasClicked(b.getText());
                 }
             });
 
@@ -182,7 +189,112 @@ public class GUIManager{
         else return Color.YELLOW;
     }
 
-    public void displayTitleInfo(String title){
-        System.out.println(title);
+    public void animeWasClicked(String title){
+        JFrame insertFrame = new JFrame(title);
+        insertFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        insertFrame.setSize(300,200);
+        insertFrame.setLocationRelativeTo(null);
+        insertFrame.setVisible(true);
+
+        JPanel titlePanel = new JPanel(new SpringLayout());
+        titlePanel.setLayout(new BoxLayout(titlePanel, BoxLayout.Y_AXIS));
+        JPanel statusPanel = new JPanel(new FlowLayout());
+
+        JLabel titleLabel = new JLabel(title, SwingUtilities.CENTER);
+        titlePanel.add(titleLabel);
+
+        JButton watchedButton = new JButton("Watched");
+        watchedButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                setTitleStatus("Watched", title);
+                insertFrame.dispose();
+                refresh();
+            }
+        });
+        JButton unwatchedButton = new JButton("Unwatched");
+        unwatchedButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                setTitleStatus("Unwatched", title);
+                insertFrame.dispose();
+                refresh();
+            }
+        });
+        JButton watchingButton = new JButton("Watching");
+        watchingButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                setTitleStatus("Watching", title);
+                insertFrame.dispose();
+                refresh();
+            }
+        });
+        statusPanel.add(watchedButton);
+        statusPanel.add(watchingButton);
+        statusPanel.add(unwatchedButton);
+        titlePanel.add(statusPanel);
+        JPanel priorityPanel = new JPanel(new FlowLayout());
+        JTextField priorityTextField = new JTextField("new priority");
+        JButton priorityButton = new JButton("Change priority");
+        priorityButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    int priority = Integer.parseInt(priorityTextField.getText());
+                    changePriority(title, priority);
+                    insertFrame.dispose();
+                }
+                catch (NumberFormatException numberFormatException)
+                {
+                    new ErrorMessage("The given priority was not a valid number");
+                }
+            }
+        });
+        priorityPanel.add(priorityTextField);
+        priorityPanel.add(priorityButton);
+
+        JButton deleteButton = new JButton("Delete anime");
+        deleteButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                deleteAnime(title) ;
+                insertFrame.dispose();
+
+            }
+        });
+        priorityPanel.add(deleteButton);
+        titlePanel.add(priorityPanel);
+        insertFrame.setContentPane(titlePanel);
+        SwingUtilities.updateComponentTreeUI(insertFrame);
+
     }
+    private void setTitleStatus(String targetStatus, String animeName){
+        dataBaseManager.changeAnimeStatus(animeName,targetStatus);
+        System.out.println(selectedMainFrame);
+    }
+    private void deleteAnime(String animeName){
+
+    }
+
+    private void changePriority(String animeName, int priority){
+
+    }
+
+    private void refresh(){
+        switch (selectedMainFrame)
+        {
+            case 0:
+                showAllTitlesAlphabetical(mainFrame);
+                System.out.println("sout naar mijn homies");
+                break;
+            case 1:
+                showAllTitlesPriority(mainFrame);
+                break;
+            case 2:
+                showAllTitlesStatus(mainFrame);
+                break;
+        }
+    }
+
 }
