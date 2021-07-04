@@ -161,6 +161,7 @@ public class DataBaseManager {
             Connection conn = DriverManager.getConnection("jdbc:sqlite:" + "Anime BookmarkList.db");
             Statement stat = conn.createStatement();
             stat.executeUpdate(querry);
+            conn.close();
         }
         catch (Exception e)
         {
@@ -179,6 +180,7 @@ public class DataBaseManager {
             Connection conn = DriverManager.getConnection("jdbc:sqlite:" + "Anime BookmarkList.db");
             Statement stat = conn.createStatement();
             stat.executeUpdate(querry);
+            conn.close();
         }
         catch (Exception e){
             new ErrorMessage(e.getMessage());
@@ -195,8 +197,10 @@ public class DataBaseManager {
             Connection conn = DriverManager.getConnection("jdbc:sqlite:" + "Anime BookmarkList.db");
             Statement stat = conn.createStatement();
             ResultSet rs =  stat.executeQuery(querry);
+            int targetInt = rs.getInt(1);
+            conn.close();
+            return targetInt;
 
-            return rs.getInt(1);
 
 
         }
@@ -214,6 +218,7 @@ public class DataBaseManager {
             Connection conn = DriverManager.getConnection("jdbc:sqlite:" + "Anime BookmarkList.db");
             Statement stat = conn.createStatement();
             stat.executeUpdate(querry);
+            conn.close();
         }
         catch (Exception e){
             new ErrorMessage(e.getMessage());

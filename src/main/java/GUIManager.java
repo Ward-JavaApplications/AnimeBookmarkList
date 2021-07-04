@@ -235,7 +235,8 @@ public class GUIManager{
         statusPanel.add(unwatchedButton);
         titlePanel.add(statusPanel);
         JPanel priorityPanel = new JPanel(new FlowLayout());
-        JTextField priorityTextField = new JTextField("new priority");
+        int currentPriority = dataBaseManager.getPriority(title);
+        JTextField priorityTextField = new JTextField(String.valueOf(currentPriority));
         JButton priorityButton = new JButton("Change priority");
         priorityButton.addActionListener(new ActionListener() {
             @Override
