@@ -2,17 +2,17 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class GUIManager{
 
+    private DataBaseManager manager = new DataBaseManager();
     public GUIManager(){
         startGUI();
     }
     private void startGUI(){
         JFrame frame = new JFrame("Anime BookmarkList");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.setSize(1000,1000);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
@@ -21,8 +21,9 @@ public class GUIManager{
 
     }
     private void showStartMenu(JFrame frame){
-        JPanel mainMenuPanel = new JPanel();
+        JPanel mainMenuPanel = new JPanel(new BorderLayout());
         JPanel dataReceivePanel = new JPanel();
+        JPanel dataInsertPanel = new JPanel();
         JButton showAllTitlesAlphabeticalButton = new JButton("Show alphabetical");
         showAllTitlesAlphabeticalButton.addActionListener(new ActionListener() {
             @Override
@@ -50,24 +51,41 @@ public class GUIManager{
         });
         dataReceivePanel.add(showAllTitlesStatusButton);
 
-        mainMenuPanel.add(dataReceivePanel,BorderLayout.SOUTH);
+        JButton insertNewTitleButton = new JButton("Insert anime");
+        insertNewTitleButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                insertNewTitleMenu(frame);
+            }
+        });
+        dataInsertPanel.add(insertNewTitleButton);
+
+        mainMenuPanel.add(dataReceivePanel,BorderLayout.NORTH);
+        mainMenuPanel.add(dataInsertPanel, BorderLayout.SOUTH);
         frame.setContentPane(mainMenuPanel);
         SwingUtilities.updateComponentTreeUI(frame);
     }
 
+    private void insertNewTitleMenu(JFrame mainFrame){
+        JFrame insertFrame = new JFrame("Insert new anime");
+        insertFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        insertFrame.setSize(500,500);
+        insertFrame.setLocationRelativeTo(null);
+        insertFrame.setVisible(true);
+
+
+    }
+
     private void showAllTitlesPriority(JFrame frame){
-        DataBaseManager manager = new DataBaseManager();
         ArrayList<AnimeTitle> animeList = manager.getDBPriority();
         listToButtons(frame,animeList);
     }
     private void showAllTitlesStatus(JFrame frame){
-        DataBaseManager manager = new DataBaseManager();
         ArrayList<AnimeTitle> animeList = manager.getDBStatus();
         listToButtons(frame, animeList);
     }
 
     private void showAllTitlesAlphabetical(JFrame frame) {
-        DataBaseManager manager = new DataBaseManager();
         ArrayList<AnimeTitle> animeList = manager.getDBAlphabetical();
         listToButtons(frame, animeList);
     }
