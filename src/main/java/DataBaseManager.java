@@ -6,34 +6,61 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import java.io.File;
 import java.io.FileInputStream;
 import java.sql.*;
+import java.util.ArrayList;
 
 public class DataBaseManager {
     public DataBaseManager(){
         populateDBFromExcel();
     }
     public void populateDBFromExcel(){
+        ArrayList<AnimeTitle> animes = populateFromExcel();
+        populateDB(animes);
+
+    }
+    private void populateDB(ArrayList<AnimeTitle> animes)
+    {
+        
+    }
+    private ArrayList<AnimeTitle> populateFromExcel(){
         try {
-
-
+            ArrayList<AnimeTitle> animes;
             File file = new File("C:\\Users\\wards\\OneDrive\\4docs\\Coding\\Java\\AnimeBookmarkList\\Anime BookmarkList.xlsx");
             FileInputStream inputStream = new FileInputStream(file);
             Workbook workbook = new XSSFWorkbook(inputStream);
             Sheet sheet = workbook.getSheetAt(0);
             int rowCount = sheet.getLastRowNum();
+            animes = new ArrayList<>(rowCount);
             for (int i = 0;i<rowCount+1;i++){
                 Row row = sheet.getRow(i);
                 if(row != null) {
+                    String title = new String();
+                    String status = new String();
                     for (int j = 0; j < row.getLastCellNum(); j++) {
-                        if (row.getCell(j) != null)
-                            System.out.println(row.getCell(j));
+                        if (row.getCell(j) != null) {
+                            switch (j){
+                                case 0:
+                                    title = row.getCell(j).getStringCellValue();
+                                    //System.out.println(row.getCell(j));
+                                    break;
+                                case 2:
+                                    status = row.getCell(j).getStringCellValue();
+                                    //System.out.println(row.getCell(j));
+                                    break;
+                            }
+                        }
                     }
+                    AnimeTitle animeTitle = new AnimeTitle(title,status);
+                    animes.add(animeTitle);
                 }
             }
+            return animes;
         }
         catch (Exception e){
             e.printStackTrace();
+            return null;
         }
     }
+
 
     public void readDB(){
         Connection conn = null;
@@ -65,6 +92,7 @@ public class DataBaseManager {
         {
             e.printStackTrace();
         }
+
     }
 
 }
