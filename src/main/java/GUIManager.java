@@ -76,6 +76,19 @@ public class GUIManager{
         ArrayList<JButton> buttons = new ArrayList<>(animeList.size());
         JPanel panel = new JPanel(new SpringLayout());
         panel.setLayout(new BoxLayout(panel,BoxLayout.Y_AXIS));
+
+        //Add a button to go back to main menu
+        JPanel buttonPanel = new JPanel(new BorderLayout());
+        JButton returnButton = new JButton("Return");
+        returnButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                showStartMenu(frame);
+            }
+        });
+        buttonPanel.add(returnButton, BorderLayout.EAST);
+        panel.add(buttonPanel);
+        //add all the buttons for the different anime
         for(AnimeTitle anime: animeList){
             JButton b = new JButton(anime.getTitle());
             b.setBackground(getButtonColor(anime));
