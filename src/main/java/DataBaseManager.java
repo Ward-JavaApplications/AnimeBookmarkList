@@ -19,7 +19,25 @@ public class DataBaseManager {
     }
     private void populateDB(ArrayList<AnimeTitle> animes)
     {
-        
+        Connection conn = null;
+        try {
+            Class.forName("org.sqlite.JDBC");
+            conn = DriverManager.getConnection("jdbc:sqlite:" + "Anime BookmarkList.db");
+            for (AnimeTitle a: animes) {
+                String querry = "insert into Anime (Title,Status,priority)" + " values (?,?,?)";
+                PreparedStatement preparedStatement = conn.prepareStatement(querry);
+                preparedStatement.setString(1,a.getTitle());
+                preparedStatement.setString(2,a.getStatus());
+                preparedStatement.setInt(3,0);
+                preparedStatement.execute();
+            }
+            conn.close();
+
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
     private ArrayList<AnimeTitle> populateFromExcel(){
         try {
