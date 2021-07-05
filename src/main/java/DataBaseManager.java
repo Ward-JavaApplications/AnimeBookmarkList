@@ -10,7 +10,7 @@ import java.util.ArrayList;
 
 public class DataBaseManager {
     public DataBaseManager(){
-
+        
     }
     public void populateDBFromExcel(){
         ArrayList<AnimeTitle> animes = populateFromExcel();
@@ -43,7 +43,7 @@ public class DataBaseManager {
     private ArrayList<AnimeTitle> populateFromExcel(){
         try {
             ArrayList<AnimeTitle> animes;
-            File file = new File("C:\\Users\\wards\\OneDrive\\4docs\\Coding\\Java\\AnimeBookmarkList\\Anime BookmarkList.xlsx");
+            File file = new File("Anime BookmarkList.xlsx");
             FileInputStream inputStream = new FileInputStream(file);
             Workbook workbook = new XSSFWorkbook(inputStream);
             Sheet sheet = workbook.getSheetAt(0);
