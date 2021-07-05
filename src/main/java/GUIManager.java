@@ -72,7 +72,6 @@ public class GUIManager{
             @Override
             public void actionPerformed(ActionEvent e) {
                 searchAnimeMenu();
-                mainFrame.dispose();
             }
         });
         dataSearchPanel.add(dataSearchButton);
@@ -109,12 +108,6 @@ public class GUIManager{
         SwingUtilities.updateComponentTreeUI(frame);
     }
     private void searchAnimeMenu(){
-        JFrame repopulateFrame = new JFrame("Search For Anime");
-        repopulateFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        repopulateFrame.setSize(500,500);
-        repopulateFrame.setLocationRelativeTo(null);
-        repopulateFrame.setVisible(true);
-
         JPanel searchPanel = new JPanel(new SpringLayout());
         searchPanel.setLayout(new BoxLayout(searchPanel,BoxLayout.Y_AXIS));
         JLabel searchLabel = new JLabel("Type the name in the box below, better to type less than wrong");
@@ -125,17 +118,17 @@ public class GUIManager{
         searchButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                searchForTitle(searchField.getText(),repopulateFrame);
+                searchForTitle(searchField.getText(),mainFrame);
 
             }
         });
         searchPanel.add(searchButton);
 
-        repopulateFrame.setContentPane(searchPanel);
-        SwingUtilities.updateComponentTreeUI(repopulateFrame);
+        mainFrame.setContentPane(searchPanel);
+        SwingUtilities.updateComponentTreeUI(mainFrame);
     }
     private void searchForTitle(String title,JFrame frame){
-        ArrayList<AnimeTitle> animes = dataBaseManager.getFromDB("Select * from anime where Title like \"*" + title+ "*\"");
+        ArrayList<AnimeTitle> animes = dataBaseManager.searchTitleInDB(title);
         listToButtons(frame,animes);
     }
     private void repopulateMenu(){

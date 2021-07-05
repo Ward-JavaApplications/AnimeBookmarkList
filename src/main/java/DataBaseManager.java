@@ -143,6 +143,9 @@ public class DataBaseManager {
         return getFromDB("SELECT * from Anime order by Title COLLATE NOCASE");
 
     }
+    public ArrayList<AnimeTitle> searchTitleInDB(String title){
+        return getFromDB("Select * from anime where Title like \"%" + title+ "%\"");
+    }
     public ArrayList<AnimeTitle> getFromDB(String querry){
         Connection conn = null;
         System.out.println(querry);
