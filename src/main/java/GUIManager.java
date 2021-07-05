@@ -30,6 +30,7 @@ public class GUIManager{
         showStartMenu(mainFrame);
 
     }
+
     private void showStartMenu(JFrame frame){
         JPanel mainMenuPanel = new JPanel(new SpringLayout());
         mainMenuPanel.setLayout(new BoxLayout(mainMenuPanel, BoxLayout.Y_AXIS));
@@ -65,6 +66,17 @@ public class GUIManager{
         });
         dataReceivePanel.add(showAllTitlesStatusButton);
 
+        JPanel dataSearchPanel = new JPanel();
+        JButton dataSearchButton = new JButton("Search For Title");
+        dataSearchButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                searchAnimeMenu();
+                mainFrame.dispose();
+            }
+        });
+        dataSearchPanel.add(dataSearchButton);
+
 
         JButton insertNewTitleButton = new JButton("Insert anime");
         insertNewTitleButton.addActionListener(new ActionListener() {
@@ -91,9 +103,40 @@ public class GUIManager{
 
         mainMenuPanel.add(dataReceivePanel);
         mainMenuPanel.add(dataInsertPanel);
+        mainMenuPanel.add(dataSearchPanel);
         mainMenuPanel.add(repopulatePanel);
         frame.setContentPane(mainMenuPanel);
         SwingUtilities.updateComponentTreeUI(frame);
+    }
+    private void searchAnimeMenu(){
+        JFrame repopulateFrame = new JFrame("Search For Anime");
+        repopulateFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        repopulateFrame.setSize(500,500);
+        repopulateFrame.setLocationRelativeTo(null);
+        repopulateFrame.setVisible(true);
+
+        JPanel searchPanel = new JPanel(new SpringLayout());
+        searchPanel.setLayout(new BoxLayout(searchPanel,BoxLayout.Y_AXIS));
+        JLabel searchLabel = new JLabel("Type the name in the box below, better to type less than wrong");
+        searchPanel.add(searchLabel);
+        JTextField searchField = new JTextField();
+        searchPanel.add(searchField);
+        JButton searchButton = new JButton("Search");
+        searchButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                searchForTitle(searchField.getText(),repopulateFrame);
+
+            }
+        });
+        searchPanel.add(searchButton);
+
+        repopulateFrame.setContentPane(searchPanel);
+        SwingUtilities.updateComponentTreeUI(repopulateFrame);
+    }
+    private void searchForTitle(String title,JFrame frame){
+        ArrayList<AnimeTitle> animes = dataBaseManager.getFromDB("Select * from anime where Title like \"*" + title+ "*\"");
+        listToButtons(frame,animes);
     }
     private void repopulateMenu(){
         JFrame repopulateFrame = new JFrame("RepopulateDB");

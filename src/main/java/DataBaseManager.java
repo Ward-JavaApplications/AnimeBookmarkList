@@ -143,7 +143,7 @@ public class DataBaseManager {
         return getFromDB("SELECT * from Anime order by Title COLLATE NOCASE");
 
     }
-    private ArrayList<AnimeTitle> getFromDB(String querry){
+    public ArrayList<AnimeTitle> getFromDB(String querry){
         Connection conn = null;
         System.out.println(querry);
         try
@@ -238,6 +238,7 @@ public class DataBaseManager {
             return 0;
         }
     }
+
     public String getStatus(String anime){
         try{
             Class.forName("org.sqlite.JDBC");
