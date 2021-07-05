@@ -5,6 +5,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.util.ArrayList;
+import java.util.Locale;
 
 public class GUIManager{
 
@@ -111,13 +112,19 @@ public class GUIManager{
                         int priority = 0;
                         if (!priorityField.getText().equals("")) priority = Integer.parseInt(priorityField.getText());
                         else priority = 0;
-                        insertNewAnimeInDB(new AnimeTitle(titleField.getText(),status,priority));
-                        insertFrame.dispose();
-                        refresh();
+                        if(priority<=5 && priority>=0) {
+                            insertNewAnimeInDB(new AnimeTitle(titleField.getText(), status, priority));
+                            insertFrame.dispose();
+                            refresh();
+                        }
+                        else throw new NumberRangeException(0,5);
                     }
                     catch (NumberFormatException numberFormatException)
                     {
                         new ErrorMessage("The given priority is not a valid number");
+                    }
+                    catch (NumberRangeException numberRangeException){
+                        new ErrorMessage("The priority needs to be between: " + numberRangeException.getMinRange() + " and " + numberRangeException.getMaxRange());
                     }
                 }
 
@@ -167,6 +174,7 @@ public class GUIManager{
         for(AnimeTitle anime: animeList){
             JButton b = new JButton(anime.getTitle());
             b.setBackground(getButtonColor(anime));
+            b.setFont(getFont(anime));
             b.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
@@ -184,14 +192,48 @@ public class GUIManager{
     }
 
     private Color getButtonColor(AnimeTitle target){
-        if(target.getStatus().equals("Watched"))
-            return Color.GREEN;
-        if(target.getStatus().equals("Unwatched"))
-            return Color.ORANGE;
-        else return Color.YELLOW;
+        int priority = target.getPriority();
+        switch (priority){
+            case 0:
+                return Color.WHITE;
+            case 1:
+                return Color.BLUE;
+            case 2:
+                return Color.GREEN;
+            case 3:
+                return Color.YELLOW;
+            case 4:
+                return Color.ORANGE;
+            case 5:
+                return Color.RED;
+            default:
+                return Color.WHITE;
+        }
+    }
+    private Font getFont(AnimeTitle animeTitle){
+        switch (animeTitle.getStatus().toLowerCase(Locale.ROOT)){
+            case "watched":
+                return new Font("Dialog",Font.BOLD,12);
+            case "unwatched":
+                return new Font("Dialog", Font.PLAIN,12);
+            case "watching":
+                return new Font("Dialog", Font.ITALIC,12);
+            default:
+                new ErrorMessage("Couldn't get the status of the anime.\nCurrent status is " + animeTitle.getStatus());
+                return new Font("Dialog",Font.PLAIN,12);
+        }
+    }
+    private Color getButtonColorWhenClicked(String status,JButton button){
+        //System.out.println(status+", "+button.getText());
+        if(status.toLowerCase(Locale.ROOT).equals(button.getText().toLowerCase(Locale.ROOT))){
+            return Color.CYAN;
+        }
+        else return Color.WHITE;
     }
 
     public void animeWasClicked(String title){
+        //getStatus of the anime
+        String status = dataBaseManager.getStatus(title);
         JFrame insertFrame = new JFrame(title);
         insertFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         insertFrame.setSize(500,200);
@@ -208,6 +250,7 @@ public class GUIManager{
         titlePanel.add(titleLabelPannel);
 
         JButton watchedButton = new JButton("Watched");
+        watchedButton.setBackground(getButtonColorWhenClicked(status,watchedButton));
         watchedButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -217,6 +260,7 @@ public class GUIManager{
             }
         });
         JButton unwatchedButton = new JButton("Unwatched");
+        unwatchedButton.setBackground(getButtonColorWhenClicked(status,unwatchedButton));
         unwatchedButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -226,6 +270,7 @@ public class GUIManager{
             }
         });
         JButton watchingButton = new JButton("Watching");
+        watchingButton.setBackground(getButtonColorWhenClicked(status,watchingButton));
         watchingButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

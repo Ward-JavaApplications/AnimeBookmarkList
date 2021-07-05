@@ -103,11 +103,15 @@ public class DataBaseManager {
         }
     }
     public ArrayList<AnimeTitle> getDBStatus(){
-        return getFromDB("SELECT * from anime order by Status, Title COLLATE NOCASE");
+        return getFromDB("select * from anime order by case Status COLLATE nocase\n" +
+                "when \"Watching\" then 0\n" +
+                "when \"Unwatched\" then 1\n" +
+                "when \"Watched\" then 2\n" +
+                "END");
     }
 
     public ArrayList<AnimeTitle> getDBPriority(){
-        return getFromDB("SELECT * from anime order by Priority, Title COLLATE NOCASE");
+        return getFromDB("select * from anime order by Priority DESC,Title COLLATE NOCASE ASC");
     }
 
     public ArrayList<AnimeTitle> getDBAlphabetical(){
@@ -189,7 +193,6 @@ public class DataBaseManager {
     }
 
     public int getPriority(String anime){
-        //delete from anime where Title = "aaaaa"
         try{
             Class.forName("org.sqlite.JDBC");
             String querry = "select Priority from anime where title = \"" + anime + "\"";
@@ -208,6 +211,24 @@ public class DataBaseManager {
             new ErrorMessage(e.getMessage());
             e.printStackTrace();
             return 0;
+        }
+    }
+    public String getStatus(String anime){
+        try{
+            Class.forName("org.sqlite.JDBC");
+            String querry = "select Status from anime where title = \"" + anime + "\"";
+            System.out.println(querry);
+            Connection conn = DriverManager.getConnection("jdbc:sqlite:" + "Anime BookmarkList.db");
+            Statement stat = conn.createStatement();
+            ResultSet rs =  stat.executeQuery(querry);
+            String targetString = rs.getString(1);
+            conn.close();
+            return targetString;
+        }
+        catch (Exception e){
+            new ErrorMessage(e.getMessage());
+            e.printStackTrace();
+            return null;
         }
     }
     public void changePriority(int priority, String title){
