@@ -2,6 +2,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.util.ArrayList;
 
 public class GUIManager{
@@ -26,7 +28,7 @@ public class GUIManager{
         JPanel mainMenuPanel = new JPanel(new BorderLayout());
         JPanel dataReceivePanel = new JPanel();
         JPanel dataInsertPanel = new JPanel();
-        JButton showAllTitlesAlphabeticalButton = new JButton("Show alphabetical");
+        JButton showAllTitlesAlphabeticalButton = new JButton("Sort alphabetical");
         showAllTitlesAlphabeticalButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -36,7 +38,7 @@ public class GUIManager{
         });
         dataReceivePanel.add(showAllTitlesAlphabeticalButton);
 
-        JButton showAllTitlesPriorityButton = new JButton("Show priority");
+        JButton showAllTitlesPriorityButton = new JButton("Sort priority");
         showAllTitlesPriorityButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -46,7 +48,7 @@ public class GUIManager{
         });
         dataReceivePanel.add(showAllTitlesPriorityButton);
 
-        JButton showAllTitlesStatusButton = new JButton("Show status");
+        JButton showAllTitlesStatusButton = new JButton("Sort status");
         showAllTitlesStatusButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -192,7 +194,7 @@ public class GUIManager{
     public void animeWasClicked(String title){
         JFrame insertFrame = new JFrame(title);
         insertFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        insertFrame.setSize(300,200);
+        insertFrame.setSize(500,200);
         insertFrame.setLocationRelativeTo(null);
         insertFrame.setVisible(true);
 
@@ -200,8 +202,10 @@ public class GUIManager{
         titlePanel.setLayout(new BoxLayout(titlePanel, BoxLayout.Y_AXIS));
         JPanel statusPanel = new JPanel(new FlowLayout());
 
+        JPanel titleLabelPannel = new JPanel(new FlowLayout());
         JLabel titleLabel = new JLabel(title, SwingUtilities.CENTER);
-        titlePanel.add(titleLabel);
+        titleLabelPannel.add(titleLabel);
+        titlePanel.add(titleLabelPannel);
 
         JButton watchedButton = new JButton("Watched");
         watchedButton.addActionListener(new ActionListener() {
@@ -237,6 +241,13 @@ public class GUIManager{
         JPanel priorityPanel = new JPanel(new FlowLayout());
         int currentPriority = dataBaseManager.getPriority(title);
         JTextField priorityTextField = new JTextField(String.valueOf(currentPriority));
+        priorityTextField.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                super.focusGained(e);
+                priorityTextField.setText("");
+            }
+        });
         JButton priorityButton = new JButton("Change priority");
         priorityButton.addActionListener(new ActionListener() {
             @Override
@@ -274,6 +285,7 @@ public class GUIManager{
     private void setTitleStatus(String targetStatus, String animeName){
         dataBaseManager.changeAnimeStatus(animeName,targetStatus);
     }
+
     private void deleteAnime(String animeName){
         dataBaseManager.deleteAnimeEntry(animeName);
     }
