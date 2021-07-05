@@ -7,6 +7,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.io.FileNotFoundException;
+import java.lang.reflect.Array;
 import java.time.chrono.JapaneseChronology;
 import java.util.ArrayList;
 import java.util.Locale;
@@ -89,7 +90,7 @@ public class GUIManager{
 
         JPanel repopulatePanel = new JPanel(new SpringLayout());
         repopulatePanel.setLayout(new BoxLayout(repopulatePanel,BoxLayout.X_AXIS));
-        JLabel fillerLabel = new JLabel("                                                                                                      ");
+        JLabel fillerLabel = new JLabel("                                                                         ");
         repopulatePanel.add(fillerLabel);
         JButton repopulateButton = new JButton("Repopulate from Excel");
         repopulateButton.addActionListener(new ActionListener() {
@@ -98,14 +99,96 @@ public class GUIManager{
                 repopulateMenu();
             }
         });
-        repopulatePanel.add(repopulateButton,SpringLayout.WEST);
 
+
+        JButton dangerZoneButton = new JButton("Danger Zone");
+        dangerZoneButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                loadDangerZoneMenu();
+            }
+        });
+        repopulatePanel.add(dangerZoneButton,SpringLayout.EAST);
+        repopulatePanel.add(repopulateButton,SpringLayout.WEST);
         mainMenuPanel.add(dataReceivePanel);
         mainMenuPanel.add(dataInsertPanel);
         mainMenuPanel.add(dataSearchPanel);
         mainMenuPanel.add(repopulatePanel);
         frame.setContentPane(mainMenuPanel);
         SwingUtilities.updateComponentTreeUI(frame);
+    }
+    private void loadDangerZoneMenu(){
+        JFrame dangerZoneFrame = new JFrame("DangerZone");
+        dangerZoneFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        dangerZoneFrame.setSize(500,500);
+        dangerZoneFrame.setLocationRelativeTo(null);
+        dangerZoneFrame.setVisible(true);
+
+        JPanel mainPanel = new JPanel(new SpringLayout());
+        mainPanel.setLayout(new BoxLayout(mainPanel,BoxLayout.Y_AXIS));
+        JButton loadDangerZoneButton = new JButton("Load DangerZone");
+        loadDangerZoneButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                loadDangerZone(dangerZoneFrame);
+                dangerZoneFrame.dispose();
+            }
+        });
+        JButton insertButton = new JButton("Insert title");
+        insertButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                insertInDangerZone();
+                dangerZoneFrame.dispose();
+            }
+        });
+        mainPanel.add(loadDangerZoneButton);
+        mainPanel.add(insertButton);
+        dangerZoneFrame.setContentPane(mainPanel);
+        SwingUtilities.updateComponentTreeUI(dangerZoneFrame);
+
+    }
+    private void insertInDangerZone(){
+        JFrame insertFrame = new JFrame("Insert new anime");
+        insertFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        insertFrame.setSize(300,200);
+        insertFrame.setLocationRelativeTo(null);
+        insertFrame.setVisible(true);
+
+        ///setup buttons
+        JPanel insertPanel = new JPanel(new SpringLayout());
+        insertPanel.setLayout(new BoxLayout(insertPanel, BoxLayout.Y_AXIS));
+        //title panel
+
+        JLabel titleLabel = new JLabel("Enter title",SwingConstants.CENTER);
+        JTextField titleField = new JTextField();
+        insertPanel.add(titleLabel);
+        insertPanel.add(titleField);
+        //save anime
+        JButton saveButton = new JButton("Save");
+        saveButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                try{
+                        insertNewAnimeInDangerZone((titleField.getText()));
+                        insertFrame.dispose();
+                        //refresh();
+
+                }
+                catch (Exception exception){
+                    new ErrorMessage(exception.getMessage());
+                    exception.printStackTrace();
+                }
+            }
+
+        });
+        insertPanel.add(saveButton);
+        insertFrame.setContentPane(insertPanel);
+        SwingUtilities.updateComponentTreeUI(insertFrame);
+    }
+    private void loadDangerZone(JFrame frame){
+        listToButtonsDangerZone(frame,dataBaseManager.getDangerZone());
     }
     private void searchAnimeMenu(){
         JPanel searchPanel = new JPanel(new SpringLayout());
@@ -125,6 +208,7 @@ public class GUIManager{
         searchPanel.add(searchButton);
 
         mainFrame.setContentPane(searchPanel);
+        searchField.requestFocus();
         SwingUtilities.updateComponentTreeUI(mainFrame);
     }
     private void searchForTitle(String title,JFrame frame){
@@ -243,6 +327,9 @@ public class GUIManager{
 
     }
 
+    private void insertNewAnimeInDangerZone(String title){
+        dataBaseManager.insertInDangerZone(title);
+    }
     private void insertNewAnimeInDB(AnimeTitle anime){
         dataBaseManager.insertInDB(anime);
 
@@ -261,6 +348,42 @@ public class GUIManager{
         listToButtons(frame, animeList);
     }
 
+    private void listToButtonsDangerZone(JFrame frame, ArrayList<String> animeList){
+        JPanel mainPanel = new JPanel(new SpringLayout());
+        mainPanel.setLayout(new BoxLayout(mainPanel,BoxLayout.Y_AXIS));
+        JPanel panel = new JPanel(new SpringLayout());
+        panel.setLayout(new BoxLayout(panel,BoxLayout.Y_AXIS));
+
+        //Add a button to go back to main menu
+        JPanel buttonPanel = new JPanel(new BorderLayout());
+        JButton returnButton = new JButton("Return");
+        returnButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                loadDangerZoneMenu();
+            }
+        });
+        buttonPanel.add(returnButton, BorderLayout.EAST);
+        mainPanel.add(buttonPanel);
+        //add all the buttons for the different anime
+        for(String s: animeList){
+            JButton b = new JButton(s);
+            b.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    animeWasClicked(b.getText());
+                }
+            });
+
+            panel.add(b);
+
+        }
+        JScrollPane scrollPane = new JScrollPane(panel);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(30);
+        mainPanel.add(scrollPane);
+        frame.setContentPane(mainPanel);
+        SwingUtilities.updateComponentTreeUI(frame);
+    }
     private void listToButtons(JFrame frame, ArrayList<AnimeTitle> animeList) {
         ArrayList<JButton> buttons = new ArrayList<>(animeList.size());
         JPanel mainPanel = new JPanel(new SpringLayout());

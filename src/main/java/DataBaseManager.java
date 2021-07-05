@@ -105,6 +105,26 @@ public class DataBaseManager {
             return null;
         }
     }
+    public void insertInDangerZone(String title){
+        Connection conn = null;
+        try {
+            Class.forName("org.sqlite.JDBC");
+            conn = DriverManager.getConnection("jdbc:sqlite:" + "Anime BookmarkList.db");
+
+            String querry = "insert into DangerZone (Title)" + " values (?)";
+            PreparedStatement preparedStatement = conn.prepareStatement(querry);
+            preparedStatement.setString(1,title);
+            preparedStatement.execute();
+            System.out.println(preparedStatement.toString());
+
+            conn.close();
+
+        }
+        catch (Exception e) {
+            new ErrorMessage(e.getMessage());
+            e.printStackTrace();
+        }
+    }
     public void insertInDB(AnimeTitle animeTitle){
         Connection conn = null;
         try {
@@ -134,6 +154,10 @@ public class DataBaseManager {
                 "when \"Watched\" then 2\n" +
                 "END");
     }
+    public ArrayList<String> getDangerZone(){
+        ArrayList<String> dangerZone = getFromDBDangerZone("select * from DangerZone order by Title COLLATE NOCASE ASC");
+        return dangerZone;
+    }
 
     public ArrayList<AnimeTitle> getDBPriority(){
         return getFromDB("select * from anime order by Priority DESC,Title COLLATE NOCASE ASC");
@@ -145,6 +169,42 @@ public class DataBaseManager {
     }
     public ArrayList<AnimeTitle> searchTitleInDB(String title){
         return getFromDB("Select * from anime where Title like \"%" + title+ "%\"");
+    }
+    public ArrayList<String> getFromDBDangerZone(String querry){
+        Connection conn = null;
+        System.out.println(querry);
+        try
+        {
+            // load the driver class for sqlite
+            // in sqlite-jdbc.jar in +libs folder in project folder
+            Class.forName("org.sqlite.JDBC");
+            // create the connection to the database
+            conn = DriverManager.getConnection("jdbc:sqlite:" + "Anime BookmarkList.db");
+            // create the statement
+            Statement stat = conn.createStatement();
+
+            String selectStatement = querry; // put your SQL query here
+            // execute the statement on the selected DB and receive the data as a ResultSet
+            ResultSet rs = stat.executeQuery(selectStatement);
+            // iterate through the resultset row by row
+            ArrayList<String> animes = new ArrayList<>();
+            while (rs.next())
+            {
+                String title = rs.getString(1);
+                animes.add(title);
+            }
+            rs.close();
+            stat.close();
+            conn.close();
+            return animes;
+        }
+        // in case something goes wrong, f.i. incorrect dbname, incorrect select query, driver not found, ...
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            new ErrorMessage(e.getMessage());
+            return null;
+        }
     }
     public ArrayList<AnimeTitle> getFromDB(String querry){
         Connection conn = null;
