@@ -63,8 +63,8 @@ public class GUIManager{
         insertNewTitleButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                insertNewTitleMenu(frame);
-                refresh();
+                insertNewTitleMenu();
+                
             }
         });
         dataInsertPanel.add(insertNewTitleButton);
@@ -75,7 +75,7 @@ public class GUIManager{
         SwingUtilities.updateComponentTreeUI(frame);
     }
 
-    private void insertNewTitleMenu(JFrame mainFrame){
+    private void insertNewTitleMenu(){
         JFrame insertFrame = new JFrame("Insert new anime");
         insertFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         insertFrame.setSize(300,200);
@@ -115,7 +115,7 @@ public class GUIManager{
                         if(priority<=5 && priority>=0) {
                             insertNewAnimeInDB(new AnimeTitle(titleField.getText(), status, priority));
                             insertFrame.dispose();
-                            refresh();
+                            //refresh();
                         }
                         else throw new NumberRangeException(0,5);
                     }
