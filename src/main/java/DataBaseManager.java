@@ -5,18 +5,37 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.sql.*;
 import java.util.ArrayList;
 
 public class DataBaseManager {
     public DataBaseManager(){
-        
+
     }
-    public void populateDBFromExcel(){
-        ArrayList<AnimeTitle> animes = populateFromExcel();
+    public void populateDBFromExcel(String excelFileName){
+        clearDB();
+        ArrayList<AnimeTitle> animes = populateFromExcel(excelFileName);
         populateDB(animes);
 
     }
+    private void clearDB(){
+        Connection conn = null;
+        try {
+            String querry = "Delete from anime";
+            Class.forName("org.sqlite.JDBC");
+            conn = DriverManager.getConnection("jdbc:sqlite:" + "Anime BookmarkList.db");
+            Statement stat = conn.createStatement();
+            stat.executeUpdate(querry);
+            conn.close();
+
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            new ErrorMessage(e.getMessage());
+        }
+    }
+
     private void populateDB(ArrayList<AnimeTitle> animes)
     {
         Connection conn = null;
@@ -40,10 +59,11 @@ public class DataBaseManager {
         }
 
     }
-    private ArrayList<AnimeTitle> populateFromExcel(){
+    private ArrayList<AnimeTitle> populateFromExcel (String excelFileName){
         try {
             ArrayList<AnimeTitle> animes;
-            File file = new File("Anime BookmarkList.xlsx");
+            //by default it was "Anime BookmarkList.xlsx"
+            File file = new File(excelFileName);
             FileInputStream inputStream = new FileInputStream(file);
             Workbook workbook = new XSSFWorkbook(inputStream);
             Sheet sheet = workbook.getSheetAt(0);
@@ -73,6 +93,11 @@ public class DataBaseManager {
                 }
             }
             return animes;
+        }
+        catch (FileNotFoundException fileNotFoundException){
+            fileNotFoundException.printStackTrace();
+            new ErrorMessage(fileNotFoundException.getMessage());
+            return null;
         }
         catch (Exception e){
             e.printStackTrace();

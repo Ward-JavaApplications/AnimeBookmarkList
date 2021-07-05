@@ -1,9 +1,13 @@
+import com.mysql.cj.protocol.a.NativeConstants;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.io.FileNotFoundException;
+import java.time.chrono.JapaneseChronology;
 import java.util.ArrayList;
 import java.util.Locale;
 
@@ -12,6 +16,7 @@ public class GUIManager{
     private DataBaseManager dataBaseManager = new DataBaseManager();
     private int selectedMainFrame; //0=alpahbetical, 1 = priority, 2 = status
     JFrame mainFrame;
+    String userTargetString;
     public GUIManager(){
         startGUI();
     }
@@ -26,7 +31,8 @@ public class GUIManager{
 
     }
     private void showStartMenu(JFrame frame){
-        JPanel mainMenuPanel = new JPanel(new BorderLayout());
+        JPanel mainMenuPanel = new JPanel(new SpringLayout());
+        mainMenuPanel.setLayout(new BoxLayout(mainMenuPanel, BoxLayout.Y_AXIS));
         JPanel dataReceivePanel = new JPanel();
         JPanel dataInsertPanel = new JPanel();
         JButton showAllTitlesAlphabeticalButton = new JButton("Sort alphabetical");
@@ -59,6 +65,7 @@ public class GUIManager{
         });
         dataReceivePanel.add(showAllTitlesStatusButton);
 
+
         JButton insertNewTitleButton = new JButton("Insert anime");
         insertNewTitleButton.addActionListener(new ActionListener() {
             @Override
@@ -69,10 +76,74 @@ public class GUIManager{
         });
         dataInsertPanel.add(insertNewTitleButton);
 
-        mainMenuPanel.add(dataReceivePanel,BorderLayout.NORTH);
-        mainMenuPanel.add(dataInsertPanel, BorderLayout.SOUTH);
+        JPanel repopulatePanel = new JPanel(new SpringLayout());
+        repopulatePanel.setLayout(new BoxLayout(repopulatePanel,BoxLayout.X_AXIS));
+        JLabel fillerLabel = new JLabel("                                                                                                      ");
+        repopulatePanel.add(fillerLabel);
+        JButton repopulateButton = new JButton("Repopulate from Excel");
+        repopulateButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                repopulateMenu();
+            }
+        });
+        repopulatePanel.add(repopulateButton,SpringLayout.WEST);
+
+        mainMenuPanel.add(dataReceivePanel);
+        mainMenuPanel.add(dataInsertPanel);
+        mainMenuPanel.add(repopulatePanel);
         frame.setContentPane(mainMenuPanel);
         SwingUtilities.updateComponentTreeUI(frame);
+    }
+    private void repopulateMenu(){
+        JFrame repopulateFrame = new JFrame("RepopulateDB");
+        repopulateFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        repopulateFrame.setSize(800,200);
+        repopulateFrame.setLocationRelativeTo(null);
+        repopulateFrame.setVisible(true);
+
+        JPanel repopulatePanel = new JPanel(new SpringLayout());
+        repopulatePanel.setLayout(new BoxLayout(repopulatePanel,BoxLayout.Y_AXIS));
+        JLabel warningLabel = new JLabel("Watch out you will be deleting all the data of this DB and going back to the data of an excel file!!!");
+        repopulatePanel.add(warningLabel);
+        JLabel infoLabel = new JLabel("Type the name of the corresponding xlsx file in the box below");
+        String infoFieldString = "xlsx file(don't forget the .xlsx extension at the end";
+
+        JTextField infoField = new JTextField(infoFieldString);
+        infoField.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                super.focusGained(e);
+                infoField.setText("");
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                super.focusLost(e);
+                userTargetString = infoField.getText();
+                infoField.setText(infoFieldString);
+            }
+        });
+        repopulatePanel.add(infoLabel);
+        repopulatePanel.add(infoField);
+        JButton repopulateButton = new JButton("Confirm repopulation");
+        repopulateButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    dataBaseManager.populateDBFromExcel(userTargetString);
+                    repopulateFrame.dispose();
+                }
+                catch (Exception exception)
+                {
+                    exception.printStackTrace();
+                }
+            }
+        });
+        repopulatePanel.add(repopulateButton);
+        repopulateFrame.setContentPane(repopulatePanel);
+        warningLabel.requestFocus();
+        SwingUtilities.updateComponentTreeUI(repopulateFrame);
     }
 
     private void insertNewTitleMenu(){
