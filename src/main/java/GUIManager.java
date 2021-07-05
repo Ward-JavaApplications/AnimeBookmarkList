@@ -263,6 +263,8 @@ public class GUIManager{
 
     private void listToButtons(JFrame frame, ArrayList<AnimeTitle> animeList) {
         ArrayList<JButton> buttons = new ArrayList<>(animeList.size());
+        JPanel mainPanel = new JPanel(new SpringLayout());
+        mainPanel.setLayout(new BoxLayout(mainPanel,BoxLayout.Y_AXIS));
         JPanel panel = new JPanel(new SpringLayout());
         panel.setLayout(new BoxLayout(panel,BoxLayout.Y_AXIS));
 
@@ -276,7 +278,7 @@ public class GUIManager{
             }
         });
         buttonPanel.add(returnButton, BorderLayout.EAST);
-        panel.add(buttonPanel);
+        mainPanel.add(buttonPanel);
         //add all the buttons for the different anime
         for(AnimeTitle anime: animeList){
             JButton b = new JButton(anime.getTitle());
@@ -294,7 +296,8 @@ public class GUIManager{
         }
         JScrollPane scrollPane = new JScrollPane(panel);
         scrollPane.getVerticalScrollBar().setUnitIncrement(30);
-        frame.setContentPane(scrollPane);
+        mainPanel.add(scrollPane);
+        frame.setContentPane(mainPanel);
         SwingUtilities.updateComponentTreeUI(frame);
     }
 
