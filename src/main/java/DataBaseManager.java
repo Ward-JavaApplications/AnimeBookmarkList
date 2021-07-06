@@ -263,6 +263,21 @@ public class DataBaseManager {
 
 
     }
+    public void deleteAnimeEntryDangerZone(String title){
+        try {
+            Class.forName("org.sqlite.JDBC");
+            String querry = "delete from DangerZone where Title = \""+title+"\"";
+            System.out.println(querry);
+            Connection conn = DriverManager.getConnection("jdbc:sqlite:" + "Anime BookmarkList.db");
+            Statement stat = conn.createStatement();
+            stat.executeUpdate(querry);
+            conn.close();
+        }
+        catch (Exception e){
+            new ErrorMessage(e.getMessage());
+            e.printStackTrace();
+        }
+    }
     public void deleteAnimeEntry(String title){
         //delete from anime where Title = "aaaaa"
         try{

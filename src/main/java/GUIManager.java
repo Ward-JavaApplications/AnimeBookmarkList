@@ -131,7 +131,7 @@ public class GUIManager{
             @Override
             public void actionPerformed(ActionEvent e) {
                 loadDangerZone(dangerZoneFrame);
-                dangerZoneFrame.dispose();
+                //dangerZoneFrame.dispose();
             }
         });
         JButton insertButton = new JButton("Insert title");
@@ -360,7 +360,8 @@ public class GUIManager{
         returnButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                loadDangerZoneMenu();
+                //loadDangerZoneMenu();
+                frame.dispose();
             }
         });
         buttonPanel.add(returnButton, BorderLayout.EAST);
@@ -371,7 +372,8 @@ public class GUIManager{
             b.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    animeWasClicked(b.getText());
+                    animeWasClickedDangerZone(b.getText());
+
                 }
             });
 
@@ -463,6 +465,38 @@ public class GUIManager{
         }
         else return Color.WHITE;
     }
+    private void animeWasClickedDangerZone(String title){
+        JFrame insertFrame = new JFrame(title);
+        insertFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        insertFrame.setSize(500,200);
+        insertFrame.setLocationRelativeTo(null);
+        insertFrame.setVisible(true);
+
+        JPanel titlePanel = new JPanel(new SpringLayout());
+        titlePanel.setLayout(new BoxLayout(titlePanel, BoxLayout.Y_AXIS));
+
+        JPanel titleLabelPannel = new JPanel(new FlowLayout());
+        JLabel titleLabel = new JLabel(title, SwingUtilities.CENTER);
+        titleLabelPannel.add(titleLabel);
+        titlePanel.add(titleLabelPannel);
+
+        JButton deleteButton = new JButton("Delete anime");
+        deleteButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                deleteAnimeDangerZone(title); ;
+                insertFrame.dispose();
+                loadDangerZoneMenu();
+
+            }
+        });
+        JPanel priorityPanel = new JPanel(new FlowLayout());
+        priorityPanel.add(deleteButton);
+        titlePanel.add(priorityPanel);
+        insertFrame.setContentPane(titlePanel);
+        SwingUtilities.updateComponentTreeUI(insertFrame);
+    }
+
 
     public void animeWasClicked(String title){
         //getStatus of the anime
@@ -564,6 +598,10 @@ public class GUIManager{
         dataBaseManager.changeAnimeStatus(animeName,targetStatus);
     }
 
+    private void deleteAnimeDangerZone(String animeName){
+        dataBaseManager.deleteAnimeEntryDangerZone(animeName);
+    }
+
     private void deleteAnime(String animeName){
         dataBaseManager.deleteAnimeEntry(animeName);
     }
@@ -571,6 +609,7 @@ public class GUIManager{
     private void changePriority(String animeName, int priority){
         dataBaseManager.changePriority(priority,animeName);
     }
+
 
     private void refresh(){
         switch (selectedMainFrame)
