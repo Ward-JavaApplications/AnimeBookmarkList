@@ -432,7 +432,7 @@ public class GUIManager{
             case 0:
                 return Color.WHITE;
             case 1:
-                return Color.BLUE;
+                return Color.CYAN;
             case 2:
                 return Color.GREEN;
             case 3:
