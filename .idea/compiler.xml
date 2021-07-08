@@ -10,7 +10,7 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="AnimeBookmarkList" target="16" />
+      <module name="AnimeBookmarkList" target="8" />
     </bytecodeTargetLevel>
   </component>
 </project>
