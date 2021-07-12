@@ -244,6 +244,22 @@ public class DataBaseManager {
             return null;
         }
     }
+    public void setPriorityToZero(String title){
+        try{
+            Class.forName("org.sqlite.JDBC");
+            String querry = "Update Anime set Priority = 0 WHERE Title = \"" +title+"\"";
+            System.out.println(querry);
+            Connection conn = DriverManager.getConnection("jdbc:sqlite:" + "Anime BookmarkList.db");
+            Statement stat = conn.createStatement();
+            stat.executeUpdate(querry);
+            conn.close();
+        }
+        catch (Exception e)
+        {
+            new ErrorMessage(e.getMessage());
+            e.printStackTrace();
+        }
+    }
     public void changeAnimeStatus(String title, String status){
         //Update Anime set Status = "mango" WHERE Title = "aaaa"
         try{

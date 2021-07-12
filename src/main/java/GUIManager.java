@@ -522,6 +522,7 @@ public class GUIManager{
             @Override
             public void actionPerformed(ActionEvent e) {
                 setTitleStatus("Watched", title);
+                dataBaseManager.setPriorityToZero(title);
                 insertFrame.dispose();
                 refresh();
             }
@@ -605,6 +606,7 @@ public class GUIManager{
     private void deleteAnime(String animeName){
         dataBaseManager.deleteAnimeEntry(animeName);
     }
+
 
     private void changePriority(String animeName, int priority){
         dataBaseManager.changePriority(priority,animeName);
