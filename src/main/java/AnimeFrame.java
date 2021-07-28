@@ -16,6 +16,8 @@ public class AnimeFrame implements JaikanRetriever{
     private JFrame insertFrame;
     private String title;
     private MyGUIManager parent;
+    private JPanel imagePanel;
+    private JPanel mainPanel;
     public AnimeFrame(String animeTitle, MyGUIManager parent){
         this.parent = parent;
         this.title = animeTitle;
@@ -134,9 +136,9 @@ public class AnimeFrame implements JaikanRetriever{
         priorityPanel.add(deleteButton);
         titlePanel.add(priorityPanel);
 
-        JPanel mainPanel = new JPanel(new BorderLayout());
+        mainPanel = new JPanel(new BorderLayout());
         mainPanel.add(titlePanel,BorderLayout.PAGE_START);
-        JPanel imagePanel = new JPanel(new BorderLayout());
+        imagePanel = new JPanel(new BorderLayout());
         imagePanel.add(new JLabel("Loading the data"),BorderLayout.CENTER);
         mainPanel.add(imagePanel,BorderLayout.LINE_START);
 
@@ -155,14 +157,32 @@ public class AnimeFrame implements JaikanRetriever{
 
             final BufferedImage image = ImageIO.read(new URL(animeURL));
 
+            imagePanel = new JPanel(new FlowLayout());
 
-            JPanel imagePanel = new JPanel() {
+            String synopsis = anime.getSynopsis();
+            if(synopsis == null) synopsis = "No synopsis found";
+
+            JTextArea description  = new JTextArea(synopsis);
+            description.setSize(insertFrame.getWidth()-10,100);
+            description.setLineWrap(true);
+            description.setWrapStyleWord(true);
+
+            JPanel imageToDrawPanel = new JPanel() {
                 @Override
                 protected void paintComponent(Graphics g) {
                     super.paintComponent(g);
                     g.drawImage(image.getScaledInstance(image.getWidth(), image.getHeight(), 0), Math.round(CENTER_ALIGNMENT*insertFrame.getSize().width), 0, null);
                 }
             };
+            imagePanel.add(description);
+            imagePanel.add(imageToDrawPanel);
+            mainPanel.remove(1);
+            mainPanel.add(imagePanel);
+            //SwingUtilities.updateComponentTreeUI(imagePanel)
+            insertFrame.setContentPane(mainPanel);
+            SwingUtilities.updateComponentTreeUI(insertFrame);
+
+            insertFrame.setContentPane(imagePanel);
             SwingUtilities.updateComponentTreeUI(insertFrame);
         }
         catch (Exception e){

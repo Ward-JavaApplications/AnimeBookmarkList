@@ -14,7 +14,7 @@ public class JaikanSearch {
         this.parent = parent;
         getByTitle();
     }
-    public Anime getByTitle(){
+    public void getByTitle(){
 
         List<Anime> animes = new ArrayList<>();
         Jaikan.search(Endpoints.SEARCH,AnimeResult.class,"anime",title)
@@ -22,6 +22,6 @@ public class JaikanSearch {
                     animes.add(animeResult.asAnime());
             System.out.println(animeResult.getTitle());
                 });
-        return animes.get(0);
+        parent.retrieveAnime(animes.get(0));
     }
 }
