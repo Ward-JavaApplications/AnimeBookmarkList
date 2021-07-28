@@ -2,6 +2,7 @@ import pw.mihou.jaikan.models.Anime;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.border.Border;
 import java.awt.*;
 
 import java.awt.event.ActionEvent;
@@ -11,7 +12,7 @@ import java.awt.event.FocusEvent;
 import java.awt.image.BufferedImage;
 import java.net.URL;
 
-public class AnimeFrame {
+public class AnimeFrame implements JaikanRetriever{
     private JFrame insertFrame;
     private String title;
     private MyGUIManager parent;
@@ -19,7 +20,13 @@ public class AnimeFrame {
         this.parent = parent;
         this.title = animeTitle;
         loadFrame();
+        new Thread(this::startAsyncImageSearch).start();
+
     }
+    private void startAsyncImageSearch(){
+        new JaikanSearch(title,this);
+    }
+
 
     private void loadFrame(){
         insertFrame = new JFrame(title);
@@ -129,10 +136,9 @@ public class AnimeFrame {
 
         JPanel mainPanel = new JPanel(new BorderLayout());
         mainPanel.add(titlePanel,BorderLayout.PAGE_START);
-        JPanel imagePanel = new JPanel();
-        imagePanel.add(new JLabel("Loading the data"));
+        JPanel imagePanel = new JPanel(new BorderLayout());
+        imagePanel.add(new JLabel("Loading the data"),BorderLayout.CENTER);
         mainPanel.add(imagePanel,BorderLayout.LINE_START);
-
 
         insertFrame.setContentPane(mainPanel);
         SwingUtilities.updateComponentTreeUI(insertFrame);
@@ -140,10 +146,10 @@ public class AnimeFrame {
 
     }
 
-    private void loadImage(String animeTitle){
+    @Override
+    public void retrieveAnime(Anime anime) {
         try {
 
-            Anime anime =  new JaikanSearch(animeTitle).getByTitle();
             String animeURL = anime.getImage();
             System.out.println(animeURL);
 
@@ -162,7 +168,6 @@ public class AnimeFrame {
         catch (Exception e){
             e.printStackTrace();
         }
-
-
     }
+
 }
