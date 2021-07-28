@@ -1,16 +1,9 @@
-import org.apache.poi.sl.draw.Drawable;
-import org.jsoup.Connection;
 import org.jsoup.Jsoup;
-import org.jsoup.helper.HttpConnection;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.parser.Parser;
 import org.jsoup.select.Elements;
 
-import javax.swing.*;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
 
 public class GoogleImageSearch {
     GoogleImageSearch(){

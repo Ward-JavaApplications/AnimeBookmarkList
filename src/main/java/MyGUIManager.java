@@ -12,13 +12,13 @@ import java.time.chrono.JapaneseChronology;
 import java.util.ArrayList;
 import java.util.Locale;
 
-public class GUIManager{
+public class MyGUIManager {
 
-    private DataBaseManager dataBaseManager = new DataBaseManager();
+    public DataBaseManager dataBaseManager = new DataBaseManager();
     private int selectedMainFrame; //0=alpahbetical, 1 = priority, 2 = status
     JFrame mainFrame;
     String userTargetString;
-    public GUIManager(){
+    public MyGUIManager(){
         startGUI();
     }
     private void startGUI(){
@@ -458,7 +458,7 @@ public class GUIManager{
                 return new Font("Dialog",Font.PLAIN,12);
         }
     }
-    private Color getButtonColorWhenClicked(String status,JButton button){
+    public Color getButtonColorWhenClicked(String status,JButton button){
         //System.out.println(status+", "+button.getText());
         if(status.toLowerCase(Locale.ROOT).equals(button.getText().toLowerCase(Locale.ROOT))){
             return Color.CYAN;
@@ -499,121 +499,28 @@ public class GUIManager{
 
 
     public void animeWasClicked(String title){
-        //getStatus of the anime
-        String status = dataBaseManager.getStatus(title);
-        JFrame insertFrame = new JFrame(title);
-        insertFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        insertFrame.setSize(500,200);
-        insertFrame.setLocationRelativeTo(null);
-        insertFrame.setVisible(true);
-
-        JPanel titlePanel = new JPanel(new SpringLayout());
-        titlePanel.setLayout(new BoxLayout(titlePanel, BoxLayout.Y_AXIS));
-        JPanel statusPanel = new JPanel(new FlowLayout());
-
-        JPanel titleLabelPannel = new JPanel(new FlowLayout());
-        JLabel titleLabel = new JLabel(title, SwingUtilities.CENTER);
-        titleLabelPannel.add(titleLabel);
-        titlePanel.add(titleLabelPannel);
-
-        JButton watchedButton = new JButton("Watched");
-        watchedButton.setBackground(getButtonColorWhenClicked(status,watchedButton));
-        watchedButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                setTitleStatus("Watched", title);
-                dataBaseManager.setPriorityToZero(title);
-                insertFrame.dispose();
-                refresh();
-            }
-        });
-        JButton unwatchedButton = new JButton("Unwatched");
-        unwatchedButton.setBackground(getButtonColorWhenClicked(status,unwatchedButton));
-        unwatchedButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                setTitleStatus("Unwatched", title);
-                insertFrame.dispose();
-                refresh();
-            }
-        });
-        JButton watchingButton = new JButton("Watching");
-        watchingButton.setBackground(getButtonColorWhenClicked(status,watchingButton));
-        watchingButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                setTitleStatus("Watching", title);
-                insertFrame.dispose();
-                refresh();
-            }
-        });
-        statusPanel.add(watchedButton);
-        statusPanel.add(watchingButton);
-        statusPanel.add(unwatchedButton);
-        titlePanel.add(statusPanel);
-        JPanel priorityPanel = new JPanel(new FlowLayout());
-        int currentPriority = dataBaseManager.getPriority(title);
-        JTextField priorityTextField = new JTextField(String.valueOf(currentPriority));
-        priorityTextField.addFocusListener(new FocusAdapter() {
-            @Override
-            public void focusGained(FocusEvent e) {
-                super.focusGained(e);
-                priorityTextField.setText("");
-            }
-        });
-        JButton priorityButton = new JButton("Change priority");
-        priorityButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    int priority = Integer.parseInt(priorityTextField.getText());
-                    changePriority(title, priority);
-                    insertFrame.dispose();
-                }
-                catch (NumberFormatException numberFormatException)
-                {
-                    new ErrorMessage("The given priority was not a valid number");
-                }
-            }
-        });
-        priorityPanel.add(priorityTextField);
-        priorityPanel.add(priorityButton);
-
-        JButton deleteButton = new JButton("Delete anime");
-        deleteButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                deleteAnime(title) ;
-                insertFrame.dispose();
-                refresh();
-
-            }
-        });
-        priorityPanel.add(deleteButton);
-        titlePanel.add(priorityPanel);
-        insertFrame.setContentPane(titlePanel);
-        SwingUtilities.updateComponentTreeUI(insertFrame);
+        new AnimeFrame(title,this);
 
     }
-    private void setTitleStatus(String targetStatus, String animeName){
+    public void setTitleStatus(String targetStatus, String animeName){
         dataBaseManager.changeAnimeStatus(animeName,targetStatus);
     }
 
-    private void deleteAnimeDangerZone(String animeName){
+    public void deleteAnimeDangerZone(String animeName){
         dataBaseManager.deleteAnimeEntryDangerZone(animeName);
     }
 
-    private void deleteAnime(String animeName){
+    public void deleteAnime(String animeName){
         dataBaseManager.deleteAnimeEntry(animeName);
     }
 
 
-    private void changePriority(String animeName, int priority){
+    public void changePriority(String animeName, int priority){
         dataBaseManager.changePriority(priority,animeName);
     }
 
 
-    private void refresh(){
+    public void refresh(){
         switch (selectedMainFrame)
         {
             case 0:
