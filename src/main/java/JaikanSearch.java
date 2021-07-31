@@ -20,7 +20,6 @@ public class JaikanSearch {
         Jaikan.search(Endpoints.SEARCH,AnimeResult.class,"anime",title)
                 .stream().limit(1).forEach(animeResult -> {
                     animes.add(animeResult.asAnime());
-            System.out.println(animeResult.getTitle());
                 });
         parent.retrieveAnime(animes.get(0));
     }

@@ -160,6 +160,7 @@ public class AnimeFrame implements JaikanRetriever{
 
             String animeURL = anime.getImage();
             System.out.println(animeURL);
+            new MyLogger().log(animeURL);
 
 
 
@@ -236,7 +237,9 @@ public class AnimeFrame implements JaikanRetriever{
                 SwingUtilities.updateComponentTreeUI(insertFrame);
 
                 System.out.println(description.getHeight() + " this was the height of the description");
+                new MyLogger().log(description.getHeight() + " this was the height of the description");
                 if(description.getHeight()<1000){
+                    new MyLogger().log("This was short enough therefore we will display");
                     System.out.println("This was short enough therefore we will display");
                     return;
 
@@ -248,6 +251,7 @@ public class AnimeFrame implements JaikanRetriever{
         }
         catch (Exception e){
             e.printStackTrace();
+            new ErrorMessage(e.getMessage());
         }
     }
 

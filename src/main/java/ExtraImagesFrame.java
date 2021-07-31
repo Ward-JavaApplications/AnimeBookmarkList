@@ -30,6 +30,7 @@ public class ExtraImagesFrame {
             JPanel picturesPanel = new JPanel(new FlowLayout());
 
             String request = Jaikan.genericRequest(new Endpoint("https://api.jikan.moe/v3/character/" + anime.getId() + "/pictures"));
+            new MyLogger().log(request);
             System.out.println(request);
             JsonObject obj = JsonParser.parseString(request).getAsJsonObject();
             JsonArray pictures = obj.get("pictures").getAsJsonArray();
@@ -49,6 +50,7 @@ public class ExtraImagesFrame {
         }
         catch (Exception e){
             e.printStackTrace();
+            new MyLogger().log(e.getMessage());
             imageFrame.setContentPane(new JLabel("Couldn't load additional pictures"));
             SwingUtilities.updateComponentTreeUI(imageFrame);
         }

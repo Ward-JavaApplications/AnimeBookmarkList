@@ -20,6 +20,7 @@ public class GoogleImageSearch {
                     .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:89.0) Gecko/20100101 Firefox/89.0")
                     .get();
             Element images = doc.select("[data-src]").first();
+            new MyLogger().log(images.attr("abs:data-src"));
             System.out.println(images.attr("abs:data-src"));
         }
         catch (Exception e){

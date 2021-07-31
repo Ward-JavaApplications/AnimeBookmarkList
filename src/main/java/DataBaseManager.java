@@ -115,6 +115,7 @@ public class DataBaseManager {
             PreparedStatement preparedStatement = conn.prepareStatement(querry);
             preparedStatement.setString(1,title);
             preparedStatement.execute();
+            new MyLogger().log(preparedStatement.toString());
             System.out.println(preparedStatement.toString());
 
             conn.close();
@@ -137,6 +138,7 @@ public class DataBaseManager {
             preparedStatement.setString(2,animeTitle.getStatus());
             preparedStatement.setInt(3,animeTitle.getPriority());
             preparedStatement.execute();
+            new MyLogger().log(preparedStatement.toString());
             System.out.println(preparedStatement.toString());
 
             conn.close();
@@ -172,6 +174,7 @@ public class DataBaseManager {
     }
     public ArrayList<String> getFromDBDangerZone(String querry){
         Connection conn = null;
+        new MyLogger().log(querry);
         System.out.println(querry);
         try
         {
@@ -208,6 +211,7 @@ public class DataBaseManager {
     }
     public ArrayList<AnimeTitle> getFromDB(String querry){
         Connection conn = null;
+        new MyLogger().log(querry);
         System.out.println(querry);
         try
         {
@@ -248,6 +252,7 @@ public class DataBaseManager {
         try{
             Class.forName("org.sqlite.JDBC");
             String querry = "Update Anime set Priority = 0 WHERE Title = \"" +title+"\"";
+            new MyLogger().log(querry);
             System.out.println(querry);
             Connection conn = DriverManager.getConnection("jdbc:sqlite:" + "Anime BookmarkList.db");
             Statement stat = conn.createStatement();
@@ -265,6 +270,7 @@ public class DataBaseManager {
         try{
             Class.forName("org.sqlite.JDBC");
             String querry = "Update Anime set Status = \"" + status + "\" WHERE Title = \"" +title+"\"";
+            new MyLogger().log(querry);
             System.out.println(querry);
             Connection conn = DriverManager.getConnection("jdbc:sqlite:" + "Anime BookmarkList.db");
             Statement stat = conn.createStatement();
@@ -283,6 +289,7 @@ public class DataBaseManager {
         try {
             Class.forName("org.sqlite.JDBC");
             String querry = "delete from DangerZone where Title = \""+title+"\"";
+            new MyLogger().log(querry);
             System.out.println(querry);
             Connection conn = DriverManager.getConnection("jdbc:sqlite:" + "Anime BookmarkList.db");
             Statement stat = conn.createStatement();
@@ -299,6 +306,7 @@ public class DataBaseManager {
         try{
             Class.forName("org.sqlite.JDBC");
             String querry = "delete from anime where Title = \""+title+"\"";
+            new MyLogger().log(querry);
             System.out.println(querry);
             Connection conn = DriverManager.getConnection("jdbc:sqlite:" + "Anime BookmarkList.db");
             Statement stat = conn.createStatement();
@@ -315,6 +323,7 @@ public class DataBaseManager {
         try{
             Class.forName("org.sqlite.JDBC");
             String querry = "select Priority from anime where title = \"" + anime + "\"";
+            new MyLogger().log(querry);
             System.out.println(querry);
             Connection conn = DriverManager.getConnection("jdbc:sqlite:" + "Anime BookmarkList.db");
             Statement stat = conn.createStatement();
@@ -337,6 +346,7 @@ public class DataBaseManager {
         try{
             Class.forName("org.sqlite.JDBC");
             String querry = "select Status from anime where title = \"" + anime + "\"";
+            new MyLogger().log(querry);
             System.out.println(querry);
             Connection conn = DriverManager.getConnection("jdbc:sqlite:" + "Anime BookmarkList.db");
             Statement stat = conn.createStatement();
@@ -355,6 +365,7 @@ public class DataBaseManager {
         try{
             Class.forName("org.sqlite.JDBC");
             String querry = "Update Anime set Priority = \"" + priority + "\" WHERE Title = \"" +title+"\"";
+            new MyLogger().log(querry);
             System.out.println(querry);
             Connection conn = DriverManager.getConnection("jdbc:sqlite:" + "Anime BookmarkList.db");
             Statement stat = conn.createStatement();
