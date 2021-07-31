@@ -1,24 +1,2 @@
-Jul 31, 2021 12:48:06 PM MyLogger log
-INFO: 48 this was the height of the description
-Jul 31, 2021 12:48:06 PM MyLogger log
-INFO: This was short enough therefore we will display
-Jul 31, 2021 12:48:13 PM MyLogger log
-INFO: select Status from anime where title = "Asu no Yoichi!"
-Jul 31, 2021 12:48:13 PM MyLogger log
-INFO: select Priority from anime where title = "Asu no Yoichi!"
-Jul 31, 2021 12:48:13 PM MyLogger log
-INFO: https://cdn.myanimelist.net/images/anime/6/20621.jpg
-Jul 31, 2021 12:48:13 PM MyLogger log
-INFO: 160 this was the height of the description
-Jul 31, 2021 12:48:13 PM MyLogger log
-INFO: This was short enough therefore we will display
-Jul 31, 2021 12:48:15 PM MyLogger log
-INFO: select Status from anime where title = "Attack on Titan (Dub)"
-Jul 31, 2021 12:48:15 PM MyLogger log
-INFO: select Priority from anime where title = "Attack on Titan (Dub)"
-Jul 31, 2021 12:48:20 PM MyLogger log
-INFO: https://cdn.myanimelist.net/images/anime/10/47347.jpg
-Jul 31, 2021 12:48:20 PM MyLogger log
-INFO: 240 this was the height of the description
-Jul 31, 2021 12:48:20 PM MyLogger log
-INFO: This was short enough therefore we will display
+Jul 31, 2021 2:29:56 PM MyLogger log
+INFO: {"request_hash":"request:character:159d60970ba9c0c9d9e5e42c43077e27807a9184","request_cached":false,"request_cache_expiry":86400,"pictures":[{"large":"https:\/\/cdn.myanimelist.net\/images\/characters\/2\/55759.jpg","small":"https:\/\/cdn.myanimelist.net\/images\/characters\/2\/55759.jpg"},{"large":"https:\/\/cdn.myanimelist.net\/images\/characters\/13\/78951.jpg","small":"https:\/\/cdn.myanimelist.net\/images\/characters\/13\/78951.jpg"},{"large":"https:\/\/cdn.myanimelist.net\/images\/characters\/3\/78952.jpg","small":"https:\/\/cdn.myanimelist.net\/images\/characters\/3\/78952.jpg"},{"large":"https:\/\/cdn.myanimelist.net\/images\/characters\/2\/55759.jpg","small":"https:\/\/cdn.myanimelist.net\/images\/characters\/2\/55759.jpg"},{"large":"https:\/\/cdn.myanimelist.net\/images\/characters\/13\/78951.jpg","small":"https:\/\/cdn.myanimelist.net\/images\/characters\/13\/78951.jpg"},{"large":"https:\/\/cdn.myanimelist.net\/images\/characters\/3\/78952.jpg","small":"https:\/\/cdn.myanimelist.net\/images\/characters\/3\/78952.jpg"}]}

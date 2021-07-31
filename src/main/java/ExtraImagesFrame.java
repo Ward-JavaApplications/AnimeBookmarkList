@@ -25,6 +25,10 @@ public class ExtraImagesFrame {
         imageFrame.setLocationRelativeTo(null);
         imageFrame.setVisible(true);
 
+        JLabel loadingImagesPanel = new JLabel("Loading the images...");
+        imageFrame.setContentPane(loadingImagesPanel);
+        SwingUtilities.updateComponentTreeUI(imageFrame);
+
 
         try {
             JPanel picturesPanel = new JPanel(new FlowLayout());

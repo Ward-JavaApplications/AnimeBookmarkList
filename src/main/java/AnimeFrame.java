@@ -39,7 +39,7 @@ public class AnimeFrame implements JaikanRetriever{
     private void loadFrame(){
         insertFrame = new JFrame(title);
         insertFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        insertFrame.setSize(500,800);
+        insertFrame.setSize(500,900);
         insertFrame.setLocationRelativeTo(null);
         insertFrame.setVisible(true);
         defaultPanel();
@@ -200,8 +200,12 @@ public class AnimeFrame implements JaikanRetriever{
                 Date firstDate = airDates.getFrom();
                 Date lastDate = airDates.getTo();
                 SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-                JLabel airDatesLabel = new JLabel("The anime aired from " + dateFormat.format(firstDate) + " untill " + dateFormat.format(lastDate));
-                JLabel ratings = new JLabel("The anime got a score of " + anime.getScore() + " and a ranking of " + anime.getRank());
+                JLabel airDatesLabel;
+                if(lastDate != null)
+                    airDatesLabel = new JLabel("The anime aired from " + dateFormat.format(firstDate) + " untill " + dateFormat.format(lastDate));
+                else
+                    airDatesLabel = new JLabel("The anime aired from " + dateFormat.format(firstDate) + " and is still ongoing");
+                JLabel ratings = new JLabel("The anime got a score of " + anime.getScore() + " and ranks currently " + anime.getRank() + "th");
                 JPanel descriptionPanel = new JPanel(new SpringLayout());
                 descriptionPanel.setLayout(new BoxLayout(descriptionPanel, BoxLayout.Y_AXIS));
                 descriptionPanel.add(genres);

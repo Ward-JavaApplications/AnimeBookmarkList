@@ -1,7 +1,6 @@
-Jul 31, 2021 2:20:52 PM MyLogger log
-INFO: select * from anime order by Priority Desc, case Status COLLATE nocase
-when "Watching" then 0
-when "Unwatched" then 1
-when "Watched" then 2
-END
-, Title COLLATE nocase
+Jul 31, 2021 2:31:03 PM MyLogger log
+INFO: SELECT * from Anime order by Title COLLATE NOCASE
+Jul 31, 2021 2:31:07 PM MyLogger log
+INFO: select Status from anime where title = "Attack on Titan (Sub) (1080p)"
+Jul 31, 2021 2:31:07 PM MyLogger log
+INFO: select Priority from anime where title = "Attack on Titan (Sub) (1080p)"
