@@ -216,9 +216,21 @@ public class AnimeFrame implements JaikanRetriever{
                 imagePanel.add(imageToDraw);
                 imagePanel.add(descriptionPanel);
 
+
+
+                JButton loadMoreImagesButton = new JButton("Load more images");
+                loadMoreImagesButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        new ExtraImagesFrame(anime);
+                    }
+                });
+                JPanel buttonPanel = new JPanel(new BorderLayout());
+                buttonPanel.add(loadMoreImagesButton,BorderLayout.EAST);
+                imagePanel.add(buttonPanel);
+
                 mainPanel.remove(1);
                 mainPanel.add(imagePanel);
-
 
                 insertFrame.setContentPane(mainPanel);
                 SwingUtilities.updateComponentTreeUI(insertFrame);
