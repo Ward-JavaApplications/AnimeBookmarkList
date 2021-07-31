@@ -1,0 +1,34 @@
+Jul 31, 2021 12:47:48 PM MyLogger log
+INFO: This was short enough therefore we will display
+Jul 31, 2021 12:48:03 PM MyLogger log
+INFO: select Status from anime where title = "Ansatsu Kyoushitsu (TV) 2nd Season: Kagaijugyou-hen"
+Jul 31, 2021 12:48:03 PM MyLogger log
+INFO: select Priority from anime where title = "Ansatsu Kyoushitsu (TV) 2nd Season: Kagaijugyou-hen"
+Jul 31, 2021 12:48:05 PM MyLogger log
+INFO: https://cdn.myanimelist.net/images/anime/1807/96939.jpg
+Jul 31, 2021 12:48:06 PM MyLogger log
+INFO: 2736 this was the height of the description
+Jul 31, 2021 12:48:06 PM MyLogger log
+INFO: 48 this was the height of the description
+Jul 31, 2021 12:48:06 PM MyLogger log
+INFO: This was short enough therefore we will display
+Jul 31, 2021 12:48:13 PM MyLogger log
+INFO: select Status from anime where title = "Asu no Yoichi!"
+Jul 31, 2021 12:48:13 PM MyLogger log
+INFO: select Priority from anime where title = "Asu no Yoichi!"
+Jul 31, 2021 12:48:13 PM MyLogger log
+INFO: https://cdn.myanimelist.net/images/anime/6/20621.jpg
+Jul 31, 2021 12:48:13 PM MyLogger log
+INFO: 160 this was the height of the description
+Jul 31, 2021 12:48:13 PM MyLogger log
+INFO: This was short enough therefore we will display
+Jul 31, 2021 12:48:15 PM MyLogger log
+INFO: select Status from anime where title = "Attack on Titan (Dub)"
+Jul 31, 2021 12:48:15 PM MyLogger log
+INFO: select Priority from anime where title = "Attack on Titan (Dub)"
+Jul 31, 2021 12:48:20 PM MyLogger log
+INFO: https://cdn.myanimelist.net/images/anime/10/47347.jpg
+Jul 31, 2021 12:48:20 PM MyLogger log
+INFO: 240 this was the height of the description
+Jul 31, 2021 12:48:20 PM MyLogger log
+INFO: This was short enough therefore we will display

@@ -29,18 +29,40 @@ public class ExtraImagesFrame {
         try {
             JPanel picturesPanel = new JPanel(new FlowLayout());
 
+            //images via Jikan
             String request = Jaikan.genericRequest(new Endpoint("https://api.jikan.moe/v3/character/" + anime.getId() + "/pictures"));
+
             new MyLogger().log(request);
             System.out.println(request);
-            JsonObject obj = JsonParser.parseString(request).getAsJsonObject();
-            JsonArray pictures = obj.get("pictures").getAsJsonArray();
-            Iterator<JsonElement> listIterator = pictures.iterator();
-            while (listIterator.hasNext()) {
-                JsonObject pictureObj = listIterator.next().getAsJsonObject();
-                String largePicture = pictureObj.get("large").getAsString();
-                BufferedImage image = ImageIO.read(new URL(largePicture));
-                picturesPanel.add(new JLabel(new ImageIcon(image)));
+            if(!request.equals("")) {
+                JsonElement element = JsonParser.parseString(request);
+                if (element != null) {
+                    JsonObject obj = element.getAsJsonObject();
+                    JsonArray pictures = obj.get("pictures").getAsJsonArray();
+                    Iterator<JsonElement> listIterator = pictures.iterator();
+                    while (listIterator.hasNext()) {
+                        JsonObject pictureObj = listIterator.next().getAsJsonObject();
+                        String largePicture = pictureObj.get("large").getAsString();
+                        BufferedImage image = ImageIO.read(new URL(largePicture));
+                        picturesPanel.add(new JLabel(new ImageIcon(image)));
+                    }
+                }
             }
+
+            //images via google
+            for(String url:new GoogleImageSearch().getImagesAsLinks(anime.getTitle())){
+                try{
+                    BufferedImage image = ImageIO.read(new URL(url.substring(7)));
+                    picturesPanel.add(new JLabel(new ImageIcon(image)));
+                }
+                catch (Exception e){
+                    String msg  = "Image " + url.substring(7) + " failed to load";
+                    System.out.println(msg);
+                    new MyLogger().log(msg);
+                }
+            }
+
+            //display images
 
             JScrollPane scrollPane = new JScrollPane(picturesPanel,ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER,
                     ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);

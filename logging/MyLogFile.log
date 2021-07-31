@@ -1,6 +1,6 @@
-Jul 31, 2021 12:01:36 PM MyLogger log
+Jul 31, 2021 1:06:16 PM MyLogger log
 INFO: SELECT * from Anime order by Title COLLATE NOCASE
-Jul 31, 2021 12:01:37 PM MyLogger log
-INFO: select Status from anime where title = "11eyes"
-Jul 31, 2021 12:01:37 PM MyLogger log
-INFO: select Priority from anime where title = "11eyes"
+Jul 31, 2021 1:06:48 PM MyLogger log
+INFO: select Status from anime where title = "Blood Lad (Sub)"
+Jul 31, 2021 1:06:48 PM MyLogger log
+INFO: select Priority from anime where title = "Blood Lad (Sub)"
