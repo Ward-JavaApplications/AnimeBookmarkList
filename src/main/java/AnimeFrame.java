@@ -1,4 +1,6 @@
 import pw.mihou.jaikan.models.Anime;
+import pw.mihou.jaikan.models.Dates;
+import pw.mihou.jaikan.models.Nameable;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -11,6 +13,10 @@ import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.image.BufferedImage;
 import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Date;
 
 public class AnimeFrame implements JaikanRetriever{
     private JFrame insertFrame;
@@ -155,35 +161,78 @@ public class AnimeFrame implements JaikanRetriever{
             String animeURL = anime.getImage();
             System.out.println(animeURL);
 
-            final BufferedImage image = ImageIO.read(new URL(animeURL));
 
-            imagePanel = new JPanel(new FlowLayout());
+
+
+            final BufferedImage image = ImageIO.read(new URL(animeURL));
+            JLabel imageToDraw = new JLabel(new ImageIcon(image));
+
+            JLabel title = new JLabel("The anime found is " + anime.getTitle());
 
             String synopsis = anime.getSynopsis();
             if(synopsis == null) synopsis = "No synopsis found";
 
-            JTextArea description  = new JTextArea(synopsis);
-            description.setSize(insertFrame.getWidth()-10,100);
-            description.setLineWrap(true);
-            description.setWrapStyleWord(true);
+            JTextArea description = new JTextArea();
+            int safetyCounter = 50;
+            while(safetyCounter > 0){
 
-            JPanel imageToDrawPanel = new JPanel() {
-                @Override
-                protected void paintComponent(Graphics g) {
-                    super.paintComponent(g);
-                    g.drawImage(image.getScaledInstance(image.getWidth(), image.getHeight(), 0), Math.round(CENTER_ALIGNMENT*insertFrame.getSize().width), 0, null);
+                safetyCounter --;
+
+                imagePanel = new JPanel(new FlowLayout());
+
+                description  = new JTextArea();
+                description.setSize(insertFrame.getSize().width-18,100);
+                // description.setName("Name found: " + anime.getTitle());
+                description.setText(synopsis);
+                description.setLineWrap(true);
+                description.setWrapStyleWord(true);
+
+
+                StringBuilder allGenres = new StringBuilder();
+                for(int i = 0; i < anime.getGenres().size()-1;i++){
+                    allGenres.append(anime.getGenres().get(i) + ", ");
                 }
-            };
-            imagePanel.add(description);
-            imagePanel.add(imageToDrawPanel);
-            mainPanel.remove(1);
-            mainPanel.add(imagePanel);
-            //SwingUtilities.updateComponentTreeUI(imagePanel)
-            insertFrame.setContentPane(mainPanel);
-            SwingUtilities.updateComponentTreeUI(insertFrame);
+                allGenres.append(anime.getGenres().get(anime.getGenres().size()-1));
+                JLabel genres = new JLabel("The genres are: " + allGenres.toString());
+                JLabel episodeNumber = new JLabel("Amount of episodes: " + anime.getEpisodes());
+                Dates airDates = anime.getAired();
+                Date firstDate = airDates.getFrom();
+                Date lastDate = airDates.getTo();
+                SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+                JLabel airDatesLabel = new JLabel("The anime aired from " + dateFormat.format(firstDate) + " untill " + dateFormat.format(lastDate));
+                JLabel ratings = new JLabel("The anime got a score of " + anime.getScore() + " and a ranking of " + anime.getRank());
+                JPanel descriptionPanel = new JPanel(new SpringLayout());
+                descriptionPanel.setLayout(new BoxLayout(descriptionPanel, BoxLayout.Y_AXIS));
+                descriptionPanel.add(genres);
+                descriptionPanel.add(episodeNumber);
+                descriptionPanel.add(airDatesLabel);
+                descriptionPanel.add(ratings);
 
-            insertFrame.setContentPane(imagePanel);
-            SwingUtilities.updateComponentTreeUI(insertFrame);
+
+
+
+                imagePanel.add(title);
+                imagePanel.add(description);
+                imagePanel.add(imageToDraw);
+                imagePanel.add(descriptionPanel);
+
+                mainPanel.remove(1);
+                mainPanel.add(imagePanel);
+
+
+                insertFrame.setContentPane(mainPanel);
+                SwingUtilities.updateComponentTreeUI(insertFrame);
+
+                System.out.println(description.getHeight() + " this was the height of the description");
+                if(description.getHeight()<1000){
+                    System.out.println("This was short enough therefore we will display");
+                    return;
+
+                }
+            }
+
+
+
         }
         catch (Exception e){
             e.printStackTrace();
