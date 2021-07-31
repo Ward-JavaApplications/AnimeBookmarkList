@@ -162,7 +162,12 @@ public class DataBaseManager {
     }
 
     public ArrayList<AnimeTitle> getDBPriority(){
-        return getFromDB("select * from anime order by Priority DESC,Title COLLATE NOCASE ASC");
+        return getFromDB("select * from anime order by Priority Desc, case Status COLLATE nocase\n" +
+                "when \"Watching\" then 0\n" +
+                "when \"Unwatched\" then 1\n" +
+                "when \"Watched\" then 2\n" +
+                "END\n" +
+                ", Title COLLATE nocase");
     }
 
     public ArrayList<AnimeTitle> getDBAlphabetical(){
