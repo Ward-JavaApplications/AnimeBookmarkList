@@ -219,6 +219,7 @@ public class AnimeFrame implements JaikanRetriever{
                 allGenres.append(anime.getGenres().get(anime.getGenres().size()-1));
                 JLabel genres = new JLabel("The genres are: " + allGenres.toString());
                 JLabel episodeNumber = new JLabel("Amount of episodes: " + anime.getEpisodes());
+                JLabel duration = new JLabel("Anime duration: " + anime.getDuration());
                 Dates airDates = anime.getAired();
                 Date firstDate = airDates.getFrom();
                 Date lastDate = airDates.getTo();
@@ -233,6 +234,7 @@ public class AnimeFrame implements JaikanRetriever{
                 descriptionPanel.setLayout(new BoxLayout(descriptionPanel, BoxLayout.Y_AXIS));
                 descriptionPanel.add(genres);
                 descriptionPanel.add(episodeNumber);
+                descriptionPanel.add(duration);
                 descriptionPanel.add(airDatesLabel);
                 descriptionPanel.add(ratings);
 
