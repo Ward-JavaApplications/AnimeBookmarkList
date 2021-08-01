@@ -7,6 +7,8 @@ import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
 
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
@@ -57,9 +59,30 @@ public class AnimeFrame implements JaikanRetriever{
         titlePanel.setLayout(new BoxLayout(titlePanel, BoxLayout.Y_AXIS));
         JPanel statusPanel = new JPanel(new FlowLayout());
 
-        JPanel titleLabelPannel = new JPanel(new FlowLayout());
+        JPanel titleLabelPannel = new JPanel(new BorderLayout());
         JLabel titleLabel = new JLabel(title, SwingUtilities.CENTER);
-        titleLabelPannel.add(titleLabel);
+        JButton copyButton = new JButton();
+        try {
+            Image img = ImageIO.read(getClass().getResource("images/copy icon.png"));
+            Image newImg = img.getScaledInstance(20,20,0);
+            copyButton.setIcon(new ImageIcon(newImg));
+            copyButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    StringSelection stringSelection = new StringSelection(title);
+                    Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+                    clipboard.setContents(stringSelection,null);
+                    copyButton.setIcon(null);
+                    copyButton.setText("Copied");
+                }
+            });
+        }
+        catch (Exception e){
+            MyLogger.log(e.getMessage());
+            e.printStackTrace();
+        }
+        titleLabelPannel.add(titleLabel,BorderLayout.CENTER);
+        titleLabelPannel.add(copyButton,BorderLayout.EAST);
         titlePanel.add(titleLabelPannel);
 
         JButton watchedButton = new JButton("Watched");
