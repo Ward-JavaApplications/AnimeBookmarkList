@@ -88,6 +88,16 @@ public class MyGUIManager {
         });
         dataInsertPanel.add(insertNewTitleButton);
 
+        JPanel loadStatsPanel = new JPanel();
+        JButton loadStatsButton = new JButton("Load stats");
+        loadStatsButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                new StatsFrame();
+            }
+        });
+        loadStatsPanel.add(loadStatsButton);
+
         JPanel repopulatePanel = new JPanel(new SpringLayout());
         repopulatePanel.setLayout(new BoxLayout(repopulatePanel,BoxLayout.X_AXIS));
         JLabel fillerLabel = new JLabel("                                                                         ");
@@ -113,6 +123,7 @@ public class MyGUIManager {
         mainMenuPanel.add(dataReceivePanel);
         mainMenuPanel.add(dataInsertPanel);
         mainMenuPanel.add(dataSearchPanel);
+        mainMenuPanel.add(loadStatsPanel);
         mainMenuPanel.add(repopulatePanel);
         frame.setContentPane(mainMenuPanel);
         SwingUtilities.updateComponentTreeUI(frame);

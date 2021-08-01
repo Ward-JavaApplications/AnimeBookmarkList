@@ -382,6 +382,58 @@ public class DataBaseManager {
             e.printStackTrace();
         }
     }
+    public StatsContainerStatus getStatusStats(){
+        try{
+            Class.forName("org.sqlite.JDBC");
+            Connection conn = DriverManager.getConnection("jdbc:sqlite:" + "Anime BookmarkList.db");
+            Statement stat = conn.createStatement();
+            String querry = "select count(Title) from Anime where status = ";
+            String[] types = new String[]{"Watched","Unwatched","Watching"};
+            int[] numbs = new int[3];
+            int index =0;
+            for(String s:types){
+                String query = querry + "\"" + s + "\"";
+                MyLogger.log(query);
+                ResultSet rs = stat.executeQuery(query);
+                numbs[index] = rs.getInt(1);
+                index++;
+
+            }
+            conn.close();
+            return new StatsContainerStatus(numbs[0],numbs[2],numbs[1]);
+        }
+        catch (Exception e){
+            new ErrorMessage(e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
+    }
+    public StatsContainerPriority getPriorityStats(){
+        try{
+            Class.forName("org.sqlite.JDBC");
+            Connection conn = DriverManager.getConnection("jdbc:sqlite:" + "Anime BookmarkList.db");
+            Statement stat = conn.createStatement();
+            String querry = "select count(Priority) from Anime where Priority = ";
+            int[] types = new int[]{0,1,2,3,4,5};
+            int[] numbs = new int[6];
+            int index =0;
+            for(int s:types){
+                String query = querry + s;
+                MyLogger.log(query);
+                ResultSet rs = stat.executeQuery(query);
+                numbs[index] = rs.getInt(1);
+                index++;
+
+            }
+            conn.close();
+            return new StatsContainerPriority(numbs);
+        }
+        catch (Exception e){
+            new ErrorMessage(e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
+    }
 
 
 }
