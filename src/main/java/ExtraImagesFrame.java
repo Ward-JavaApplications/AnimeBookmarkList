@@ -33,36 +33,36 @@ public class ExtraImagesFrame {
         try {
             JPanel picturesPanel = new JPanel(new FlowLayout());
 
-            //images via Jikan
-            String request = Jaikan.genericRequest(new Endpoint("https://api.jikan.moe/v3/character/" + anime.getId() + "/pictures"));
-
-            new MyLogger().log(request);
-            System.out.println(request);
-            if(!request.equals("")) {
-                JsonElement element = JsonParser.parseString(request);
-                if (element != null) {
-                    JsonObject obj = element.getAsJsonObject();
-                    JsonArray pictures = obj.get("pictures").getAsJsonArray();
-                    Iterator<JsonElement> listIterator = pictures.iterator();
-                    while (listIterator.hasNext()) {
-                        JsonObject pictureObj = listIterator.next().getAsJsonObject();
-                        String largePicture = pictureObj.get("large").getAsString();
-                        BufferedImage image = ImageIO.read(new URL(largePicture));
-                        picturesPanel.add(new JLabel(new ImageIcon(image)));
-                    }
-                }
-            }
+//            //images via Jikan
+//            String request = Jaikan.genericRequest(new Endpoint("https://api.jikan.moe/v3/character/" + anime.getId() + "/pictures"));
+//
+//            MyLogger.log(request);
+//            System.out.println(request);
+//            if(!request.equals("")) {
+//                JsonElement element = JsonParser.parseString(request);
+//                if (element != null) {
+//                    JsonObject obj = element.getAsJsonObject();
+//                    JsonArray pictures = obj.get("pictures").getAsJsonArray();
+//                    Iterator<JsonElement> listIterator = pictures.iterator();
+//                    while (listIterator.hasNext()) {
+//                        JsonObject pictureObj = listIterator.next().getAsJsonObject();
+//                        String largePicture = pictureObj.get("large").getAsString();
+//                        BufferedImage image = ImageIO.read(new URL(largePicture));
+//                        picturesPanel.add(new JLabel(new ImageIcon(image)));
+//                    }
+//                }
+//            }
 
             //images via google
             for(String url:new GoogleImageSearch().getImagesAsLinks(anime.getTitle())){
                 try{
-                    BufferedImage image = ImageIO.read(new URL(url.substring(7)));
+                    BufferedImage image = ImageIO.read(new URL(url));
                     picturesPanel.add(new JLabel(new ImageIcon(image)));
                 }
                 catch (Exception e){
-                    String msg  = "Image " + url.substring(7) + " failed to load";
-                    System.out.println(msg);
-                    new MyLogger().log(msg);
+//                    String msg  = "Image " + url + " failed to load";
+//                    System.out.println(msg);
+//                    MyLogger.log(msg);
                 }
             }
 
@@ -76,7 +76,7 @@ public class ExtraImagesFrame {
         }
         catch (Exception e){
             e.printStackTrace();
-            new MyLogger().log(e.getMessage());
+            MyLogger.log(e.getMessage());
             imageFrame.setContentPane(new JLabel("Couldn't load additional pictures"));
             SwingUtilities.updateComponentTreeUI(imageFrame);
         }

@@ -14,13 +14,13 @@ public class GoogleImageSearch {
 
     public String[] getImagesAsLinks(String title){
         try{
-            String url = "https://www.google.com/search?q=" + title;
+            String url = "https://www.google.com/search?tbm=isch&q=" + title;
             Document doc = Jsoup.connect(url).get();
-            System.out.println(doc);
-            Elements images = doc.select("img[src]");
+//            MyLogger.log(doc.toString());
+            Elements images = doc.select("img");
             ArrayList<String> imagesList = new ArrayList<>(100);
             for(Element e:images){
-                imagesList.add(e.attr("src"));
+                imagesList.add(e.attr("data-src"));
             }
             return imagesList.toArray(new String[0]);
 

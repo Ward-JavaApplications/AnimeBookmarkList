@@ -4,7 +4,7 @@ import java.awt.*;
 public class ErrorMessage {
     public ErrorMessage(String msg){
 
-        new MyLogger().log(msg);
+        MyLogger.log(msg);
 
         JFrame ErrorFrame = new JFrame("Error");
         ErrorFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);

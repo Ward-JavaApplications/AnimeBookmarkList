@@ -2,9 +2,13 @@ import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
-public class MyLogger {
-    private Logger logger;
-    public MyLogger(){
+public enum MyLogger {
+    INSTANCE;
+    private static Logger logger;
+    MyLogger(){
+        initialize();
+    }
+    private static void initialize(){
         logger = Logger.getLogger("Markel");
         FileHandler fh;
         try{
@@ -19,7 +23,7 @@ public class MyLogger {
             e.printStackTrace();
         }
     }
-    public void log(String msg){
+    public static void log(String msg){
         logger.info(msg);
     }
 }
