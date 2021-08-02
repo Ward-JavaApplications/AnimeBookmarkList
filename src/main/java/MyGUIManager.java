@@ -202,27 +202,9 @@ public class MyGUIManager {
         listToButtonsDangerZone(frame,dataBaseManager.getDangerZone());
     }
     private void searchAnimeMenu(){
-        JPanel searchPanel = new JPanel(new SpringLayout());
-        searchPanel.setLayout(new BoxLayout(searchPanel,BoxLayout.Y_AXIS));
-        JLabel searchLabel = new JLabel("Type the name in the box below, better to type less than wrong");
-        searchPanel.add(searchLabel);
-        JTextField searchField = new JTextField();
-        searchPanel.add(searchField);
-        JButton searchButton = new JButton("Search");
-        searchButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                searchForTitle(searchField.getText(),mainFrame);
-
-            }
-        });
-        searchPanel.add(searchButton);
-
-        mainFrame.setContentPane(searchPanel);
-        searchField.requestFocus();
-        SwingUtilities.updateComponentTreeUI(mainFrame);
+        new SearchAnimeFrame(this);
     }
-    private void searchForTitle(String title,JFrame frame){
+    public void searchForTitle(String title,JFrame frame){
         ArrayList<AnimeTitle> animes = dataBaseManager.searchTitleInDB(title);
         listToButtons(frame,animes);
     }
