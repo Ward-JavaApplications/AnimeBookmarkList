@@ -175,9 +175,24 @@ public class AnimeFrame implements JaikanRetriever{
         deleteButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                parent.deleteAnime(title) ;
-                insertFrame.dispose();
-                parent.refresh();
+                Image img = null;
+                try {
+                    img = ImageIO.read(getClass().getResource("images/sharp_delete_forever_black_24dp.png"));
+                }
+                catch (Exception exception){
+                    exception.printStackTrace();
+                    MyLogger.log(exception.getMessage());
+                }
+                int i = JOptionPane.showConfirmDialog(null,"Are you sure you want to delete " + title,"Confirm delete",JOptionPane.YES_NO_OPTION,JOptionPane.ERROR_MESSAGE,new ImageIcon(img));
+                switch (i){
+                    case 0:
+                        parent.deleteAnime(title) ;
+                        insertFrame.dispose();
+                        parent.refresh();
+                        break;
+
+                }
+
 
             }
         });

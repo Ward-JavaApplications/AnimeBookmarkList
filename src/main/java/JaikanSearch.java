@@ -21,13 +21,19 @@ public class JaikanSearch {
 
     }
     public void getByTitle(String title){
+        try {
 
-        List<Anime> animes = new ArrayList<>();
-        Jaikan.search(Endpoints.SEARCH,AnimeResult.class,"anime",title)
-                .stream().limit(1).forEach(animeResult -> {
-                    animes.add(animeResult.asAnime());
-                });
-        parent.retrieveAnime(animes.get(0));
+            List<Anime> animes = new ArrayList<>();
+            Jaikan.search(Endpoints.SEARCH, AnimeResult.class, "anime", title)
+                    .stream().limit(1).forEach(animeResult -> {
+                animes.add(animeResult.asAnime());
+            });
+            parent.retrieveAnime(animes.get(0));
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            new ErrorMessage(e.getMessage());
+        }
     }
     private void getById(int id){
         Anime anime = Jaikan.as(Endpoints.OBJECT,Anime.class,"anime",id);
