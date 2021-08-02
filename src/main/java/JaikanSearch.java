@@ -7,14 +7,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class JaikanSearch {
-    private String title;
     private JaikanRetriever parent;
     public JaikanSearch(String title,JaikanRetriever parent){
-        this.title = title;
+
         this.parent = parent;
-        getByTitle();
+        getByTitle(title);
     }
-    public void getByTitle(){
+    public JaikanSearch(int id,JaikanRetriever parent){
+        this.parent = parent;
+        getById(id);
+    }
+    public void getByTitle(String title){
 
         List<Anime> animes = new ArrayList<>();
         Jaikan.search(Endpoints.SEARCH,AnimeResult.class,"anime",title)
@@ -22,5 +25,9 @@ public class JaikanSearch {
                     animes.add(animeResult.asAnime());
                 });
         parent.retrieveAnime(animes.get(0));
+    }
+    private void getById(int id){
+        Anime anime = Jaikan.as(Endpoints.OBJECT,Anime.class,"anime",id);
+        parent.retrieveAnime(anime);
     }
 }

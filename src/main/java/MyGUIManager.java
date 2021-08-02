@@ -278,70 +278,13 @@ public class MyGUIManager {
     }
 
     private void insertNewTitleMenu(){
-        JFrame insertFrame = new JFrame("Insert new anime");
-        insertFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        insertFrame.setSize(300,200);
-        insertFrame.setLocationRelativeTo(null);
-        insertFrame.setVisible(true);
-
-        ///setup buttons
-        JPanel insertPanel = new JPanel(new SpringLayout());
-        insertPanel.setLayout(new BoxLayout(insertPanel, BoxLayout.Y_AXIS));
-        //title panel
-
-        JLabel titleLabel = new JLabel("Enter title",SwingConstants.CENTER);
-        JTextField titleField = new JTextField();
-        insertPanel.add(titleLabel);
-        insertPanel.add(titleField);
-        //status
-        JCheckBox checkBox = new JCheckBox("watched", false);
-        insertPanel.add(checkBox);
-        //priority
-        JLabel priorityLabel = new JLabel("Priority", SwingConstants.CENTER);
-        JTextField priorityField = new JTextField();
-        insertPanel.add(priorityLabel);
-        insertPanel.add(priorityField);
-        //save anime
-        JButton saveButton = new JButton("Save");
-        saveButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-
-                    try{
-                        String status = new String();
-                        if(checkBox.isSelected()) status = "Watched";
-                        else status = "Unwatched";
-                        int priority = 0;
-                        if (!priorityField.getText().equals("")) priority = Integer.parseInt(priorityField.getText());
-                        else priority = 0;
-                        if(priority<=5 && priority>=0) {
-                            insertNewAnimeInDB(new AnimeTitle(titleField.getText(), status, priority));
-                            insertFrame.dispose();
-                            //refresh();
-                        }
-                        else throw new NumberRangeException(0,5);
-                    }
-                    catch (NumberFormatException numberFormatException)
-                    {
-                        new ErrorMessage("The given priority is not a valid number");
-                    }
-                    catch (NumberRangeException numberRangeException){
-                        new ErrorMessage("The priority needs to be between: " + numberRangeException.getMinRange() + " and " + numberRangeException.getMaxRange());
-                    }
-                }
-
-        });
-        insertPanel.add(saveButton);
-        insertFrame.setContentPane(insertPanel);
-        SwingUtilities.updateComponentTreeUI(insertFrame);
-
-
+        new InsertNewTitleFrame(this);
     }
 
     private void insertNewAnimeInDangerZone(String title){
         dataBaseManager.insertInDangerZone(title);
     }
-    private void insertNewAnimeInDB(AnimeTitle anime){
+    public void insertNewAnimeInDB(AnimeTitle anime){
         dataBaseManager.insertInDB(anime);
 
     }

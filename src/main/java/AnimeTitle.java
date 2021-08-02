@@ -14,6 +14,7 @@ public class AnimeTitle {
         this.status = status;
     }
 
+
     public String getTitle() {
         return title;
     }

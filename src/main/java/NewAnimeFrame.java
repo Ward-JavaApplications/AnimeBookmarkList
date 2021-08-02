@@ -1,43 +1,38 @@
 import pw.mihou.jaikan.models.Anime;
 import pw.mihou.jaikan.models.Dates;
-import pw.mihou.jaikan.models.Nameable;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.border.Border;
 import java.awt.*;
 
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
+import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.net.URL;
 import java.text.SimpleDateFormat;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.Date;
 
-public class AnimeFrame implements JaikanRetriever{
+public class NewAnimeFrame implements JaikanRetriever{
     private JFrame insertFrame;
     private String title;
     private MyGUIManager parent;
     private JPanel imagePanel;
     private JPanel mainPanel;
     private JLabel titleLabel;
-    private AnimeFrame animeFrameParent;
-    public AnimeFrame(String animeTitle, MyGUIManager parent){
+    private NewAnimeFrame animeFrameParent;
+    private int id;
+    public NewAnimeFrame(String animeTitle, int id, MyGUIManager parent){
         this.parent = parent;
         this.title = animeTitle;
         this.animeFrameParent = this;
+        this.id = id;
         loadFrame();
         new Thread(this::startAsyncImageSearch).start();
 
     }
     private void startAsyncImageSearch(){
-        new JaikanSearch(title,this);
+        new JaikanSearch(id,this);
     }
 
 
@@ -53,10 +48,27 @@ public class AnimeFrame implements JaikanRetriever{
 
 
     }
+    private class CapsuleObject {
+        private JPanel panel;
+        private JTextField textField;
+
+        public CapsuleObject(JPanel panel, JTextField textField) {
+            this.panel = panel;
+            this.textField = textField;
+        }
+
+        public JPanel getPanel() {
+            return panel;
+        }
+
+        public JTextField getTextField() {
+            return textField;
+        }
+    }
 
     private void defaultPanel(){
-        //getStatus of the anime
-        String status = parent.dataBaseManager.getStatus(title);
+
+
 
         JPanel titlePanel = new JPanel(new SpringLayout());
         titlePanel.setLayout(new BoxLayout(titlePanel, BoxLayout.Y_AXIS));
@@ -84,65 +96,55 @@ public class AnimeFrame implements JaikanRetriever{
             MyLogger.log(e.getMessage());
             e.printStackTrace();
         }
+        CapsuleObject capsuleObject = importAnimePanel(title);
+        JPanel insertAnimePanel = capsuleObject.getPanel();
+
         titleLabelPannel.add(titleLabel,BorderLayout.CENTER);
         titleLabelPannel.add(copyButton,BorderLayout.EAST);
+        titlePanel.add(insertAnimePanel,BorderLayout.SOUTH);
         titlePanel.add(titleLabelPannel);
 
-        JButton watchedButton = new JButton("Watched");
-        watchedButton.setBackground(parent.getButtonColorWhenClicked(status,watchedButton));
-        watchedButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                parent.setTitleStatus("Watched", title);
-                parent.dataBaseManager.setPriorityToZero(title);
-                insertFrame.dispose();
-                parent.refresh();
-            }
-        });
-        JButton unwatchedButton = new JButton("Unwatched");
-        unwatchedButton.setBackground(parent.getButtonColorWhenClicked(status,unwatchedButton));
-        unwatchedButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                parent.setTitleStatus("Unwatched", title);
-                insertFrame.dispose();
-                parent.refresh();
-            }
-        });
-        JButton watchingButton = new JButton("Watching");
-        watchingButton.setBackground(parent.getButtonColorWhenClicked(status,watchingButton));
-        watchingButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                parent.setTitleStatus("Watching", title);
-                insertFrame.dispose();
-                parent.refresh();
-            }
-        });
-        statusPanel.add(watchedButton);
-        statusPanel.add(watchingButton);
-        statusPanel.add(unwatchedButton);
-        titlePanel.add(statusPanel);
-        JPanel priorityPanel = new JPanel(new FlowLayout());
-        int currentPriority = parent.dataBaseManager.getPriority(title);
-        JTextField priorityTextField = new JTextField(String.valueOf(currentPriority));
-        priorityTextField.addFocusListener(new FocusAdapter() {
+        mainPanel = new JPanel(new BorderLayout());
+        mainPanel.add(titlePanel,BorderLayout.PAGE_START);
+        imagePanel = new JPanel(new BorderLayout());
+        imagePanel.add(new JLabel("Loading the data"),BorderLayout.CENTER);
+        mainPanel.add(imagePanel,BorderLayout.LINE_START);
+
+        insertFrame.setContentPane(mainPanel);
+        SwingUtilities.updateComponentTreeUI(insertFrame);
+        imagePanel.requestFocus();
+        capsuleObject.getTextField().setText("0");
+
+
+
+    }
+    private CapsuleObject importAnimePanel(String title){
+        JPanel mainPanel = new JPanel(new FlowLayout());
+        JLabel priorityLabel = new JLabel("priority:");
+        JTextField priorityTextField = new JTextField();
+        //priorityTextField.setFocusable(false);
+        priorityTextField.addFocusListener(new FocusListener() {
             @Override
             public void focusGained(FocusEvent e) {
-                super.focusGained(e);
                 priorityTextField.setText("");
             }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+
+            }
         });
-        JButton priorityButton = new JButton("Change priority");
-        priorityButton.addActionListener(new ActionListener() {
+        mainPanel.add(priorityLabel);
+        mainPanel.add(priorityTextField);
+        JButton insertAnimeButton = new JButton("Import this anime");
+        insertAnimeButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
                     int priority = Integer.parseInt(priorityTextField.getText());
                     if(!(priority>=0&&priority<=5)) throw new NumberRangeException(0,5);
-                    parent.changePriority(title, priority);
+                    parent.insertNewAnimeInDB(new AnimeTitle(title,"Unwatched",priority));
                     insertFrame.dispose();
-                    parent.refresh();
                 }
                 catch (NumberFormatException numberFormatException)
                 {
@@ -153,40 +155,10 @@ public class AnimeFrame implements JaikanRetriever{
                 }
             }
         });
-        priorityPanel.add(priorityTextField);
-        priorityPanel.add(priorityButton);
+        mainPanel.add(insertAnimeButton);
 
-        JButton changeTitleButton = new JButton("Change title");
-        changeTitleButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                new ChangeTitleFrame(title,parent,animeFrameParent);
-            }
-        });
-        priorityPanel.add(changeTitleButton);
 
-        JButton deleteButton = new JButton("Delete anime");
-        deleteButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                parent.deleteAnime(title) ;
-                insertFrame.dispose();
-                parent.refresh();
-
-            }
-        });
-        priorityPanel.add(deleteButton);
-        titlePanel.add(priorityPanel);
-
-        mainPanel = new JPanel(new BorderLayout());
-        mainPanel.add(titlePanel,BorderLayout.PAGE_START);
-        imagePanel = new JPanel(new BorderLayout());
-        imagePanel.add(new JLabel("Loading the data"),BorderLayout.CENTER);
-        mainPanel.add(imagePanel,BorderLayout.LINE_START);
-
-        insertFrame.setContentPane(mainPanel);
-        SwingUtilities.updateComponentTreeUI(insertFrame);
-
+        return new CapsuleObject(mainPanel,priorityTextField);
 
     }
     public void updateTitle(String newtitle,MyGUIManager parent){
@@ -208,7 +180,6 @@ public class AnimeFrame implements JaikanRetriever{
             final BufferedImage image = ImageIO.read(new URL(animeURL));
             JLabel imageToDraw = new JLabel(new ImageIcon(image));
 
-            JLabel title = new JLabel("The anime found is " + anime.getTitle());
 
             String synopsis = anime.getSynopsis();
             if(synopsis == null) synopsis = "No synopsis found";
@@ -261,8 +232,6 @@ public class AnimeFrame implements JaikanRetriever{
 
 
 
-
-                imagePanel.add(title);
                 imagePanel.add(description);
                 imagePanel.add(imageToDraw);
                 imagePanel.add(descriptionPanel);
