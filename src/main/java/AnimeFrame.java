@@ -142,6 +142,7 @@ public class AnimeFrame implements JaikanRetriever{
                     if(!(priority>=0&&priority<=5)) throw new NumberRangeException(0,5);
                     parent.changePriority(title, priority);
                     insertFrame.dispose();
+                    parent.refresh();
                 }
                 catch (NumberFormatException numberFormatException)
                 {
