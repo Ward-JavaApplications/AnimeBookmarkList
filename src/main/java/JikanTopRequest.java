@@ -67,8 +67,8 @@ public class JikanTopRequest {
     private void addTitleToPanelRecommendations(String request){
         JPanel scrollPanePanel = new JPanel(new SpringLayout());
         scrollPanePanel.setLayout(new BoxLayout(scrollPanePanel,BoxLayout.Y_AXIS));
-        JScrollPane scrollPane = new JScrollPane(scrollPanePanel);
-        scrollPane.getVerticalScrollBar().setUnitIncrement(30);
+        MyRunnable paneLoader = new MyRunnable(scrollPanePanel);
+
         String json = Jaikan.genericRequest(new Endpoint(request));
         MyLogger.log(json);
         JsonElement element = JsonParser.parseString(json);
@@ -77,9 +77,8 @@ public class JikanTopRequest {
             JsonArray pictures = obj.get("recommendations").getAsJsonArray();
             Iterator<JsonElement> listIterator = pictures.iterator();
 
-            int index = 0;
-            JPanel rowPanel = new JPanel(new SpringLayout());
-            rowPanel.setLayout(new BoxLayout(rowPanel,BoxLayout.X_AXIS));
+
+
             while (listIterator.hasNext()) {
                 JsonObject anime = listIterator.next().getAsJsonObject();
                 String title = anime.get("title").getAsString();
@@ -96,8 +95,6 @@ public class JikanTopRequest {
                     e.printStackTrace();
                     imageLabel.setText("Image failed to load");
                 }
-                //JPanel animeTitlePanel = new JPanel(new SpringLayout());
-                //animeTitlePanel.setLayout(new BoxLayout(animeTitlePanel,BoxLayout.Y_AXIS));
                 JPanel animeTitlePanel = new JPanel(new FlowLayout());
                 animeTitlePanel.add(new JLabel(title));
                 animeTitlePanel.add(new JLabel("Was recommended by " + amountOfRecommenders + " people"));
@@ -128,16 +125,33 @@ public class JikanTopRequest {
 
                     }
                 });
-                scrollPanePanel.add(animeTitlePanel);
-                mainFrame.setContentPane(scrollPane);
-                SwingUtilities.updateComponentTreeUI(mainFrame);
-
+                paneLoader.updatePanel(animeTitlePanel);
+                new Thread(paneLoader).start();
 
             }
         }
-        mainFrame.setContentPane(scrollPane);
-        SwingUtilities.updateComponentTreeUI(mainFrame);
     }
+
+    public class MyRunnable implements Runnable{
+
+        private JPanel panel;
+        private JScrollPane scrollPane;
+        public MyRunnable(JPanel panel){
+            scrollPane = new JScrollPane(panel);
+            scrollPane.getVerticalScrollBar().setUnitIncrement(30);
+            this.panel = panel;
+        }
+        public void updatePanel(JPanel newPanel){
+            panel.add(newPanel);
+        }
+
+        @Override
+        public void run() {
+            mainFrame.setContentPane(scrollPane);
+            SwingUtilities.updateComponentTreeUI(mainFrame);
+        }
+    }
+
 
     private JPanel addTitlesToPanel(JFrame mainFrame, JPanel mainPanel, String requestFirstHalf, String requestSecondHalf, int pageNumber, String request) {
         String json = Jaikan.genericRequest(new Endpoint(request));
