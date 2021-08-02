@@ -13,7 +13,7 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class NewAnimeFrame implements JaikanRetriever{
+public class NewAnimeFrame{
     private JFrame insertFrame;
     private String title;
     private MyGUIManager parent;
@@ -28,11 +28,15 @@ public class NewAnimeFrame implements JaikanRetriever{
         this.animeFrameParent = this;
         this.id = id;
         loadFrame();
-        new Thread(this::startAsyncImageSearch).start();
+        startSyncImageSearch();
 
     }
-    private void startAsyncImageSearch(){
-        new JaikanSearch(id,this);
+    private void startSyncImageSearch(){
+        Anime anime =  new JaikanSearch().getByIdSync(id);
+        defaultPanel(anime);
+        retrieveAnime(anime);
+
+
     }
 
 
@@ -42,31 +46,15 @@ public class NewAnimeFrame implements JaikanRetriever{
         insertFrame.setSize(500,900);
         insertFrame.setLocationRelativeTo(null);
         insertFrame.setVisible(true);
-        defaultPanel();
+
         SwingUtilities.updateComponentTreeUI(insertFrame);
         //loadImage(title);
 
 
     }
-    private class CapsuleObject {
-        private JPanel panel;
-        private JTextField textField;
 
-        public CapsuleObject(JPanel panel, JTextField textField) {
-            this.panel = panel;
-            this.textField = textField;
-        }
 
-        public JPanel getPanel() {
-            return panel;
-        }
-
-        public JTextField getTextField() {
-            return textField;
-        }
-    }
-
-    private void defaultPanel(){
+    private void defaultPanel(Anime anime){
 
 
 
@@ -96,7 +84,8 @@ public class NewAnimeFrame implements JaikanRetriever{
             MyLogger.log(e.getMessage());
             e.printStackTrace();
         }
-        CapsuleObject capsuleObject = importAnimePanel(title);
+
+        CapsuleObject capsuleObject = importAnimePanel(title,anime);
         JPanel insertAnimePanel = capsuleObject.getPanel();
 
         titleLabelPannel.add(titleLabel,BorderLayout.CENTER);
@@ -118,7 +107,7 @@ public class NewAnimeFrame implements JaikanRetriever{
 
 
     }
-    private CapsuleObject importAnimePanel(String title){
+    private CapsuleObject importAnimePanel(String title,Anime anime){
         JPanel mainPanel = new JPanel(new FlowLayout());
         JLabel priorityLabel = new JLabel("priority:");
         JTextField priorityTextField = new JTextField();
@@ -144,7 +133,13 @@ public class NewAnimeFrame implements JaikanRetriever{
                     int priority = Integer.parseInt(priorityTextField.getText());
                     if(!(priority>=0&&priority<=5)) throw new NumberRangeException(0,5);
                     if(!(parent.dataBaseManager.getFromDB("select * from anime where title = \""+title+"\"").isEmpty())) throw new TitleAlreadyPresentException();
-                    parent.insertNewAnimeInDB(new AnimeTitle(title,"Unwatched",priority));
+                    boolean released = (anime.getAired().getFrom() != null) && anime.getAired().getFrom().getTime() < new Date().getTime();
+                    parent.insertNewAnimeInDB(new AnimeTitle(title,"Unwatched",priority,released));
+                    if(!released){
+                        if(anime.getAired().getFrom() != null)
+                        parent.dataBaseManager.insertInUnreleased(title, anime.getAired().getFrom().getTime());
+                        else parent.dataBaseManager.insertInUnreleased(title, 0L);
+                    }
                     insertFrame.dispose();
                 }
                 catch (NumberFormatException numberFormatException)
@@ -169,7 +164,7 @@ public class NewAnimeFrame implements JaikanRetriever{
         new AnimeFrame(newtitle,parent);
     }
 
-    @Override
+
     public void retrieveAnime(Anime anime) {
         try {
 
@@ -277,4 +272,24 @@ public class NewAnimeFrame implements JaikanRetriever{
         }
     }
 
+    private class CapsuleObject {
+        private JPanel panel;
+        private JTextField textField;
+
+        public CapsuleObject(JPanel panel, JTextField textField) {
+            this.panel = panel;
+            this.textField = textField;
+        }
+
+        public JPanel getPanel() {
+            return panel;
+        }
+
+        public JTextField getTextField() {
+            return textField;
+        }
+    }
+
 }
+
+

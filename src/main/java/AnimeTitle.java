@@ -2,6 +2,7 @@ public class AnimeTitle {
     private String title;
     private String status;
     private int priority;
+    private boolean released = true;
 
     public AnimeTitle(String title, String status, int priority) {
         this.title = title;
@@ -13,7 +14,21 @@ public class AnimeTitle {
         this.title = title;
         this.status = status;
     }
+    public AnimeTitle(String title, String status, int priority,boolean released) {
+        this.title = title;
+        this.status = status;
+        this.priority = priority;
+        this.released = released;
+    }
+    public AnimeTitle(String title, String status,boolean released) {
+        this.title = title;
+        this.status = status;
+        this.released = released;
+    }
 
+    public boolean isReleased() {
+        return released;
+    }
 
     public String getTitle() {
         return title;

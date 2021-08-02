@@ -126,17 +126,42 @@ public class DataBaseManager {
             e.printStackTrace();
         }
     }
+    public void insertInUnreleased(String title,long releaseDate){
+        Connection conn = null;
+        try {
+            Class.forName("org.sqlite.JDBC");
+            conn = DriverManager.getConnection("jdbc:sqlite:" + "Anime BookmarkList.db");
+
+            String querry = "insert into Unreleased (Title,ReleaseDate)" + " values (?,?)";
+            PreparedStatement preparedStatement = conn.prepareStatement(querry);
+            preparedStatement.setString(1,title);
+            preparedStatement.setLong(2,releaseDate);
+            preparedStatement.execute();
+            MyLogger.log(preparedStatement.toString());
+            System.out.println(preparedStatement.toString());
+
+            conn.close();
+
+        }
+        catch (Exception e) {
+            new ErrorMessage(e.getMessage());
+            e.printStackTrace();
+        }
+    }
     public void insertInDB(AnimeTitle animeTitle){
         Connection conn = null;
         try {
             Class.forName("org.sqlite.JDBC");
             conn = DriverManager.getConnection("jdbc:sqlite:" + "Anime BookmarkList.db");
 
-            String querry = "insert into Anime (Title,Status,priority)" + " values (?,?,?)";
+            String querry = "insert into Anime (Title,Status,priority,released)" + " values (?,?,?,?)";
             PreparedStatement preparedStatement = conn.prepareStatement(querry);
             preparedStatement.setString(1,animeTitle.getTitle());
             preparedStatement.setString(2,animeTitle.getStatus());
             preparedStatement.setInt(3,animeTitle.getPriority());
+            int i = 1;
+            if(!animeTitle.isReleased()) i = 0;
+            preparedStatement.setInt(4,i);
             preparedStatement.execute();
             MyLogger.log(preparedStatement.toString());
             System.out.println(preparedStatement.toString());
@@ -289,6 +314,25 @@ public class DataBaseManager {
         }
 
 
+    }
+    public void updateReleased(String title,boolean released){
+        try{
+            Class.forName("org.sqlite.JDBC");
+            int rel = 1;
+            if(!released) rel = 1;
+            String querry = "Update Anime set Released = "+rel+" Where title = \"" + title + "\"";
+            MyLogger.log(querry);
+            System.out.println(querry);
+            Connection conn = DriverManager.getConnection("jdbc:sqlite:" + "Anime BookmarkList.db");
+            Statement stat = conn.createStatement();
+            stat.executeUpdate(querry);
+            conn.close();
+        }
+        catch (Exception e)
+        {
+            new ErrorMessage(e.getMessage());
+            e.printStackTrace();
+        }
     }
     public void deleteAnimeEntryDangerZone(String title){
         try {

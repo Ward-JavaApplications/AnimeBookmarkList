@@ -17,6 +17,9 @@ public class JaikanSearch {
         this.parent = parent;
         getById(id);
     }
+    public JaikanSearch(){
+
+    }
     public void getByTitle(String title){
 
         List<Anime> animes = new ArrayList<>();
@@ -29,5 +32,8 @@ public class JaikanSearch {
     private void getById(int id){
         Anime anime = Jaikan.as(Endpoints.OBJECT,Anime.class,"anime",id);
         parent.retrieveAnime(anime);
+    }
+    public Anime getByIdSync(int id){
+        return Jaikan.as(Endpoints.OBJECT,Anime.class,"anime",id);
     }
 }
