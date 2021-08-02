@@ -1,3 +1,6 @@
+import pw.mihou.jaikan.Jaikan;
+import pw.mihou.jaikan.endpoints.Endpoint;
+import pw.mihou.jaikan.endpoints.Endpoints;
 import pw.mihou.jaikan.models.Anime;
 import pw.mihou.jaikan.models.Dates;
 import pw.mihou.jaikan.models.Nameable;
@@ -271,6 +274,16 @@ public class AnimeFrame implements JaikanRetriever{
                 imagePanel.add(descriptionPanel);
 
 
+                JButton recommendationsButton = new JButton("Load recommendations");
+                recommendationsButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        int id = anime.getId();
+                        String request = "https://api.jikan.moe/v3/anime/"+id+"/recommendations";
+                        new JikanTopRequest(parent).getTopRecommendations(request,anime.getTitle());
+
+                    }
+                });
 
                 JButton loadMoreImagesButton = new JButton("Load more images");
                 loadMoreImagesButton.addActionListener(new ActionListener() {
@@ -281,6 +294,7 @@ public class AnimeFrame implements JaikanRetriever{
                 });
                 JPanel buttonPanel = new JPanel(new BorderLayout());
                 buttonPanel.add(loadMoreImagesButton,BorderLayout.EAST);
+                buttonPanel.add(recommendationsButton,BorderLayout.WEST);
                 imagePanel.add(buttonPanel);
 
                 mainPanel.remove(1);

@@ -30,6 +30,9 @@ public class InsertNewTitleFrame {
         return insertFrame;
     }
     private JPanel getNewTitleMenu(JFrame mainFrame){
+
+        JikanTopRequest jikanTopRequest = new JikanTopRequest(parent);
+
         JPanel menu = new JPanel(new SpringLayout());
         menu.setLayout(new BoxLayout(menu,BoxLayout.Y_AXIS));
         JButton customTitleButton = new JButton("Insert from custom Title");
@@ -46,7 +49,7 @@ public class InsertNewTitleFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 mainFrame.dispose();
-                getTopAnime("Top upcoming anime","https://api.jikan.moe/v3/top/anime/","/upcoming",1);
+                jikanTopRequest.getTopAnime("Top upcoming anime","https://api.jikan.moe/v3/top/anime/","/upcoming",1);
 
             }
         });
@@ -56,7 +59,7 @@ public class InsertNewTitleFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 mainFrame.dispose();
-                getTopAnime("Top favorite allTime","https://api.jikan.moe/v3/top/anime/","/favorite",1);
+                jikanTopRequest.getTopAnime("Top favorite allTime","https://api.jikan.moe/v3/top/anime/","/favorite",1);
             }
         });
         menu.add(loadFromFavorite);
@@ -65,7 +68,7 @@ public class InsertNewTitleFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 mainFrame.dispose();
-                getTopAnime("Top popularity","https://api.jikan.moe/v3/top/anime/","/bypopularity",1);
+                jikanTopRequest.getTopAnime("Top popularity","https://api.jikan.moe/v3/top/anime/","/bypopularity",1);
             }
         });
         menu.add(loadByPopularity);
@@ -74,126 +77,13 @@ public class InsertNewTitleFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 mainFrame.dispose();
-                getTopAnime("Top airing anime","https://api.jikan.moe/v3/top/anime/","/airing",1);
+                jikanTopRequest.getTopAnime("Top airing anime","https://api.jikan.moe/v3/top/anime/","/airing",1);
             }
         });
         menu.add(loadByAiringButton);
         return menu;
     }
-    private void getTopAnime(JFrame frame,JPanel mainPanel,String requestFirstHalf,String requestSecondHalf,int pageNumber){
-        String request = requestFirstHalf + String.valueOf(pageNumber) + requestSecondHalf;
 
-        JPanel panel = addTitlesToPanel(frame,mainPanel,requestFirstHalf,requestSecondHalf,pageNumber,request);
-        JScrollPane scrollPane = new JScrollPane(panel);
-        scrollPane.getVerticalScrollBar().setUnitIncrement(30);
-        frame.setContentPane(scrollPane);
-        SwingUtilities.updateComponentTreeUI(frame);
-    }
-
-    private void getTopAnime(String frameTitle,String requestFirstHalf,String requestSecondHalf,int pageNumber){
-        String request = requestFirstHalf + String.valueOf(pageNumber) + requestSecondHalf;
-
-        JFrame mainFrame = new JFrame(frameTitle);
-        mainFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        mainFrame.setSize(800,800);
-        mainFrame.setLocationRelativeTo(null);
-        mainFrame.setVisible(true);
-
-        JPanel mainPanel = new JPanel(new SpringLayout());
-        mainPanel.setLayout(new BoxLayout(mainPanel,BoxLayout.Y_AXIS));
-
-        addTitlesToPanel(mainFrame, mainPanel,requestFirstHalf, requestSecondHalf, pageNumber, request);
-        JScrollPane scrollPane = new JScrollPane(mainPanel);
-        scrollPane.getVerticalScrollBar().setUnitIncrement(30);
-        mainFrame.setContentPane(scrollPane);
-        SwingUtilities.updateComponentTreeUI(mainFrame);
-
-    }
-
-    private JPanel addTitlesToPanel(JFrame mainFrame, JPanel mainPanel, String requestFirstHalf, String requestSecondHalf, int pageNumber, String request) {
-        String json = Jaikan.genericRequest(new Endpoint(request));
-        MyLogger.log(json);
-        JsonElement element = JsonParser.parseString(json);
-        if (element != null) {
-                    JsonObject obj = element.getAsJsonObject();
-                    JsonArray pictures = obj.get("top").getAsJsonArray();
-                    Iterator<JsonElement> listIterator = pictures.iterator();
-
-                    int index = 0;
-                    JPanel rowPanel = new JPanel(new SpringLayout());
-                    rowPanel.setLayout(new BoxLayout(rowPanel,BoxLayout.X_AXIS));
-                    while (listIterator.hasNext()) {
-                        JsonObject anime = listIterator.next().getAsJsonObject();
-                        String title = anime.get("title").getAsString();
-                        //System.out.println(title);
-                        String imageURL = anime.get("image_url").getAsString();
-                        int id = anime.get("mal_id").getAsInt();
-                        JLabel imageLabel = new JLabel();
-                        try {
-                            BufferedImage image = ImageIO.read(new URL(imageURL));
-                            imageLabel.setIcon(new ImageIcon(image));
-                        }
-                        catch (Exception e){
-                            MyLogger.log(e.getMessage());
-                            e.printStackTrace();
-                            imageLabel.setText("Image failed to load");
-                        }
-                        JPanel animeTitlePanel = new JPanel(new SpringLayout());
-                        animeTitlePanel.setLayout(new BoxLayout(animeTitlePanel,BoxLayout.Y_AXIS));
-                        animeTitlePanel.add(new JLabel(title));
-                        animeTitlePanel.add(imageLabel);
-                        animeTitlePanel.addMouseListener(new MouseListener() {
-                            @Override
-                            public void mouseClicked(MouseEvent e) {
-                                new NewAnimeFrame(title,id,parent);
-                            }
-
-                            @Override
-                            public void mousePressed(MouseEvent e) {
-
-                            }
-
-                            @Override
-                            public void mouseReleased(MouseEvent e) {
-
-                            }
-
-                            @Override
-                            public void mouseEntered(MouseEvent e) {
-
-                            }
-
-                            @Override
-                            public void mouseExited(MouseEvent e) {
-
-                            }
-                        });
-                        mainPanel.add(animeTitlePanel);
-//                        rowPanel.add(animeTitlePanel);
-//                        if (index >= 3) {
-//                            //need to add to a new row
-//                            mainPanel.add(rowPanel);
-//                            rowPanel.removeAll();
-//                            index = 0;
-//                        }
-//                        index ++;
-
-
-                    }
-            JButton loadMoreButton = new JButton("Load more titles");
-            loadMoreButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    mainPanel.remove(loadMoreButton);
-                    getTopAnime(mainFrame,mainPanel, requestFirstHalf, requestSecondHalf, pageNumber +1);
-                    SwingUtilities.updateComponentTreeUI(mainFrame);
-
-                }
-            });
-            mainPanel.add(loadMoreButton);
-        }
-        return mainPanel;
-    }
 
 
     @NotNull
