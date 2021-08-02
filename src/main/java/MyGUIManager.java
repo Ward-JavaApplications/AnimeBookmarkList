@@ -524,6 +524,10 @@ public class MyGUIManager {
     public void deleteAnime(String animeName){
         dataBaseManager.deleteAnimeEntry(animeName);
     }
+    public void changeAnimeTitle(String oldTitle,String newTitle){
+        dataBaseManager.changeAnimeTitle(oldTitle, newTitle);
+        refresh();
+    }
 
 
     public void changePriority(String animeName, int priority){

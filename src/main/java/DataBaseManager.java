@@ -324,6 +324,23 @@ public class DataBaseManager {
         }
     }
 
+    public void changeAnimeTitle(String oldTitle,String newTitle){
+        try{
+            Class.forName("org.sqlite.JDBC");
+            String querry = "update Anime set Title = \""+newTitle+"\" where Title = \""+oldTitle+"\"";
+            MyLogger.log(querry);
+            System.out.println(querry);
+            Connection conn = DriverManager.getConnection("jdbc:sqlite:" + "Anime BookmarkList.db");
+            Statement stat = conn.createStatement();
+            stat.executeUpdate(querry);
+            conn.close();
+        }
+        catch (Exception e){
+            new ErrorMessage(e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
     public int getPriority(String anime){
         try{
             Class.forName("org.sqlite.JDBC");

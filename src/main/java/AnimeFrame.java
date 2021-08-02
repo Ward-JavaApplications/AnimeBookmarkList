@@ -26,9 +26,12 @@ public class AnimeFrame implements JaikanRetriever{
     private MyGUIManager parent;
     private JPanel imagePanel;
     private JPanel mainPanel;
+    private JLabel titleLabel;
+    private AnimeFrame animeFrameParent;
     public AnimeFrame(String animeTitle, MyGUIManager parent){
         this.parent = parent;
         this.title = animeTitle;
+        this.animeFrameParent = this;
         loadFrame();
         new Thread(this::startAsyncImageSearch).start();
 
@@ -60,7 +63,7 @@ public class AnimeFrame implements JaikanRetriever{
         JPanel statusPanel = new JPanel(new FlowLayout());
 
         JPanel titleLabelPannel = new JPanel(new BorderLayout());
-        JLabel titleLabel = new JLabel(title, SwingUtilities.CENTER);
+        titleLabel = new JLabel(title, SwingUtilities.CENTER);
         JButton copyButton = new JButton();
         try {
             Image img = ImageIO.read(getClass().getResource("images/copy icon.png"));
@@ -152,6 +155,15 @@ public class AnimeFrame implements JaikanRetriever{
         priorityPanel.add(priorityTextField);
         priorityPanel.add(priorityButton);
 
+        JButton changeTitleButton = new JButton("Change title");
+        changeTitleButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                new ChangeTitleFrame(title,parent,animeFrameParent);
+            }
+        });
+        priorityPanel.add(changeTitleButton);
+
         JButton deleteButton = new JButton("Delete anime");
         deleteButton.addActionListener(new ActionListener() {
             @Override
@@ -175,6 +187,10 @@ public class AnimeFrame implements JaikanRetriever{
         SwingUtilities.updateComponentTreeUI(insertFrame);
 
 
+    }
+    public void updateTitle(String newtitle,MyGUIManager parent){
+        insertFrame.dispose();
+        new AnimeFrame(newtitle,parent);
     }
 
     @Override
