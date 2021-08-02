@@ -140,6 +140,7 @@ public class AnimeFrame implements JaikanRetriever{
                 try {
                     int priority = Integer.parseInt(priorityTextField.getText());
                     if(!(priority>=0&&priority<=5)) throw new NumberRangeException(0,5);
+                    if(!(parent.dataBaseManager.getFromDB("select * from anime where title = \""+title+"\"").isEmpty())) throw new TitleAlreadyPresentException();
                     parent.changePriority(title, priority);
                     insertFrame.dispose();
                     parent.refresh();
@@ -150,6 +151,8 @@ public class AnimeFrame implements JaikanRetriever{
                 }
                 catch (NumberRangeException numberRangeException){
                     new ErrorMessage("The given priority was not between 0 and 5");
+                } catch (TitleAlreadyPresentException titleAlreadyPresentException) {
+                    new ErrorMessage("The given title is already present");
                 }
             }
         });

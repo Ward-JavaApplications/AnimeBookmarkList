@@ -5,7 +5,6 @@ import pw.mihou.jaikan.endpoints.Endpoint;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -47,16 +46,54 @@ public class InsertNewTitleFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 mainFrame.dispose();
-                getFromUpcoming();
+                getTopAnime("Top upcoming anime","https://api.jikan.moe/v3/top/anime/","/upcoming",1);
 
             }
         });
         menu.add(loadFromUpcoming);
+        JButton loadFromFavorite = new JButton("From top favorites all time");
+        loadFromFavorite.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                mainFrame.dispose();
+                getTopAnime("Top favorite allTime","https://api.jikan.moe/v3/top/anime/","/favorite",1);
+            }
+        });
+        menu.add(loadFromFavorite);
+        JButton loadByPopularity = new JButton("From top popular all time");
+        loadByPopularity.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                mainFrame.dispose();
+                getTopAnime("Top popularity","https://api.jikan.moe/v3/top/anime/","/bypopularity",1);
+            }
+        });
+        menu.add(loadByPopularity);
+        JButton loadByAiringButton = new JButton("From airing anime");
+        loadByAiringButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                mainFrame.dispose();
+                getTopAnime("Top airing anime","https://api.jikan.moe/v3/top/anime/","/airing",1);
+            }
+        });
+        menu.add(loadByAiringButton);
         return menu;
     }
+    private void getTopAnime(JFrame frame,JPanel mainPanel,String requestFirstHalf,String requestSecondHalf,int pageNumber){
+        String request = requestFirstHalf + String.valueOf(pageNumber) + requestSecondHalf;
 
-    private void getFromUpcoming(){
-        JFrame mainFrame = new JFrame("Get From Upcoming");
+        JPanel panel = addTitlesToPanel(frame,mainPanel,requestFirstHalf,requestSecondHalf,pageNumber,request);
+        JScrollPane scrollPane = new JScrollPane(panel);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(30);
+        frame.setContentPane(scrollPane);
+        SwingUtilities.updateComponentTreeUI(frame);
+    }
+
+    private void getTopAnime(String frameTitle,String requestFirstHalf,String requestSecondHalf,int pageNumber){
+        String request = requestFirstHalf + String.valueOf(pageNumber) + requestSecondHalf;
+
+        JFrame mainFrame = new JFrame(frameTitle);
         mainFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         mainFrame.setSize(800,800);
         mainFrame.setLocationRelativeTo(null);
@@ -65,7 +102,16 @@ public class InsertNewTitleFrame {
         JPanel mainPanel = new JPanel(new SpringLayout());
         mainPanel.setLayout(new BoxLayout(mainPanel,BoxLayout.Y_AXIS));
 
-        String json = Jaikan.genericRequest(new Endpoint("https://api.jikan.moe/v3/top/anime/1/upcoming"));
+        addTitlesToPanel(mainFrame, mainPanel,requestFirstHalf, requestSecondHalf, pageNumber, request);
+        JScrollPane scrollPane = new JScrollPane(mainPanel);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(30);
+        mainFrame.setContentPane(scrollPane);
+        SwingUtilities.updateComponentTreeUI(mainFrame);
+
+    }
+
+    private JPanel addTitlesToPanel(JFrame mainFrame, JPanel mainPanel, String requestFirstHalf, String requestSecondHalf, int pageNumber, String request) {
+        String json = Jaikan.genericRequest(new Endpoint(request));
         MyLogger.log(json);
         JsonElement element = JsonParser.parseString(json);
         if (element != null) {
@@ -132,14 +178,23 @@ public class InsertNewTitleFrame {
 //                        }
 //                        index ++;
 
-                    }
-                }
-        JScrollPane scrollPane = new JScrollPane(mainPanel);
-        scrollPane.getVerticalScrollBar().setUnitIncrement(30);
-        mainFrame.setContentPane(scrollPane);
-        SwingUtilities.updateComponentTreeUI(mainFrame);
 
+                    }
+            JButton loadMoreButton = new JButton("Load more titles");
+            loadMoreButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    mainPanel.remove(loadMoreButton);
+                    getTopAnime(mainFrame,mainPanel, requestFirstHalf, requestSecondHalf, pageNumber +1);
+                    SwingUtilities.updateComponentTreeUI(mainFrame);
+
+                }
+            });
+            mainPanel.add(loadMoreButton);
+        }
+        return mainPanel;
     }
+
 
     @NotNull
     private JPanel getCustomTitlePanel(JFrame insertFrame) {
