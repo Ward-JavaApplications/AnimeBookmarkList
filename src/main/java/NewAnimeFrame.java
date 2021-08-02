@@ -21,6 +21,7 @@ public class NewAnimeFrame{
     private JPanel mainPanel;
     private JLabel titleLabel;
     private NewAnimeFrame animeFrameParent;
+    private JTextField priorityTextField;
     private int id;
     public NewAnimeFrame(String animeTitle, int id, MyGUIManager parent){
         this.parent = parent;
@@ -35,6 +36,8 @@ public class NewAnimeFrame{
         Anime anime =  new JaikanSearch().getByIdSync(id);
         defaultPanel(anime);
         retrieveAnime(anime);
+        imagePanel.requestFocus();
+        priorityTextField.setText("0");
 
 
     }
@@ -110,7 +113,7 @@ public class NewAnimeFrame{
     private CapsuleObject importAnimePanel(String title,Anime anime){
         JPanel mainPanel = new JPanel(new FlowLayout());
         JLabel priorityLabel = new JLabel("priority:");
-        JTextField priorityTextField = new JTextField();
+        priorityTextField = new JTextField();
         //priorityTextField.setFocusable(false);
         priorityTextField.addFocusListener(new FocusListener() {
             @Override
@@ -265,10 +268,11 @@ public class NewAnimeFrame{
 
 
 
+
         }
         catch (Exception e){
             e.printStackTrace();
-            new ErrorMessage(e.getMessage());
+            new ErrorMessage("Couldn't find the anime with id " + id);
         }
     }
 

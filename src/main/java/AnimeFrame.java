@@ -47,7 +47,7 @@ public class AnimeFrame implements JaikanRetriever{
     private void loadFrame(){
         insertFrame = new JFrame(title);
         insertFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        insertFrame.setSize(500,900);
+        insertFrame.setSize(600,900);
         insertFrame.setLocationRelativeTo(null);
         insertFrame.setVisible(true);
         defaultPanel();
@@ -196,7 +196,34 @@ public class AnimeFrame implements JaikanRetriever{
 
             }
         });
+
         priorityPanel.add(deleteButton);
+        JButton moveToDangerZoneButton = new JButton("Move to DangerZone");
+        moveToDangerZoneButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Image img = null;
+                try {
+                    img = ImageIO.read(getClass().getResource("images/silence wench.jpg")).getScaledInstance(250,250,0);
+                }
+                catch (Exception exception){
+                    exception.printStackTrace();
+                    MyLogger.log(exception.getMessage());
+                }
+                int i = JOptionPane.showConfirmDialog(null,"Are you sure you want to move " + title + " to the dangerZone\nThis will remove it from the main list","Confirm move"
+                        ,JOptionPane.YES_NO_OPTION,JOptionPane.ERROR_MESSAGE,new ImageIcon(img));
+                switch (i){
+                    case 0:
+                        parent.dataBaseManager.insertInDangerZone(title);
+                        parent.dataBaseManager.deleteAnimeEntry(title);
+                        insertFrame.dispose();
+                        parent.refresh();
+                        break;
+
+                }
+            }
+        });
+        priorityPanel.add(moveToDangerZoneButton);
         titlePanel.add(priorityPanel);
 
         mainPanel = new JPanel(new BorderLayout());
