@@ -100,6 +100,8 @@ public class InsertNewTitleFrame {
         //status
         JCheckBox checkBox = new JCheckBox("watched", false);
         insertPanel.add(checkBox);
+        JCheckBox airingCheckBox = new JCheckBox("Airing",false);
+        insertPanel.add(airingCheckBox);
         //priority
         JLabel priorityLabel = new JLabel("Priority", SwingConstants.CENTER);
         JTextField priorityField = new JTextField();
@@ -124,6 +126,7 @@ public class InsertNewTitleFrame {
                         //refresh();
                     }
                     else throw new NumberRangeException(0,5);
+                    if(airingCheckBox.isSelected()) parent.dataBaseManager.insertInAiring(titleField.getText());
                 }
                 catch (NumberFormatException numberFormatException)
                 {
