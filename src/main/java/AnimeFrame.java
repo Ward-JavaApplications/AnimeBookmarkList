@@ -1,13 +1,8 @@
-import pw.mihou.jaikan.Jaikan;
-import pw.mihou.jaikan.endpoints.Endpoint;
-import pw.mihou.jaikan.endpoints.Endpoints;
 import pw.mihou.jaikan.models.Anime;
 import pw.mihou.jaikan.models.Dates;
-import pw.mihou.jaikan.models.Nameable;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.border.Border;
 import java.awt.*;
 
 import java.awt.datatransfer.Clipboard;
@@ -17,10 +12,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.image.BufferedImage;
+import java.net.URI;
 import java.net.URL;
 import java.text.SimpleDateFormat;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.Date;
 
 public class AnimeFrame implements JaikanRetriever{
@@ -31,14 +25,50 @@ public class AnimeFrame implements JaikanRetriever{
     private JPanel mainPanel;
     private JLabel titleLabel;
     private AnimeFrame animeFrameParent;
+    private AnimeSearcher animeSearcher;
     public AnimeFrame(String animeTitle, MyGUIManager parent){
         this.parent = parent;
         this.title = animeTitle;
         this.animeFrameParent = this;
+        this.animeSearcher = new AnimeSearcher();
         loadFrame();
         new Thread(this::startAsyncImageSearch).start();
 
     }
+    private class AnimeSearcher{
+        private String url;
+        private boolean hasBeenRequested;
+        private AnimeSearcher(){
+            url = null;
+            hasBeenRequested = false;
+        }
+        private void loadBrowser(){
+            if(url == null){
+                hasBeenRequested = true;
+            }
+            else{
+                openBrowser();
+            }
+        }
+        private void setUrl(String newUrl){
+            url = newUrl;
+            if(hasBeenRequested){
+                hasBeenRequested = false;
+                openBrowser();
+            }
+        }
+        private void openBrowser(){
+            try {
+                if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+                    Desktop.getDesktop().browse(new URI(url));
+                }
+                else new ErrorMessage("Pc was not compatible to open browser");
+            }catch (Exception ex){
+                ex.printStackTrace();
+            }
+        }
+    }
+
     private void startAsyncImageSearch(){
         new JaikanSearch(title,this);
     }
@@ -87,8 +117,24 @@ public class AnimeFrame implements JaikanRetriever{
             MyLogger.log(e.getMessage());
             e.printStackTrace();
         }
+        Image image = null;
+        try{
+            image = ImageIO.read(getClass().getResource("images/mal_icon.png")).getScaledInstance(30,25,0);
+        }
+        catch (Exception exc){
+            exc.printStackTrace();
+        }
+        JButton malButton = new JButton();
+        malButton.setIcon(new ImageIcon(image));
+        malButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                animeSearcher.loadBrowser();
+            }
+        });
         titleLabelPannel.add(titleLabel,BorderLayout.CENTER);
         titleLabelPannel.add(copyButton,BorderLayout.EAST);
+        titleLabelPannel.add(malButton,BorderLayout.WEST);
         titlePanel.add(titleLabelPannel);
 
         JButton watchedButton = new JButton("Watched");
@@ -247,6 +293,7 @@ public class AnimeFrame implements JaikanRetriever{
             System.out.println(animeURL);
             MyLogger.log(animeURL);
 
+            animeSearcher.setUrl(anime.getUrl());
 
 
 
