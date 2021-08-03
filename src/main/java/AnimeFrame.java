@@ -1,3 +1,4 @@
+import org.sqlite.SQLiteException;
 import pw.mihou.jaikan.models.Anime;
 import pw.mihou.jaikan.models.Dates;
 
@@ -394,6 +395,7 @@ public class AnimeFrame implements JaikanRetriever{
                 if(description.getHeight()<1000){
                     MyLogger.log("This was short enough therefore we will display");
                     System.out.println("This was short enough therefore we will display");
+                    if(anime.isAiring()&&!parent.dataBaseManager.airingIsPresent(anime.getTitle())) parent.dataBaseManager.insertInAiring(anime.getTitle());
                     return;
 
                 }

@@ -31,6 +31,9 @@ public class MyGUIManager {
         showStartMenu(mainFrame);
 
     }
+    private MyGUIManager getParent(){
+        return this;
+    }
 
     private void showStartMenu(JFrame frame){
         JPanel mainMenuPanel = new JPanel(new SpringLayout());
@@ -88,6 +91,16 @@ public class MyGUIManager {
         });
         dataInsertPanel.add(insertNewTitleButton);
 
+        JPanel loadAiringPanel = new JPanel();
+        JButton loadAiringButton = new JButton("Load airing anime");
+        loadAiringButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                new AiringAnimeFrame(getParent());
+            }
+        });
+        loadAiringPanel.add(loadAiringButton);
+
         JPanel loadStatsPanel = new JPanel();
         JButton loadStatsButton = new JButton("Load stats");
         loadStatsButton.addActionListener(new ActionListener() {
@@ -123,6 +136,7 @@ public class MyGUIManager {
         mainMenuPanel.add(dataReceivePanel);
         mainMenuPanel.add(dataInsertPanel);
         mainMenuPanel.add(dataSearchPanel);
+        mainMenuPanel.add(loadAiringPanel);
         mainMenuPanel.add(loadStatsPanel);
         mainMenuPanel.add(repopulatePanel);
         frame.setContentPane(mainMenuPanel);

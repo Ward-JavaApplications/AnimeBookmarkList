@@ -126,6 +126,106 @@ public class DataBaseManager {
             e.printStackTrace();
         }
     }
+    public void insertInAiring(String title){
+        Connection conn = null;
+        try {
+            Class.forName("org.sqlite.JDBC");
+            conn = DriverManager.getConnection("jdbc:sqlite:" + "Anime BookmarkList.db");
+
+            String querry = "insert into Airing (Title,Episode)" + " values (?,?)";
+            PreparedStatement preparedStatement = conn.prepareStatement(querry);
+            preparedStatement.setString(1,title);
+            preparedStatement.setInt(2,0);
+            MyLogger.log(preparedStatement.toString());
+            System.out.println(preparedStatement.toString());
+            preparedStatement.execute();
+
+
+            conn.close();
+
+        }
+        catch (Exception e) {
+            new ErrorMessage(e.getMessage());
+            e.printStackTrace();
+        }
+    }
+    public ArrayList<AiringAnime> getAiring(){
+        Connection conn = null;
+        try
+        {
+            Class.forName("org.sqlite.JDBC");
+            conn = DriverManager.getConnection("jdbc:sqlite:" + "Anime BookmarkList.db");
+            Statement stat = conn.createStatement();
+            String selectStatement = "Select * from Airing";
+            ResultSet rs = stat.executeQuery(selectStatement);
+            ArrayList<AiringAnime> animes = new ArrayList<>();
+            while (rs.next())
+            {
+                String mark = rs.getString(1);
+                int episode = rs.getInt(2);
+                animes.add(new AiringAnime(mark,episode));
+            }
+            rs.close();
+            stat.close();
+            conn.close();
+            return animes;
+        }
+        // in case something goes wrong, f.i. incorrect dbname, incorrect select query, driver not found, ...
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            new ErrorMessage(e.getMessage());
+            return null;
+        }
+    }
+    public boolean airingIsPresent(String title){
+        Connection conn = null;
+        try
+        {
+            Class.forName("org.sqlite.JDBC");
+            conn = DriverManager.getConnection("jdbc:sqlite:" + "Anime BookmarkList.db");
+            Statement stat = conn.createStatement();
+            String selectStatement = "Select * from Airing where Title = \"" + title + "\"";
+            ResultSet rs = stat.executeQuery(selectStatement);
+            ArrayList<String> animes = new ArrayList<>();
+            while (rs.next())
+            {
+                String mark = rs.getString(1);
+                animes.add(mark);
+            }
+            rs.close();
+            stat.close();
+            conn.close();
+            return !animes.isEmpty();
+        }
+        // in case something goes wrong, f.i. incorrect dbname, incorrect select query, driver not found, ...
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            new ErrorMessage(e.getMessage());
+            return true;
+        }
+    }
+    public void updateAiringEpisode(String title, int episodeNR){
+        Connection conn = null;
+        try {
+            Class.forName("org.sqlite.JDBC");
+            conn = DriverManager.getConnection("jdbc:sqlite:" + "Anime BookmarkList.db");
+
+            String querry = "Update Airing set Episode = " + episodeNR + " WHERE Title = \"" +title+"\"";
+            PreparedStatement preparedStatement = conn.prepareStatement(querry);
+            preparedStatement.execute();
+            MyLogger.log(preparedStatement.toString());
+            System.out.println(preparedStatement.toString());
+
+            conn.close();
+
+        }
+        catch (Exception e) {
+            new ErrorMessage(e.getMessage());
+            e.printStackTrace();
+        }
+    }
     public void insertInUnreleased(String title,long releaseDate){
         Connection conn = null;
         try {

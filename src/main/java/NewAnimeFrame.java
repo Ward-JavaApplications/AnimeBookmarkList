@@ -9,6 +9,7 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
+import java.net.URI;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -91,8 +92,32 @@ public class NewAnimeFrame{
         CapsuleObject capsuleObject = importAnimePanel(title,anime);
         JPanel insertAnimePanel = capsuleObject.getPanel();
 
+        Image image = null;
+        try{
+            image = ImageIO.read(getClass().getResource("images/mal_icon.png")).getScaledInstance(30,25,0);
+        }
+        catch (Exception exc){
+            exc.printStackTrace();
+        }
+        JButton malButton = new JButton();
+        malButton.setIcon(new ImageIcon(image));
+        malButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+                        Desktop.getDesktop().browse(new URI(anime.getUrl()));
+                    }
+                    else new ErrorMessage("Pc was not compatible to open browser");
+                }catch (Exception ex){
+                    ex.printStackTrace();
+                }
+            }
+        });
+
         titleLabelPannel.add(titleLabel,BorderLayout.CENTER);
         titleLabelPannel.add(copyButton,BorderLayout.EAST);
+        titleLabelPannel.add(malButton,BorderLayout.WEST);
         titlePanel.add(insertAnimePanel,BorderLayout.SOUTH);
         titlePanel.add(titleLabelPannel);
 
@@ -143,6 +168,7 @@ public class NewAnimeFrame{
                         parent.dataBaseManager.insertInUnreleased(title, anime.getAired().getFrom().getTime());
                         else parent.dataBaseManager.insertInUnreleased(title, 0L);
                     }
+                    if(anime.isAiring()&&!parent.dataBaseManager.airingIsPresent(anime.getTitle())) parent.dataBaseManager.insertInAiring(anime.getTitle());
                     insertFrame.dispose();
                 }
                 catch (NumberFormatException numberFormatException)
