@@ -2,6 +2,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import pw.mihou.jaikan.models.Anime;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -594,6 +595,29 @@ public class DataBaseManager {
             e.printStackTrace();
             return null;
         }
+    }
+    public AnimeTitle getRandomTitle(){
+        String query = "SELECT * FROM Anime WHERE Status = \"Unwatched\" ORDER BY RANDOM() LIMIT 1";
+        try{
+            Class.forName("org.sqlite.JDBC");
+            Connection conn = DriverManager.getConnection("jdbc:sqlite:" + "Anime BookmarkList.db");
+            Statement stat = conn.createStatement();
+            MyLogger.log(query);
+            ResultSet rs = stat.executeQuery(query);
+            String title = rs.getString(1);
+            String status = rs.getString(2);
+            int priority = rs.getInt(3);
+
+
+            conn.close();
+            return new AnimeTitle(title,status,priority);
+        }
+        catch (Exception e){
+            new ErrorMessage(e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
+
     }
 
 

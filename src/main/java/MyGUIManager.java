@@ -80,6 +80,18 @@ public class MyGUIManager {
         });
         dataSearchPanel.add(dataSearchButton);
 
+        JPanel searchRandomPanel = new JPanel();
+        JButton searchRandomButton = new JButton("Get random anime");
+    searchRandomButton.addActionListener(new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            AnimeTitle animeTitle = dataBaseManager.getRandomTitle();
+            new AnimeFrame(animeTitle.getTitle(),getParent());
+        }
+    });
+    searchRandomPanel.add(searchRandomButton);
+
+
 
         JButton insertNewTitleButton = new JButton("Insert anime");
         insertNewTitleButton.addActionListener(new ActionListener() {
@@ -135,6 +147,7 @@ public class MyGUIManager {
         repopulatePanel.add(repopulateButton,SpringLayout.WEST);
         mainMenuPanel.add(dataReceivePanel);
         mainMenuPanel.add(dataInsertPanel);
+        mainMenuPanel.add(searchRandomPanel);
         mainMenuPanel.add(dataSearchPanel);
         mainMenuPanel.add(loadAiringPanel);
         mainMenuPanel.add(loadStatsPanel);
