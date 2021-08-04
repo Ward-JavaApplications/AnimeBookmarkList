@@ -35,6 +35,21 @@ public class JikanTopRequest {
 
 
     }
+    public void getSeasonAnime(String frameTitle,String year,String season){
+        String malButtonRequest = "https://myanimelist.net/anime/season/" + year + "/" + season;
+        String request = "https://api.jikan.moe/v3/season/" + year + "/" + season;
+
+
+        loadFrameAndPanel(frameTitle);
+
+        addMalButton(mainPanel,malButtonRequest);
+
+        mainPanel.add(addTitlesToPanelSeasonal(request,malButtonRequest));
+        JScrollPane scrollPane = new JScrollPane(mainPanel);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(30);
+        mainFrame.setContentPane(scrollPane);
+        SwingUtilities.updateComponentTreeUI(mainFrame);
+    }
 
     public void getTopAnime(JFrame frame, JPanel mainPanel, String requestFirstHalf, String requestSecondHalf, int pageNumber){
         String request = requestFirstHalf + String.valueOf(pageNumber) + requestSecondHalf;
@@ -99,6 +114,79 @@ public class JikanTopRequest {
 
         mainPanel = new JPanel(new SpringLayout());
         mainPanel.setLayout(new BoxLayout(mainPanel,BoxLayout.Y_AXIS));
+    }
+    private JPanel addTitlesToPanelSeasonal(String request,String malButtonRequest){
+        JPanel mainPanel = new JPanel(new SpringLayout());
+        mainPanel.setLayout(new BoxLayout(mainPanel,BoxLayout.Y_AXIS));
+
+        String json = Jaikan.genericRequest(new Endpoint(request));
+        MyLogger.log(json);
+        JsonElement element = JsonParser.parseString(json);
+        if (element != null) {
+            JsonObject obj = element.getAsJsonObject();
+            JsonArray pictures = obj.get("anime").getAsJsonArray();
+            Iterator<JsonElement> listIterator = pictures.iterator();
+            boolean wasLegitSearch = false;
+            while (listIterator.hasNext()) {
+                wasLegitSearch = true;
+                JsonObject anime = listIterator.next().getAsJsonObject();
+                String title = anime.get("title").getAsString();
+                String imageURL = anime.get("image_url").getAsString();
+                int id = anime.get("mal_id").getAsInt();
+                JLabel imageLabel = new JLabel();
+                try {
+                    BufferedImage image = ImageIO.read(new URL(imageURL));
+                    imageLabel.setIcon(new ImageIcon(image));
+                }
+                catch (Exception e){
+                    MyLogger.log(e.getMessage());
+                    e.printStackTrace();
+                    imageLabel.setText("Image failed to load");
+                }
+                JPanel animeTitlePanel = new JPanel(new FlowLayout());
+                animeTitlePanel.add(new JLabel(title));
+                animeTitlePanel.add(imageLabel);
+                animeTitlePanel.addMouseListener(new MouseListener() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        new NewAnimeFrame(title,id,parent);
+                    }
+
+                    @Override
+                    public void mousePressed(MouseEvent e) {
+
+                    }
+
+                    @Override
+                    public void mouseReleased(MouseEvent e) {
+
+                    }
+
+                    @Override
+                    public void mouseEntered(MouseEvent e) {
+
+                    }
+
+                    @Override
+                    public void mouseExited(MouseEvent e) {
+
+                    }
+                });
+                mainPanel.add(animeTitlePanel);
+
+
+            }
+            if(!wasLegitSearch){
+                mainPanel = new JPanel(new BorderLayout());
+                mainPanel.add(new JLabel("The requested season was not present in the database"),BorderLayout.CENTER);
+            }
+        }
+        else{
+            mainPanel = new JPanel(new BorderLayout());
+            mainPanel.add(new JLabel("The requested season was not present in the database"),BorderLayout.CENTER);
+        }
+
+        return mainPanel;
     }
     private void addTitleToPanelRecommendations(String request,String malButtonRequest){
         JPanel mainPanel = new JPanel(new SpringLayout());

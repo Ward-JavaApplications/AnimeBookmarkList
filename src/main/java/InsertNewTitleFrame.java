@@ -53,6 +53,15 @@ public class InsertNewTitleFrame {
 
             }
         });
+        JButton seasonalButton = new JButton("From seasonal anime");
+        seasonalButton.addActionListener(new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            mainFrame.dispose();
+            new SeasonalSelector(parent);
+        }
+    });
+        menu.add(seasonalButton);
         menu.add(loadFromUpcoming);
         JButton loadFromFavorite = new JButton("From top favorites all time");
         loadFromFavorite.addActionListener(new ActionListener() {
