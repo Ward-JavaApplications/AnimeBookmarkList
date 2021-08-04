@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import pw.mihou.jaikan.Jaikan;
 import pw.mihou.jaikan.endpoints.Endpoint;
+import pw.mihou.jaikan.models.Anime;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -13,6 +14,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
+import java.net.URI;
 import java.net.URL;
 import java.util.Iterator;
 
@@ -25,9 +27,11 @@ public class JikanTopRequest {
         this.parent =  parent;
     }
 
-    public void getTopRecommendations(String request,String title){
-        loadFrameAndPanel("Recommendations for " + title);
-        addTitleToPanelRecommendations(request);
+
+    public void getTopRecommendations(String request, Anime anime){
+        loadFrameAndPanel("Recommendations for " + anime.getTitle());
+        String malButtonRequest = "https://myanimelist.net/anime/"+anime.getId()+"/"+anime.getTitle().replace(" ","_")+"/userrecs";
+        addTitleToPanelRecommendations(request,malButtonRequest);
 
 
     }
@@ -44,8 +48,12 @@ public class JikanTopRequest {
 
     public void getTopAnime(String frameTitle,String requestFirstHalf,String requestSecondHalf,int pageNumber){
         String request = requestFirstHalf + String.valueOf(pageNumber) + requestSecondHalf;
+        String malButtonRequest = "https://myanimelist.net/topanime.php?type=" + requestSecondHalf.substring(1);
+        System.out.println(malButtonRequest);
 
         loadFrameAndPanel(frameTitle);
+
+        addMalButton(mainPanel,malButtonRequest);
 
         addTitlesToPanel(mainFrame, mainPanel,requestFirstHalf, requestSecondHalf, pageNumber, request);
         JScrollPane scrollPane = new JScrollPane(mainPanel);
@@ -53,6 +61,34 @@ public class JikanTopRequest {
         mainFrame.setContentPane(scrollPane);
         SwingUtilities.updateComponentTreeUI(mainFrame);
 
+    }
+    private JPanel addMalButton(JPanel panel,String request){
+        JPanel buttonPanel = new JPanel(new BorderLayout());
+        Image image = null;
+        try{
+            image = ImageIO.read(getClass().getResource("images/mal_icon.png")).getScaledInstance(30,25,0);
+        }
+        catch (Exception exc){
+            exc.printStackTrace();
+        }
+        JButton malButton = new JButton();
+        malButton.setIcon(new ImageIcon(image));
+        malButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+                        Desktop.getDesktop().browse(new URI(request));
+                    }
+                    else new ErrorMessage("Pc was not compatible to open browser");
+                }catch (Exception ex){
+                    ex.printStackTrace();
+                }
+            }
+        });
+        buttonPanel.add(malButton,BorderLayout.WEST);
+        panel.add(buttonPanel);
+        return panel;
     }
     private void loadFrameAndPanel(String frameTitle){
         mainFrame = new JFrame(frameTitle);
@@ -64,10 +100,11 @@ public class JikanTopRequest {
         mainPanel = new JPanel(new SpringLayout());
         mainPanel.setLayout(new BoxLayout(mainPanel,BoxLayout.Y_AXIS));
     }
-    private void addTitleToPanelRecommendations(String request){
-        JPanel scrollPanePanel = new JPanel(new SpringLayout());
-        scrollPanePanel.setLayout(new BoxLayout(scrollPanePanel,BoxLayout.Y_AXIS));
-        MyRunnable paneLoader = new MyRunnable(scrollPanePanel);
+    private void addTitleToPanelRecommendations(String request,String malButtonRequest){
+        JPanel mainPanel = new JPanel(new SpringLayout());
+        mainPanel.setLayout(new BoxLayout(mainPanel,BoxLayout.Y_AXIS));
+        addMalButton(mainPanel,malButtonRequest);
+        MyRunnable paneLoader = new MyRunnable(mainPanel);
 
         String json = Jaikan.genericRequest(new Endpoint(request));
         MyLogger.log(json);

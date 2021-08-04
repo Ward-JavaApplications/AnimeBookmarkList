@@ -367,7 +367,7 @@ public class AnimeFrame implements JaikanRetriever{
                     public void actionPerformed(ActionEvent e) {
                         int id = anime.getId();
                         String request = "https://api.jikan.moe/v3/anime/"+id+"/recommendations";
-                        new JikanTopRequest(parent).getTopRecommendations(request,anime.getTitle());
+                        new JikanTopRequest(parent).getTopRecommendations(request,anime);
 
                     }
                 });
