@@ -24,7 +24,7 @@ public class JaikanSearch {
     public ArrayList<Anime> getSuggestions(String title){
         ArrayList<Anime> animes = new ArrayList<>();
         Jaikan.search(Endpoints.SEARCH, AnimeResult.class, "anime", title)
-                .stream().limit(5).forEach(animeResult -> {
+                .stream().limit(3).forEach(animeResult -> {
             animes.add(animeResult.asAnime());
         });
         return animes;

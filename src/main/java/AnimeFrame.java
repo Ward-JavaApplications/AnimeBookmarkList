@@ -1,4 +1,3 @@
-import org.sqlite.SQLiteException;
 import pw.mihou.jaikan.models.Anime;
 import pw.mihou.jaikan.models.Dates;
 
@@ -20,18 +19,24 @@ import java.util.Date;
 
 public class AnimeFrame implements JaikanRetriever{
     private JFrame insertFrame;
-    private String title;
+    private String animeTitleString;
     private MyGUIManager parent;
     private JPanel imagePanel;
     private JPanel mainPanel;
     private JLabel titleLabel;
     private AnimeFrame animeFrameParent;
     private AnimeSearcher animeSearcher;
-    public AnimeFrame(String animeTitle, MyGUIManager parent){
+    private boolean wasCached = false;
+    private int currentPriority;
+    private String status;
+    private AnimeTitle animeTitleObject;
+
+    public AnimeFrame(String animeTitleString, MyGUIManager parent){
         this.parent = parent;
-        this.title = animeTitle;
+        this.animeTitleString = animeTitleString;
         this.animeFrameParent = this;
         this.animeSearcher = new AnimeSearcher();
+        animeTitleObject = parent.dataBaseManager.getFromDB("Select * from Anime where title = \"" + animeTitleString + "\"").get(0);
         loadFrame();
         new Thread(this::startAsyncImageSearch).start();
 
@@ -71,12 +76,22 @@ public class AnimeFrame implements JaikanRetriever{
     }
 
     private void startAsyncImageSearch(){
-        new JaikanSearch(title,this);
+        MyCacheManager cacheManager = new MyCacheManager(parent);
+        Anime cachedAnime = cacheManager.getFromCache(animeTitleObject.getMalID());
+        if(cachedAnime != null){
+            wasCached = true;
+            retrieveAnime(cachedAnime);
+
+        }
+        else {
+            wasCached = false;
+            new JaikanSearch(animeTitleString, this);
+        }
     }
 
 
     private void loadFrame(){
-        insertFrame = new JFrame(title);
+        insertFrame = new JFrame(animeTitleString);
         insertFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         insertFrame.setSize(600,900);
         insertFrame.setLocationRelativeTo(null);
@@ -90,14 +105,14 @@ public class AnimeFrame implements JaikanRetriever{
 
     private void defaultPanel(){
         //getStatus of the anime
-        String status = parent.dataBaseManager.getStatus(title);
+        status = parent.dataBaseManager.getStatus(animeTitleString);
 
         JPanel titlePanel = new JPanel(new SpringLayout());
         titlePanel.setLayout(new BoxLayout(titlePanel, BoxLayout.Y_AXIS));
         JPanel statusPanel = new JPanel(new FlowLayout());
 
         JPanel titleLabelPannel = new JPanel(new BorderLayout());
-        titleLabel = new JLabel(title, SwingUtilities.CENTER);
+        titleLabel = new JLabel(animeTitleString, SwingUtilities.CENTER);
         JButton copyButton = new JButton();
         try {
             Image img = ImageIO.read(getClass().getResource("images/copy icon.png"));
@@ -106,7 +121,7 @@ public class AnimeFrame implements JaikanRetriever{
             copyButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    StringSelection stringSelection = new StringSelection(title);
+                    StringSelection stringSelection = new StringSelection(animeTitleString);
                     Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
                     clipboard.setContents(stringSelection,null);
                     copyButton.setIcon(null);
@@ -143,9 +158,9 @@ public class AnimeFrame implements JaikanRetriever{
         watchedButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                parent.setTitleStatus("Watched", title);
-                parent.dataBaseManager.setPriorityToZero(title);
-                parent.dataBaseManager.deleteFromAiring(title);
+                parent.setTitleStatus("Watched", animeTitleString);
+                parent.dataBaseManager.setPriorityToZero(animeTitleString);
+                parent.dataBaseManager.deleteFromAiring(animeTitleString);
                 insertFrame.dispose();
                 parent.refresh();
             }
@@ -155,7 +170,7 @@ public class AnimeFrame implements JaikanRetriever{
         unwatchedButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                parent.setTitleStatus("Unwatched", title);
+                parent.setTitleStatus("Unwatched", animeTitleString);
                 insertFrame.dispose();
                 parent.refresh();
             }
@@ -165,8 +180,8 @@ public class AnimeFrame implements JaikanRetriever{
         watchingButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                parent.setTitleStatus("Watching", title);
-                parent.dataBaseManager.insertInAiring(title);
+                parent.setTitleStatus("Watching", animeTitleString);
+                parent.dataBaseManager.insertInAiring(animeTitleString);
                 insertFrame.dispose();
                 parent.refresh();
             }
@@ -176,7 +191,7 @@ public class AnimeFrame implements JaikanRetriever{
         statusPanel.add(unwatchedButton);
         titlePanel.add(statusPanel);
         JPanel priorityPanel = new JPanel(new FlowLayout());
-        int currentPriority = parent.dataBaseManager.getPriority(title);
+        currentPriority = parent.dataBaseManager.getPriority(animeTitleString);
         JTextField priorityTextField = new JTextField(String.valueOf(currentPriority));
         priorityTextField.addFocusListener(new FocusAdapter() {
             @Override
@@ -192,7 +207,7 @@ public class AnimeFrame implements JaikanRetriever{
                 try {
                     int priority = Integer.parseInt(priorityTextField.getText());
                     if(!(priority>=0&&priority<=5)) throw new NumberRangeException(0,5);
-                                        parent.changePriority(title, priority);
+                                        parent.changePriority(animeTitleString, priority);
                     insertFrame.dispose();
                     parent.refresh();
                 }
@@ -212,7 +227,7 @@ public class AnimeFrame implements JaikanRetriever{
         changeTitleButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                new ChangeTitleFrame(title,parent,animeFrameParent);
+                new ChangeTitleFrame(animeTitleString,parent,animeFrameParent);
             }
         });
         priorityPanel.add(changeTitleButton);
@@ -229,10 +244,10 @@ public class AnimeFrame implements JaikanRetriever{
                     exception.printStackTrace();
                     MyLogger.log(exception.getMessage());
                 }
-                int i = JOptionPane.showConfirmDialog(null,"Are you sure you want to delete " + title,"Confirm delete",JOptionPane.YES_NO_OPTION,JOptionPane.ERROR_MESSAGE,new ImageIcon(img));
+                int i = JOptionPane.showConfirmDialog(null,"Are you sure you want to delete " + animeTitleString,"Confirm delete",JOptionPane.YES_NO_OPTION,JOptionPane.ERROR_MESSAGE,new ImageIcon(img));
                 switch (i){
                     case 0:
-                        parent.deleteAnime(title) ;
+                        parent.deleteAnime(animeTitleString) ;
                         insertFrame.dispose();
                         parent.refresh();
                         break;
@@ -256,12 +271,12 @@ public class AnimeFrame implements JaikanRetriever{
                     exception.printStackTrace();
                     MyLogger.log(exception.getMessage());
                 }
-                int i = JOptionPane.showConfirmDialog(null,"Are you sure you want to move " + title + " to the dangerZone\nThis will remove it from the main list","Confirm move"
+                int i = JOptionPane.showConfirmDialog(null,"Are you sure you want to move " + animeTitleString + " to the dangerZone\nThis will remove it from the main list","Confirm move"
                         ,JOptionPane.YES_NO_OPTION,JOptionPane.ERROR_MESSAGE,new ImageIcon(img));
                 switch (i){
                     case 0:
-                        parent.dataBaseManager.insertInDangerZone(title);
-                        parent.dataBaseManager.deleteAnimeEntry(title);
+                        parent.dataBaseManager.insertInDangerZone(animeTitleString);
+                        parent.dataBaseManager.deleteAnimeEntry(animeTitleString);
                         insertFrame.dispose();
                         parent.refresh();
                         break;
@@ -297,6 +312,8 @@ public class AnimeFrame implements JaikanRetriever{
             MyLogger.log(animeURL);
 
             animeSearcher.setUrl(anime.getUrl());
+
+
 
 
 
@@ -385,9 +402,51 @@ public class AnimeFrame implements JaikanRetriever{
                 buttonPanel.add(loadMoreImagesButton,BorderLayout.EAST);
                 buttonPanel.add(recommendationsButton,BorderLayout.WEST);
                 imagePanel.add(buttonPanel);
+                if(!wasCached) {
+                    JPanel cachePanel = new JPanel(new FlowLayout());
+                    JLabel cacheTitleLabel = new JLabel("The anime wasn't confirmed yet, is the anime shown the correct one?");
+                    JButton yesButton = new JButton("Yes");
+                    yesButton.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+
+                            new MyCacheManager(parent).pushToCache(anime,image);
+                            parent.dataBaseManager.putMalID(animeTitleString,anime.getId());
+                            cachePanel.removeAll();
+                            SwingUtilities.updateComponentTreeUI(imagePanel);
+                            if(!animeTitleString.equals(anime.getTitle())) {
+                                int i = JOptionPane.showConfirmDialog(null, "Would you like to change the name " + animeTitleString + " to " + anime.getTitle() + " as well?", "Confirm anime", JOptionPane.YES_NO_OPTION);
+                                if (i == 0) parent.dataBaseManager.changeAnimeTitle(animeTitleString, anime.getTitle());
+                            }
+                            parent.refresh();
+                        }
+                    });
+                    JButton noButton = new JButton("No");
+                    noButton.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            new SuggestionFrame(parent, new AnimeTitle(animeTitleString, status, currentPriority)){
+                                @Override
+                                public void saveAnime(AnimeTitle animeTitle) {
+                                    new MyCacheManager(parent).pushToCache(anime,image);
+                                    parent.dataBaseManager.changeAnimeTitle(animeTitleString,anime.getTitle());
+                                    disposeFrame();
+                                }
+                            };
+                            cachePanel.removeAll();
+                            SwingUtilities.updateComponentTreeUI(imagePanel);
+                            parent.refresh();
+                        }
+                    });
+                    cachePanel.add(cacheTitleLabel);
+                    cachePanel.add(yesButton);
+                    cachePanel.add(noButton);
+                    imagePanel.add(cachePanel);
+                }
 
                 mainPanel.remove(1);
                 mainPanel.add(imagePanel);
+
 
                 insertFrame.setContentPane(mainPanel);
                 SwingUtilities.updateComponentTreeUI(insertFrame);

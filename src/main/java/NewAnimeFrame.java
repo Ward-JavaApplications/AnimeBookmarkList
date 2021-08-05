@@ -24,6 +24,7 @@ public class NewAnimeFrame{
     private NewAnimeFrame animeFrameParent;
     private JTextField priorityTextField;
     private int id;
+    private BufferedImage image;
     public NewAnimeFrame(String animeTitle, int id, MyGUIManager parent){
         this.parent = parent;
         this.title = animeTitle;
@@ -168,7 +169,7 @@ public class NewAnimeFrame{
                         parent.dataBaseManager.insertInUnreleased(title, anime.getAired().getFrom().getTime());
                         else parent.dataBaseManager.insertInUnreleased(title, 0L);
                     }
-                    if(anime.isAiring()&&!parent.dataBaseManager.airingIsPresent(anime.getTitle())) parent.dataBaseManager.insertInAiring(anime.getTitle());
+                    new MyCacheManager(parent).pushToCache(anime,image);
                     insertFrame.dispose();
                 }
                 catch (NumberFormatException numberFormatException)
@@ -204,7 +205,7 @@ public class NewAnimeFrame{
 
 
 
-            final BufferedImage image = ImageIO.read(new URL(animeURL));
+            image = ImageIO.read(new URL(animeURL));
             JLabel imageToDraw = new JLabel(new ImageIcon(image));
 
 

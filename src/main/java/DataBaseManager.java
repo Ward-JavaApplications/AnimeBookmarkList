@@ -364,7 +364,10 @@ public class DataBaseManager {
                 String title = rs.getString(1);
                 String status = rs.getString(2);
                 int priority = rs.getInt(3);
-                animes.add(new AnimeTitle(title,status,priority));
+                int released = rs.getInt(4);
+                boolean releasedBool = (released == 1);
+                int malID = rs.getInt(5);
+                animes.add(new AnimeTitle(title,malID,status,priority,releasedBool));
             }
             rs.close();
             stat.close();
@@ -635,6 +638,100 @@ public class DataBaseManager {
             return null;
         }
 
+    }
+    public void putMalID(String title,int malID){
+        Connection conn = null;
+        try {
+            Class.forName("org.sqlite.JDBC");
+            conn = DriverManager.getConnection("jdbc:sqlite:" + "Anime BookmarkList.db");
+
+            String querry = "Update Anime set mal_id = " + malID + " WHERE Title = \"" +title+"\"";
+            PreparedStatement preparedStatement = conn.prepareStatement(querry);
+            preparedStatement.execute();
+            MyLogger.log(preparedStatement.toString());
+            System.out.println(preparedStatement.toString());
+
+            conn.close();
+
+        }
+        catch (Exception e) {
+            new ErrorMessage(e.getMessage());
+            e.printStackTrace();
+        }
+
+    }
+    public void pushToCache(int id,String title,String gson){
+
+        Connection conn = null;
+        try {
+            Class.forName("org.sqlite.JDBC");
+            conn = DriverManager.getConnection("jdbc:sqlite:" + "Anime BookmarkList.db");
+
+            String querry = "insert into Cache (mal_id,title,gson,image)" + " values (?,?,?,?)";
+            PreparedStatement preparedStatement = conn.prepareStatement(querry);
+            preparedStatement.setInt(1,id);
+            preparedStatement.setString(2,title);
+            preparedStatement.setString(3,gson);
+            preparedStatement.execute();
+            MyLogger.log(preparedStatement.toString());
+            System.out.println(preparedStatement.toString());
+
+            conn.close();
+
+        }
+        catch (Exception e) {
+            new ErrorMessage(e.getMessage());
+            e.printStackTrace();
+        }
+
+    }
+    public String getFromCache(int id){
+        Connection conn = null;
+        try {
+            Class.forName("org.sqlite.JDBC");
+            conn = DriverManager.getConnection("jdbc:sqlite:" + "Anime BookmarkList.db");
+
+            String querry = "select Gson from Cache where mal_id = " + id;
+            Statement statement = conn.createStatement();
+            ResultSet resultSet = statement.executeQuery(querry);
+            if(resultSet.isClosed()) return null;
+            String gson = resultSet.getString(1);
+            MyLogger.log(querry);
+            System.out.println(querry);
+
+            conn.close();
+            return gson;
+
+        }
+        catch (Exception e) {
+            new ErrorMessage(e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
+    }
+    public String getFromCache(String name){
+        Connection conn = null;
+        try {
+            Class.forName("org.sqlite.JDBC");
+            conn = DriverManager.getConnection("jdbc:sqlite:" + "Anime BookmarkList.db");
+
+            String querry = "Select Gson from Cache where title = \"" + name + "\"";
+            Statement statement = conn.createStatement();
+            ResultSet resultSet = statement.executeQuery(querry);
+            if (resultSet.isClosed()) return null;
+            String gson = resultSet.getString(1);
+            MyLogger.log(querry);
+            System.out.println(querry);
+
+            conn.close();
+            return gson;
+
+        }
+        catch (Exception e) {
+            new ErrorMessage(e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
     }
 
 
