@@ -15,32 +15,34 @@ import java.util.Iterator;
 
 public class InsertNewTitleFrame {
     private MyGUIManager parent;
-    public InsertNewTitleFrame(MyGUIManager parent){
+
+    public InsertNewTitleFrame(MyGUIManager parent) {
         this.parent = parent;
-        JFrame mainFrame =  loadFrame();
+        JFrame mainFrame = loadFrame();
         mainFrame.setContentPane(getNewTitleMenu(mainFrame));
         SwingUtilities.updateComponentTreeUI(mainFrame);
     }
-    private JFrame loadFrame(){
+
+    private JFrame loadFrame() {
         JFrame insertFrame = new JFrame("Insert new anime");
         insertFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        insertFrame.setSize(300,200);
+        insertFrame.setSize(300, 200);
         insertFrame.setLocationRelativeTo(null);
         insertFrame.setVisible(true);
         return insertFrame;
     }
-    private JPanel getNewTitleMenu(JFrame mainFrame){
+
+    private JPanel getNewTitleMenu(JFrame mainFrame) {
 
         JikanTopRequest jikanTopRequest = new JikanTopRequest(parent);
 
         JPanel menu = new JPanel(new SpringLayout());
-        menu.setLayout(new BoxLayout(menu,BoxLayout.Y_AXIS));
+        menu.setLayout(new BoxLayout(menu, BoxLayout.Y_AXIS));
         JButton customTitleButton = new JButton("Insert from custom Title");
         customTitleButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                mainFrame.setContentPane(getCustomTitlePanel(mainFrame));
-                SwingUtilities.updateComponentTreeUI(mainFrame);
+                new CustomTitleFrame(mainFrame,parent);
             }
         });
         menu.add(customTitleButton);
@@ -49,18 +51,18 @@ public class InsertNewTitleFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 mainFrame.dispose();
-                jikanTopRequest.getTopAnime("Top upcoming anime","https://api.jikan.moe/v3/top/anime/","/upcoming",1);
+                jikanTopRequest.getTopAnime("Top upcoming anime", "https://api.jikan.moe/v3/top/anime/", "/upcoming", 1);
 
             }
         });
         JButton seasonalButton = new JButton("From seasonal anime");
         seasonalButton.addActionListener(new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            mainFrame.dispose();
-            new SeasonalSelector(parent);
-        }
-    });
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                mainFrame.dispose();
+                new SeasonalSelector(parent);
+            }
+        });
         menu.add(seasonalButton);
         menu.add(loadFromUpcoming);
         JButton loadFromFavorite = new JButton("From top favorites all time");
@@ -68,7 +70,7 @@ public class InsertNewTitleFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 mainFrame.dispose();
-                jikanTopRequest.getTopAnime("Top favorite allTime","https://api.jikan.moe/v3/top/anime/","/favorite",1);
+                jikanTopRequest.getTopAnime("Top favorite allTime", "https://api.jikan.moe/v3/top/anime/", "/favorite", 1);
             }
         });
         menu.add(loadFromFavorite);
@@ -77,7 +79,7 @@ public class InsertNewTitleFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 mainFrame.dispose();
-                jikanTopRequest.getTopAnime("Top popularity","https://api.jikan.moe/v3/top/anime/","/bypopularity",1);
+                jikanTopRequest.getTopAnime("Top popularity", "https://api.jikan.moe/v3/top/anime/", "/bypopularity", 1);
             }
         });
         menu.add(loadByPopularity);
@@ -86,70 +88,11 @@ public class InsertNewTitleFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 mainFrame.dispose();
-                jikanTopRequest.getTopAnime("Top airing anime","https://api.jikan.moe/v3/top/anime/","/airing",1);
+                jikanTopRequest.getTopAnime("Top airing anime", "https://api.jikan.moe/v3/top/anime/", "/airing", 1);
             }
         });
         menu.add(loadByAiringButton);
         return menu;
     }
-
-
-
-    @NotNull
-    private JPanel getCustomTitlePanel(JFrame insertFrame) {
-        ///setup buttons
-        JPanel insertPanel = new JPanel(new SpringLayout());
-        insertPanel.setLayout(new BoxLayout(insertPanel, BoxLayout.Y_AXIS));
-        //title panel
-
-        JLabel titleLabel = new JLabel("Enter title",SwingConstants.CENTER);
-        JTextField titleField = new JTextField();
-        insertPanel.add(titleLabel);
-        insertPanel.add(titleField);
-        //status
-        JCheckBox checkBox = new JCheckBox("watched", false);
-        insertPanel.add(checkBox);
-        JCheckBox airingCheckBox = new JCheckBox("Airing",false);
-        insertPanel.add(airingCheckBox);
-        //priority
-        JLabel priorityLabel = new JLabel("Priority", SwingConstants.CENTER);
-        JTextField priorityField = new JTextField();
-        insertPanel.add(priorityLabel);
-        insertPanel.add(priorityField);
-        //save anime
-        JButton saveButton = new JButton("Save");
-        saveButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-
-                try{
-                    String status = new String();
-                    if(checkBox.isSelected()) status = "Watched";
-                    else status = "Unwatched";
-                    int priority = 0;
-                    if (!priorityField.getText().equals("")) priority = Integer.parseInt(priorityField.getText());
-                    else priority = 0;
-                    if(priority<=5 && priority>=0) {
-                        parent.insertNewAnimeInDB(new AnimeTitle(titleField.getText(), status, priority));
-                        insertFrame.dispose();
-                        //refresh();
-                    }
-                    else throw new NumberRangeException(0,5);
-                    if(airingCheckBox.isSelected()) parent.dataBaseManager.insertInAiring(titleField.getText());
-                }
-                catch (NumberFormatException numberFormatException)
-                {
-                    new ErrorMessage("The given priority is not a valid number");
-                }
-                catch (NumberRangeException numberRangeException){
-                    new ErrorMessage("The priority needs to be between: " + numberRangeException.getMinRange() + " and " + numberRangeException.getMaxRange());
-                }
-            }
-
-        });
-        insertPanel.add(saveButton);
-        return insertPanel;
-    }
-
 
 }

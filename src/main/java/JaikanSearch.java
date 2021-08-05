@@ -8,6 +8,7 @@ import java.util.List;
 
 public class JaikanSearch {
     private JaikanRetriever parent;
+
     public JaikanSearch(String title,JaikanRetriever parent){
 
         this.parent = parent;
@@ -19,6 +20,14 @@ public class JaikanSearch {
     }
     public JaikanSearch(){
 
+    }
+    public ArrayList<Anime> getSuggestions(String title){
+        ArrayList<Anime> animes = new ArrayList<>();
+        Jaikan.search(Endpoints.SEARCH, AnimeResult.class, "anime", title)
+                .stream().limit(5).forEach(animeResult -> {
+            animes.add(animeResult.asAnime());
+        });
+        return animes;
     }
     public void getByTitle(String title){
         try {
