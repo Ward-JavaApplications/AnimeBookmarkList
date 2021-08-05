@@ -597,7 +597,7 @@ public class DataBaseManager {
         }
     }
     public AnimeTitle getRandomTitle(){
-        String query = "SELECT * FROM Anime WHERE Status = \"Unwatched\" ORDER BY RANDOM() LIMIT 1";
+        String query = "SELECT * FROM Anime WHERE Status = \"Unwatched\" AND Released = 1 ORDER BY RANDOM() LIMIT 1";
         try{
             Class.forName("org.sqlite.JDBC");
             Connection conn = DriverManager.getConnection("jdbc:sqlite:" + "Anime BookmarkList.db");
