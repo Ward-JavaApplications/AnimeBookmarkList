@@ -104,7 +104,7 @@ public class MyGUIManager {
         dataInsertPanel.add(insertNewTitleButton);
 
         JPanel loadAiringPanel = new JPanel();
-        JButton loadAiringButton = new JButton("Load airing anime");
+        JButton loadAiringButton = new JButton("Load the anime you're currently watching");
         loadAiringButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

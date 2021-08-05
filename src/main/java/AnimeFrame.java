@@ -145,6 +145,7 @@ public class AnimeFrame implements JaikanRetriever{
             public void actionPerformed(ActionEvent e) {
                 parent.setTitleStatus("Watched", title);
                 parent.dataBaseManager.setPriorityToZero(title);
+                parent.dataBaseManager.deleteFromAiring(title);
                 insertFrame.dispose();
                 parent.refresh();
             }
@@ -165,6 +166,7 @@ public class AnimeFrame implements JaikanRetriever{
             @Override
             public void actionPerformed(ActionEvent e) {
                 parent.setTitleStatus("Watching", title);
+                parent.dataBaseManager.insertInAiring(title);
                 insertFrame.dispose();
                 parent.refresh();
             }
