@@ -143,9 +143,9 @@ public class JikanTopRequest {
                     e.printStackTrace();
                     imageLabel.setText("Image failed to load");
                 }
-                JPanel animeTitlePanel = new JPanel(new FlowLayout());
-                animeTitlePanel.add(new JLabel(title));
-                animeTitlePanel.add(imageLabel);
+                JPanel animeTitlePanel = new JPanel(new BorderLayout());
+                animeTitlePanel.add(new JLabel(title),BorderLayout.PAGE_START);
+                animeTitlePanel.add(imageLabel,BorderLayout.LINE_START);
                 animeTitlePanel.addMouseListener(new MouseListener() {
                     @Override
                     public void mouseClicked(MouseEvent e) {
@@ -220,10 +220,9 @@ public class JikanTopRequest {
                     e.printStackTrace();
                     imageLabel.setText("Image failed to load");
                 }
-                JPanel animeTitlePanel = new JPanel(new FlowLayout());
-                animeTitlePanel.add(new JLabel(title));
-                animeTitlePanel.add(new JLabel("Was recommended by " + amountOfRecommenders + " people"));
-                animeTitlePanel.add(imageLabel);
+                JPanel animeTitlePanel = new JPanel(new BorderLayout());
+                animeTitlePanel.add(new JLabel(title + " was recommended by " + amountOfRecommenders + " people"),BorderLayout.PAGE_START);
+                animeTitlePanel.add(imageLabel,BorderLayout.LINE_START);
                 animeTitlePanel.addMouseListener(new MouseListener() {
                     @Override
                     public void mouseClicked(MouseEvent e) {
