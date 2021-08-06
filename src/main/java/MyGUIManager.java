@@ -1,5 +1,6 @@
 import com.mysql.cj.protocol.a.NativeConstants;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -15,7 +16,7 @@ import java.util.Locale;
 public class MyGUIManager {
 
     public DataBaseManager dataBaseManager = new DataBaseManager();
-    private int selectedMainFrame; //0=alpahbetical, 1 = priority, 2 = status
+    private int selectedMainFrame; //0=alpahbetical, 1 = priority, 2 = status 3 = favorite
     JFrame mainFrame;
     String userTargetString;
     public MyGUIManager(){
@@ -112,6 +113,14 @@ public class MyGUIManager {
             }
         });
         loadAiringPanel.add(loadAiringButton);
+        JButton loadFavoriteButton = new JButton("Load favorite anime");
+        loadFavoriteButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                showAllTitlesFavorite(mainFrame);
+            }
+        });
+        loadAiringPanel.add(loadFavoriteButton);
 
         JPanel loadStatsPanel = new JPanel();
         JButton loadStatsButton = new JButton("Load stats");
@@ -368,16 +377,41 @@ public class MyGUIManager {
         buttonPanel.add(returnButton, BorderLayout.EAST);
         mainPanel.add(buttonPanel);
         //add all the buttons for the different anime
+        ImageIcon star1 = null;
+        ImageIcon star2 = null;
+        ImageIcon star3 = null;
+        int iconSize = 20;
+        try{
+            star1 = new ImageIcon(ImageIO.read(getClass().getResource("images/1 star.png")).getScaledInstance(iconSize*2,iconSize,0));
+            star2 = new ImageIcon(ImageIO.read(getClass().getResource("images/2 star.png")).getScaledInstance(iconSize*2,iconSize,0));
+            star3 = new ImageIcon(ImageIO.read(getClass().getResource("images/3 star.png")).getScaledInstance(iconSize*2,iconSize,0));
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            MyLogger.log(e.getMessage());
+        }
         for(AnimeTitle anime: animeList){
             JButton b = new JButton(anime.getTitle());
             b.setBackground(getButtonColor(anime));
             b.setFont(getFont(anime));
+            switch (anime.getFavorite()){
+                case 1:
+                    b.setIcon(star1);
+                    break;
+                case 2:
+                    b.setIcon(star2);
+                    break;
+                case 3:
+                    b.setIcon(star3);
+                    break;
+            }
             b.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     animeWasClicked(b.getText());
                 }
             });
+            b.setHorizontalTextPosition(SwingConstants.LEFT);
 
             panel.add(b);
 
@@ -486,6 +520,11 @@ public class MyGUIManager {
         dataBaseManager.changePriority(priority,animeName);
     }
 
+    public void showAllTitlesFavorite(JFrame frame){
+        listToButtons(frame,dataBaseManager.getFromDB("Select * from Anime order by favorite desc"));
+        selectedMainFrame = 3;
+
+    }
 
     public void refresh(){
         switch (selectedMainFrame)
@@ -498,6 +537,9 @@ public class MyGUIManager {
                 break;
             case 2:
                 showAllTitlesStatus(mainFrame);
+                break;
+            case 3:
+                showAllTitlesFavorite(mainFrame);
                 break;
         }
     }

@@ -30,6 +30,10 @@ public class AnimeFrame implements JaikanRetriever{
     private int currentPriority;
     private String status;
     private AnimeTitle animeTitleObject;
+    ImageIcon star1 = null;
+    ImageIcon star2 = null;
+    ImageIcon star3 = null;
+    ImageIcon star0 = null;
 
     public AnimeFrame(String animeTitleString, MyGUIManager parent){
         this.parent = parent;
@@ -113,6 +117,60 @@ public class AnimeFrame implements JaikanRetriever{
 
         JPanel titleLabelPannel = new JPanel(new BorderLayout());
         titleLabel = new JLabel(animeTitleString, SwingUtilities.CENTER);
+        JButton starsButton = new JButton();
+        int iconSize = 25;
+        try{
+            star1 = new ImageIcon(ImageIO.read(getClass().getResource("images/1 star.png")).getScaledInstance(iconSize*2,iconSize,0));
+            star2 = new ImageIcon(ImageIO.read(getClass().getResource("images/2 star.png")).getScaledInstance(iconSize*2,iconSize,0));
+            star3 = new ImageIcon(ImageIO.read(getClass().getResource("images/3 star.png")).getScaledInstance(iconSize*2,iconSize,0));
+            star0 = new ImageIcon(ImageIO.read(getClass().getResource("images/0 star.png")).getScaledInstance(iconSize*2,iconSize,0));
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            MyLogger.log(e.getMessage());
+        }
+        switch (animeTitleObject.getFavorite()){
+            case 0:
+                starsButton.setIcon(star0);
+                break;
+            case 1:
+                starsButton.setIcon(star1);
+                break;
+            case 2:
+                starsButton.setIcon(star2);
+                break;
+            case 3:
+                starsButton.setIcon(star3);
+                break;
+        }
+        starsButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                switch (animeTitleObject.getFavorite()){
+                    case 0:
+                        parent.dataBaseManager.updateFavorite(animeTitleObject.getTitle(),1);
+                        starsButton.setIcon(star1);
+                        animeTitleObject.setFavorite(1);
+                        break;
+                    case 1:
+                        parent.dataBaseManager.updateFavorite(animeTitleObject.getTitle(),2);
+                        starsButton.setIcon(star2);
+                        animeTitleObject.setFavorite(2);
+                        break;
+                    case 2:
+                        parent.dataBaseManager.updateFavorite(animeTitleObject.getTitle(),3);
+                        starsButton.setIcon(star3);
+                        animeTitleObject.setFavorite(3);
+                        break;
+                    case 3:
+                        parent.dataBaseManager.updateFavorite(animeTitleObject.getTitle(),0);
+                        starsButton.setIcon(star0);
+                        animeTitleObject.setFavorite(0);
+                        break;
+                }
+                parent.refresh();
+            }
+        });
         JButton copyButton = new JButton();
         try {
             Image img = ImageIO.read(getClass().getResource("images/copy icon.png"));
@@ -148,7 +206,10 @@ public class AnimeFrame implements JaikanRetriever{
                 animeSearcher.loadBrowser();
             }
         });
-        titleLabelPannel.add(titleLabel,BorderLayout.CENTER);
+        JPanel titleAndStarsPanel = new JPanel(new FlowLayout());
+        titleAndStarsPanel.add(titleLabel);
+        titleAndStarsPanel.add(starsButton);
+        titleLabelPannel.add(titleAndStarsPanel,BorderLayout.CENTER);
         titleLabelPannel.add(copyButton,BorderLayout.EAST);
         titleLabelPannel.add(malButton,BorderLayout.WEST);
         titlePanel.add(titleLabelPannel);

@@ -4,6 +4,16 @@ public class AnimeTitle {
     private String status;
     private int priority;
     private boolean released = true;
+    private int favorite;
+
+    public AnimeTitle(String title, int malID, String status, int priority, boolean released, int favorite) {
+        this.title = title;
+        this.malID = malID;
+        this.status = status;
+        this.priority = priority;
+        this.released = released;
+        this.favorite = favorite;
+    }
 
     public AnimeTitle(String title, String status, int priority) {
         this.title = title;
@@ -54,6 +64,14 @@ public class AnimeTitle {
         this.title = title;
         this.malID = malID;
         this.status = status;
+    }
+
+    public int getFavorite() {
+        return favorite;
+    }
+
+    public void setFavorite(int favorite) {
+        this.favorite = favorite;
     }
 
     public int getMalID() {

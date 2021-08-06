@@ -107,6 +107,26 @@ public class DataBaseManager {
             return null;
         }
     }
+    public void updateFavorite(String title,int favorite){
+        Connection conn = null;
+        try {
+            Class.forName("org.sqlite.JDBC");
+            conn = DriverManager.getConnection("jdbc:sqlite:" + "Anime BookmarkList.db");
+
+            String querry = "Update Anime set Favorite = " + favorite + " where title = \"" + title + "\"";
+            PreparedStatement preparedStatement = conn.prepareStatement(querry);
+            preparedStatement.execute();
+            MyLogger.log(preparedStatement.toString());
+            System.out.println(preparedStatement.toString());
+
+            conn.close();
+
+        }
+        catch (Exception e) {
+            new ErrorMessage(e.getMessage());
+            e.printStackTrace();
+        }
+    }
     public void insertInDangerZone(String title){
         Connection conn = null;
         try {
@@ -369,7 +389,8 @@ public class DataBaseManager {
                 int released = rs.getInt(4);
                 boolean releasedBool = (released == 1);
                 int malID = rs.getInt(5);
-                animes.add(new AnimeTitle(title,malID,status,priority,releasedBool));
+                int favorite = rs.getInt(6);
+                animes.add(new AnimeTitle(title,malID,status,priority,releasedBool,favorite));
             }
             rs.close();
             stat.close();
