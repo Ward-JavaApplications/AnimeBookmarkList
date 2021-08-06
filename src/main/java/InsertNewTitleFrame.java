@@ -26,7 +26,7 @@ public class InsertNewTitleFrame {
     private JFrame loadFrame() {
         JFrame insertFrame = new JFrame("Insert new anime");
         insertFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        insertFrame.setSize(300, 200);
+        insertFrame.setSize(300, 300);
         insertFrame.setLocationRelativeTo(null);
         insertFrame.setVisible(true);
         return insertFrame;
@@ -46,6 +46,38 @@ public class InsertNewTitleFrame {
             }
         });
         menu.add(customTitleButton);
+        JButton fromidButton = new JButton("Insert from id");
+        fromidButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String input = JOptionPane.showInputDialog("Type the id or the link to myanimelist.net in the box below.");
+                try{
+                    int id = Integer.parseInt(input);
+                    new NewAnimeFrame(id,parent);
+                }
+                catch (NumberFormatException numberFormatException){
+                    //mss als link ingegeven
+                    //example link https://myanimelist.net/anime/205/Samurai_Champloo
+                    if(input.length()>=30) {
+                        String linkID = input.substring(30);
+                        String idString = getIDfromString(linkID);
+                        try {
+                            int id2 = Integer.parseInt(idString);
+                            new NewAnimeFrame(id2, parent);
+                        } catch (Exception exception) {
+                            new ErrorMessage("Couldn't load anime from the given id");
+                            exception.printStackTrace();
+                            MyLogger.log(exception.getMessage());
+                        }
+                    }
+                    else{
+                        new ErrorMessage("Couldn't load anime from the given id");
+                    }
+
+                }
+            }
+        });
+        menu.add(fromidButton);
         JButton loadFromUpcoming = new JButton("From upcoming anime");
         loadFromUpcoming.addActionListener(new ActionListener() {
             @Override
@@ -93,6 +125,16 @@ public class InsertNewTitleFrame {
         });
         menu.add(loadByAiringButton);
         return menu;
+    }
+
+    private String getIDfromString(String linkID) {
+        //search till /
+        StringBuilder builder = new StringBuilder();
+        for(Character character:linkID.toCharArray()){
+            if(character == '/') return builder.toString();
+            builder.append(character);
+        }
+        return null;
     }
 
 }

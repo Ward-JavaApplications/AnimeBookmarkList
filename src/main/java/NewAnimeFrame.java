@@ -34,6 +34,14 @@ public class NewAnimeFrame{
         startSyncImageSearch();
 
     }
+    public NewAnimeFrame(int id, MyGUIManager parent){
+        this.parent = parent;
+        this.animeFrameParent = this;
+        this.id = id;
+        loadFrame();
+        startSyncImageSearch();
+
+    }
     private void startSyncImageSearch(){
         Anime anime =  new JaikanSearch().getByIdSync(id);
         defaultPanel(anime);
@@ -68,7 +76,7 @@ public class NewAnimeFrame{
         JPanel statusPanel = new JPanel(new FlowLayout());
 
         JPanel titleLabelPannel = new JPanel(new BorderLayout());
-        titleLabel = new JLabel(title, SwingUtilities.CENTER);
+        titleLabel = new JLabel(anime.getTitle(), SwingUtilities.CENTER);
         JButton copyButton = new JButton();
         try {
             Image img = ImageIO.read(getClass().getResource("images/copy icon.png"));
