@@ -15,6 +15,7 @@ import java.awt.image.BufferedImage;
 import java.net.URI;
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 public class AnimeFrame implements JaikanRetriever{
@@ -542,6 +543,7 @@ public class AnimeFrame implements JaikanRetriever{
                     MyLogger.log("This was short enough therefore we will display");
                     System.out.println("This was short enough therefore we will display");
                     if(anime.isAiring()&&!parent.dataBaseManager.airingIsPresent(anime.getTitle())) parent.dataBaseManager.insertInAiring(anime.getTitle());
+                    scrapeForExtras(anime);
                     return;
 
                 }
@@ -554,6 +556,42 @@ public class AnimeFrame implements JaikanRetriever{
             e.printStackTrace();
             new ErrorMessage(e.getMessage());
         }
+    }
+
+    private void scrapeForExtras(Anime anime){
+        System.out.println("Scraping");
+        MyMalScraperAnime scraperAnime = new MyMalScraperAnime(anime);
+        ArrayList<MyMalScraperAnime.RelatedAnimeContainer> additionalMaterial = scraperAnime.getRelatedAnime();
+        JPanel additionalPanel = new JPanel(new SpringLayout());
+        additionalPanel.setLayout(new BoxLayout(additionalPanel,BoxLayout.Y_AXIS));
+        String type = "";
+        JPanel titlePanel = new JPanel(new SpringLayout());
+        titlePanel.setLayout(new BoxLayout(titlePanel,BoxLayout.Y_AXIS));
+        for(MyMalScraperAnime.RelatedAnimeContainer animeContainer:additionalMaterial){
+            if(!type.equals(animeContainer.getType())){
+                type = animeContainer.getType();
+                additionalPanel.add(titlePanel);
+                titlePanel = new JPanel(new SpringLayout());
+                titlePanel.setLayout(new BoxLayout(titlePanel,BoxLayout.Y_AXIS));
+                JLabel typeLabel = new JLabel(type);
+                typeLabel.setFont(typeLabel.getFont().deriveFont(20f));
+                titlePanel.add(typeLabel);
+            }
+            JButton relativeAnimeButton = new JButton();
+            relativeAnimeButton.setText(animeContainer.getName());
+            relativeAnimeButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    AnimeSearcher animeSearcher = new AnimeSearcher();
+                    animeSearcher.setUrl(animeContainer.getUrl());
+                    animeSearcher.loadBrowser();
+                }
+            });
+            titlePanel.add(relativeAnimeButton);
+        }
+        additionalPanel.add(titlePanel);
+        insertFrame.setContentPane(additionalPanel);
+        SwingUtilities.updateComponentTreeUI(insertFrame);
     }
 
     private void changeNameIfNecessary(Anime anime) {
