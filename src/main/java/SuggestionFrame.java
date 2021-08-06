@@ -58,7 +58,7 @@ public class SuggestionFrame extends JPanel {
             animePanel.addMouseListener(new MouseListener() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
-                    saveAnime(new AnimeTitle(anime.getTitle(),animeTitle.getStatus(),animeTitle.getPriority()));
+                    saveAnime(new AnimeTitle(anime.getTitle(),animeTitle.getStatus(),animeTitle.getPriority()),anime);
                     frameToDispose.dispose();
                     //refresh();
                 }
@@ -91,8 +91,9 @@ public class SuggestionFrame extends JPanel {
 
 
     }
-    public void saveAnime(AnimeTitle animeTitle) {
+    public void saveAnime(AnimeTitle animeTitle,Anime anime) {
         parent.insertNewAnimeInDB(animeTitle);
+        new MyCacheManager(parent).pushToCache(anime,null);
     }
     public void disposeFrame(){
         mainFrame.dispose();

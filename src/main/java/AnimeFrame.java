@@ -427,9 +427,13 @@ public class AnimeFrame implements JaikanRetriever{
                         public void actionPerformed(ActionEvent e) {
                             new SuggestionFrame(parent, new AnimeTitle(animeTitleString, status, currentPriority)){
                                 @Override
-                                public void saveAnime(AnimeTitle animeTitle) {
+                                public void saveAnime(AnimeTitle animeTitle,Anime anime) {
                                     new MyCacheManager(parent).pushToCache(anime,image);
-                                    parent.dataBaseManager.changeAnimeTitle(animeTitleString,anime.getTitle());
+                                    parent.dataBaseManager.putMalID(animeTitleString,anime.getId());
+                                    if(!animeTitleString.equals(anime.getTitle())) {
+                                        int i = JOptionPane.showConfirmDialog(null, "Would you like to change the name " + animeTitleString + " to " + anime.getTitle() + " as well?", "Confirm anime", JOptionPane.YES_NO_OPTION);
+                                        if (i == 0) parent.dataBaseManager.changeAnimeTitle(animeTitleString, anime.getTitle());
+                                    }
                                     disposeFrame();
                                 }
                             };
