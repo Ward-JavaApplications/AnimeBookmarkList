@@ -414,10 +414,7 @@ public class AnimeFrame implements JaikanRetriever{
                             parent.dataBaseManager.putMalID(animeTitleString,anime.getId());
                             cachePanel.removeAll();
                             SwingUtilities.updateComponentTreeUI(imagePanel);
-                            if(!animeTitleString.equals(anime.getTitle())) {
-                                int i = JOptionPane.showConfirmDialog(null, "Would you like to change the name " + animeTitleString + " to " + anime.getTitle() + " as well?", "Confirm anime", JOptionPane.YES_NO_OPTION);
-                                if (i == 0) parent.dataBaseManager.changeAnimeTitle(animeTitleString, anime.getTitle());
-                            }
+                            changeNameIfNecessary(anime);
                             parent.refresh();
                         }
                     });
@@ -430,21 +427,44 @@ public class AnimeFrame implements JaikanRetriever{
                                 public void saveAnime(AnimeTitle animeTitle,Anime anime) {
                                     new MyCacheManager(parent).pushToCache(anime,image);
                                     parent.dataBaseManager.putMalID(animeTitleString,anime.getId());
-                                    if(!animeTitleString.equals(anime.getTitle())) {
-                                        int i = JOptionPane.showConfirmDialog(null, "Would you like to change the name " + animeTitleString + " to " + anime.getTitle() + " as well?", "Confirm anime", JOptionPane.YES_NO_OPTION);
-                                        if (i == 0) parent.dataBaseManager.changeAnimeTitle(animeTitleString, anime.getTitle());
-                                    }
+                                    changeNameIfNecessary(anime);
                                     disposeFrame();
+
                                 }
                             };
                             cachePanel.removeAll();
                             SwingUtilities.updateComponentTreeUI(imagePanel);
                             parent.refresh();
+
                         }
                     });
                     cachePanel.add(cacheTitleLabel);
                     cachePanel.add(yesButton);
                     cachePanel.add(noButton);
+                    imagePanel.add(cachePanel);
+                }
+                else{
+                    JPanel cachePanel = new JPanel(new SpringLayout());
+                    cachePanel.setLayout(new BoxLayout(cachePanel,BoxLayout.Y_AXIS));
+                    JButton wrongAnime = new JButton("Change bound anime");
+                wrongAnime.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        new SuggestionFrame(parent, new AnimeTitle(animeTitleString, status, currentPriority)){
+                            @Override
+                            public void saveAnime(AnimeTitle animeTitle,Anime anime) {
+                                new MyCacheManager(parent).pushToCache(anime,image);
+                                parent.dataBaseManager.putMalID(animeTitleString,anime.getId());
+                                changeNameIfNecessary(anime);
+                                disposeFrame();
+                            }
+                        };
+                        cachePanel.removeAll();
+                        SwingUtilities.updateComponentTreeUI(imagePanel);
+                        parent.refresh();
+                    }
+                });
+                    cachePanel.add(wrongAnime);
                     imagePanel.add(cachePanel);
                 }
 
@@ -473,6 +493,28 @@ public class AnimeFrame implements JaikanRetriever{
             e.printStackTrace();
             new ErrorMessage(e.getMessage());
         }
+    }
+
+    private void changeNameIfNecessary(Anime anime) {
+        if(!animeTitleString.equals(anime.getTitle())) {
+            int i = JOptionPane.showConfirmDialog(null, "Would you like to change the name " + animeTitleString + " to " + anime.getTitle() + " as well?", "Confirm anime", JOptionPane.YES_NO_OPTION);
+            if (i == 0) {
+                parent.dataBaseManager.changeAnimeTitle(animeTitleString, anime.getTitle());
+                reloadAnimeFrame(anime.getTitle());
+                parent.refresh();
+            }
+        }
+    }
+
+    private void reloadAnimeFrame(){
+        insertFrame.dispose();
+        new AnimeFrame(animeTitleString,parent);
+        parent.refresh();
+    }
+    private void reloadAnimeFrame(String newtitle){
+        insertFrame.dispose();
+        new AnimeFrame(newtitle,parent);
+        parent.refresh();
     }
 
 }
