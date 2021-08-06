@@ -58,7 +58,7 @@ public class SuggestionFrame extends JPanel {
             animePanel.addMouseListener(new MouseListener() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
-                    saveAnime(new AnimeTitle(anime.getTitle(),animeTitle.getStatus(),animeTitle.getPriority()),anime);
+                    saveAnime(new AnimeTitle(anime.getTitle(),anime.getId(),animeTitle.getStatus(),animeTitle.getPriority()),anime);
                     frameToDispose.dispose();
                     //refresh();
                 }

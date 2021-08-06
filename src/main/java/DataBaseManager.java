@@ -256,7 +256,7 @@ public class DataBaseManager {
             Class.forName("org.sqlite.JDBC");
             conn = DriverManager.getConnection("jdbc:sqlite:" + "Anime BookmarkList.db");
 
-            String querry = "insert into Anime (Title,Status,priority,released)" + " values (?,?,?,?)";
+            String querry = "insert into Anime (Title,Status,priority,released,mal_id)" + " values (?,?,?,?,?)";
             PreparedStatement preparedStatement = conn.prepareStatement(querry);
             preparedStatement.setString(1,animeTitle.getTitle());
             preparedStatement.setString(2,animeTitle.getStatus());
@@ -264,6 +264,7 @@ public class DataBaseManager {
             int i = 1;
             if(!animeTitle.isReleased()) i = 0;
             preparedStatement.setInt(4,i);
+            preparedStatement.setInt(5,animeTitle.getMalID());
             preparedStatement.execute();
             MyLogger.log(preparedStatement.toString());
             System.out.println(preparedStatement.toString());
