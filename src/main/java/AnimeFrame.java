@@ -503,7 +503,9 @@ public class AnimeFrame implements JaikanRetriever{
                 reloadAnimeFrame(anime.getTitle());
                 parent.refresh();
             }
+            else reloadAnimeFrame();
         }
+
     }
 
     private void reloadAnimeFrame(){
