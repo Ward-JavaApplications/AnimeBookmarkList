@@ -170,6 +170,7 @@ public class NewAnimeFrame{
                         else parent.dataBaseManager.insertInUnreleased(title, 0L);
                     }
                     new MyCacheManager(parent).pushToCache(anime,image);
+                    parent.dataBaseManager.putMalID(anime.getTitle(),anime.getId());
                     insertFrame.dispose();
                 }
                 catch (NumberFormatException numberFormatException)
