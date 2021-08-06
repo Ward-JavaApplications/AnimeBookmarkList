@@ -9,6 +9,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class DataBaseManager {
     public DataBaseManager(){
@@ -492,12 +493,12 @@ public class DataBaseManager {
     public void changeAnimeTitle(String oldTitle,String newTitle){
         try{
             Class.forName("org.sqlite.JDBC");
-            String querry = "update Anime set Title = \""+newTitle+"\" where Title = \""+oldTitle+"\"";
-            MyLogger.log(querry);
-            System.out.println(querry);
+            String[] querry = new String[]{ "update Anime set Title = \""+newTitle+"\" where Title = \""+oldTitle+"\"","update Unreleased set Title = \""+newTitle+"\" where Title = \""+oldTitle+"\"","update Airing set Title = \""+newTitle+"\" where Title = \""+oldTitle+"\""};
             Connection conn = DriverManager.getConnection("jdbc:sqlite:" + "Anime BookmarkList.db");
-            Statement stat = conn.createStatement();
-            stat.executeUpdate(querry);
+            for(String s: querry){
+                Statement stat = conn.createStatement();
+                stat.executeUpdate(s);
+            }
             conn.close();
         }
         catch (Exception e){
