@@ -1,6 +1,3 @@
-import pw.mihou.jaikan.models.Anime;
-import pw.mihou.jaikan.models.Dates;
-
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
@@ -15,10 +12,9 @@ import java.awt.image.BufferedImage;
 import java.net.URI;
 import java.net.URL;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 
-public class AnimeFrame implements JaikanRetriever{
+public class AnimeFrame implements JikanRetriever {
     private JFrame insertFrame;
     private String animeTitleString;
     private MyGUIManager parent;
@@ -82,7 +78,7 @@ public class AnimeFrame implements JaikanRetriever{
 
     private void startAsyncImageSearch(){
         MyCacheManager cacheManager = new MyCacheManager(parent);
-        Anime cachedAnime = cacheManager.getFromCache(animeTitleObject.getMalID());
+        JikanAnime cachedAnime = cacheManager.getFromCache(animeTitleObject.getMalID());
         if(cachedAnime != null){
             wasCached = true;
             retrieveAnime(cachedAnime);
@@ -90,7 +86,7 @@ public class AnimeFrame implements JaikanRetriever{
         }
         else {
             wasCached = false;
-            new JaikanSearch(animeTitleString, this);
+            new JikanSearch().getJikanAnimeAsync(animeTitleString,this);
         }
     }
 
@@ -366,7 +362,7 @@ public class AnimeFrame implements JaikanRetriever{
     }
 
     @Override
-    public void retrieveAnime(Anime anime) {
+    public void retrieveAnime(JikanAnime anime) {
         try {
 
             String animeURL = anime.getImage();
@@ -411,7 +407,7 @@ public class AnimeFrame implements JaikanRetriever{
                 JLabel genres = new JLabel("The genres are: " + allGenres.toString());
                 JLabel episodeNumber = new JLabel("Amount of episodes: " + anime.getEpisodes());
                 JLabel duration = new JLabel("Anime duration: " + anime.getDuration());
-                Dates airDates = anime.getAired();
+                JikanDates airDates = anime.getAired();
                 Date firstDate = airDates.getFrom();
                 Date lastDate = airDates.getTo();
                 SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
@@ -486,7 +482,7 @@ public class AnimeFrame implements JaikanRetriever{
                         public void actionPerformed(ActionEvent e) {
                             new SuggestionFrame(parent, new AnimeTitle(animeTitleString, status, currentPriority)){
                                 @Override
-                                public void saveAnime(AnimeTitle animeTitle,Anime anime) {
+                                public void saveAnime(AnimeTitle animeTitle,JikanAnime anime) {
                                     new MyCacheManager(parent).pushToCache(anime,image);
                                     parent.dataBaseManager.putMalID(animeTitleString,anime.getId());
                                     changeNameIfNecessary(anime);
@@ -514,7 +510,7 @@ public class AnimeFrame implements JaikanRetriever{
                     public void actionPerformed(ActionEvent e) {
                         new SuggestionFrame(parent, new AnimeTitle(animeTitleString, status, currentPriority)){
                             @Override
-                            public void saveAnime(AnimeTitle animeTitle,Anime anime) {
+                            public void saveAnime(AnimeTitle animeTitle,JikanAnime anime) {
                                 new MyCacheManager(parent).pushToCache(anime,image);
                                 parent.dataBaseManager.putMalID(animeTitleString,anime.getId());
                                 changeNameIfNecessary(anime);
@@ -543,7 +539,7 @@ public class AnimeFrame implements JaikanRetriever{
                     MyLogger.log("This was short enough therefore we will display");
                     System.out.println("This was short enough therefore we will display");
                     if(anime.isAiring()&&!parent.dataBaseManager.airingIsPresent(anime.getTitle())) parent.dataBaseManager.insertInAiring(anime.getTitle());
-                    scrapeForExtras(anime);
+                    //scrapeForExtras(anime);
                     return;
 
                 }
@@ -558,43 +554,43 @@ public class AnimeFrame implements JaikanRetriever{
         }
     }
 
-    private void scrapeForExtras(Anime anime){
-        System.out.println("Scraping");
-        MyMalScraperAnime scraperAnime = new MyMalScraperAnime(anime);
-        ArrayList<MyMalScraperAnime.RelatedAnimeContainer> additionalMaterial = scraperAnime.getRelatedAnime();
-        JPanel additionalPanel = new JPanel(new SpringLayout());
-        additionalPanel.setLayout(new BoxLayout(additionalPanel,BoxLayout.Y_AXIS));
-        String type = "";
-        JPanel titlePanel = new JPanel(new SpringLayout());
-        titlePanel.setLayout(new BoxLayout(titlePanel,BoxLayout.Y_AXIS));
-        for(MyMalScraperAnime.RelatedAnimeContainer animeContainer:additionalMaterial){
-            if(!type.equals(animeContainer.getType())){
-                type = animeContainer.getType();
-                additionalPanel.add(titlePanel);
-                titlePanel = new JPanel(new SpringLayout());
-                titlePanel.setLayout(new BoxLayout(titlePanel,BoxLayout.Y_AXIS));
-                JLabel typeLabel = new JLabel(type);
-                typeLabel.setFont(typeLabel.getFont().deriveFont(20f));
-                titlePanel.add(typeLabel);
-            }
-            JButton relativeAnimeButton = new JButton();
-            relativeAnimeButton.setText(animeContainer.getName());
-            relativeAnimeButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    AnimeSearcher animeSearcher = new AnimeSearcher();
-                    animeSearcher.setUrl(animeContainer.getUrl());
-                    animeSearcher.loadBrowser();
-                }
-            });
-            titlePanel.add(relativeAnimeButton);
-        }
-        additionalPanel.add(titlePanel);
-        insertFrame.setContentPane(additionalPanel);
-        SwingUtilities.updateComponentTreeUI(insertFrame);
-    }
+//    private void scrapeForExtras(JikanAnime anime){
+//        System.out.println("Scraping");
+//        MyMalScraperAnime scraperAnime = new MyMalScraperAnime(anime);
+//        ArrayList<MyMalScraperAnime.RelatedAnimeContainer> additionalMaterial = scraperAnime.getRelatedAnime();
+//        JPanel additionalPanel = new JPanel(new SpringLayout());
+//        additionalPanel.setLayout(new BoxLayout(additionalPanel,BoxLayout.Y_AXIS));
+//        String type = "";
+//        JPanel titlePanel = new JPanel(new SpringLayout());
+//        titlePanel.setLayout(new BoxLayout(titlePanel,BoxLayout.Y_AXIS));
+//        for(MyMalScraperAnime.RelatedAnimeContainer animeContainer:additionalMaterial){
+//            if(!type.equals(animeContainer.getType())){
+//                type = animeContainer.getType();
+//                additionalPanel.add(titlePanel);
+//                titlePanel = new JPanel(new SpringLayout());
+//                titlePanel.setLayout(new BoxLayout(titlePanel,BoxLayout.Y_AXIS));
+//                JLabel typeLabel = new JLabel(type);
+//                typeLabel.setFont(typeLabel.getFont().deriveFont(20f));
+//                titlePanel.add(typeLabel);
+//            }
+//            JButton relativeAnimeButton = new JButton();
+//            relativeAnimeButton.setText(animeContainer.getName());
+//            relativeAnimeButton.addActionListener(new ActionListener() {
+//                @Override
+//                public void actionPerformed(ActionEvent e) {
+//                    AnimeSearcher animeSearcher = new AnimeSearcher();
+//                    animeSearcher.setUrl(animeContainer.getUrl());
+//                    animeSearcher.loadBrowser();
+//                }
+//            });
+//            titlePanel.add(relativeAnimeButton);
+//        }
+//        additionalPanel.add(titlePanel);
+//        insertFrame.setContentPane(additionalPanel);
+//        SwingUtilities.updateComponentTreeUI(insertFrame);
+//    }
 
-    private void changeNameIfNecessary(Anime anime) {
+    private void changeNameIfNecessary(JikanAnime anime) {
         if(!animeTitleString.equals(anime.getTitle())) {
             int i = JOptionPane.showConfirmDialog(null, "Would you like to change the name " + animeTitleString + " to " + anime.getTitle() + " as well?", "Confirm anime", JOptionPane.YES_NO_OPTION);
             if (i == 0) {

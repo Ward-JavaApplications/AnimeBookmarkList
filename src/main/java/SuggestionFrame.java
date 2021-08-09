@@ -40,8 +40,8 @@ public class SuggestionFrame extends JPanel {
         titleLabel.setFont(titleLabel.getFont().deriveFont(25f));
         titlePanel.add(titleLabel);
         mainPanel.add(titlePanel);
-        ArrayList<Anime> suggestions = new JaikanSearch().getSuggestions(animeTitle.getTitle());
-        for(Anime anime: suggestions){
+        ArrayList<JikanBasicAnimeInfo> suggestions = new JikanSearch().getSuggestions(animeTitle.getTitle());
+        for(JikanBasicAnimeInfo anime: suggestions){
             JPanel animePanel = new JPanel(new SpringLayout());
             animePanel.setLayout(new BoxLayout(animePanel,BoxLayout.Y_AXIS));
             animePanel.add(new JLabel(anime.getTitle()), BorderLayout.PAGE_START);
@@ -58,7 +58,8 @@ public class SuggestionFrame extends JPanel {
             animePanel.addMouseListener(new MouseListener() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
-                    saveAnime(new AnimeTitle(anime.getTitle(),anime.getId(),animeTitle.getStatus(),animeTitle.getPriority()),anime);
+                    saveAnime(new AnimeTitle(anime.getTitle(),anime.getId(),animeTitle.getStatus(),animeTitle.getPriority()),
+                            new JikanSearch().getJikanAnime(anime.getId()));
                     frameToDispose.dispose();
                     //refresh();
                 }
@@ -91,7 +92,7 @@ public class SuggestionFrame extends JPanel {
 
 
     }
-    public void saveAnime(AnimeTitle animeTitle,Anime anime) {
+    public void saveAnime(AnimeTitle animeTitle,JikanAnime anime) {
         parent.insertNewAnimeInDB(animeTitle);
         new MyCacheManager(parent).pushToCache(anime,null);
     }

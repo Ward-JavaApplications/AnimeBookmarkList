@@ -1,6 +1,5 @@
 import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
-import org.json.JSONArray;
 
 
 import java.util.ArrayList;
@@ -18,6 +17,7 @@ public class JikanAnime {
     private String japaneseTitle = "";
     @SerializedName("title_english")
     private String englishTitle = "";
+    private String animeTitle;
     @SerializedName("title_synonyms")
     private List<JikanNameable> titleSynonyms;
     private String status = "";
@@ -171,5 +171,9 @@ public class JikanAnime {
 
     public ArrayList<JikanRelated.JikanRelatedContainer> getRelated() {
         return new JikanRelated(related).getJikanRelated();
+    }
+
+    public String getTitle() {
+        return animeTitle;
     }
 }

@@ -20,7 +20,7 @@ public class MyCacheManager{
         this.parent = parent;
     }
 
-    public void pushToCache(Anime anime, BufferedImage image){
+    public void pushToCache(JikanAnime anime, BufferedImage image){
 
         if(getFromCache(anime.getId()) == null){
             Gson gson = new Gson();
@@ -41,20 +41,20 @@ public class MyCacheManager{
         }
     }
 
-    public Anime getFromCache(int id){
+    public JikanAnime getFromCache(int id){
         String gson = parent.dataBaseManager.getFromCache(id);
         if(gson == null)return null;
         if(gson.equals("")) return null;
         return jsonToAnime(gson);
     }
 
-    private Anime jsonToAnime(String gson) {
+    private JikanAnime jsonToAnime(String gson) {
         GsonBuilder gsonBuilder = new GsonBuilder();
-        Anime anime =  gsonBuilder.create().fromJson(gson,Anime.class);
+        JikanAnime anime =  gsonBuilder.create().fromJson(gson,JikanAnime.class);
         return anime;
     }
 
-    public Anime getFromCache(String name){
+    public JikanAnime getFromCache(String name){
         String gson = parent.dataBaseManager.getFromCache(name);
         if(gson == null) return null;
         if(gson.equals("")) return null;

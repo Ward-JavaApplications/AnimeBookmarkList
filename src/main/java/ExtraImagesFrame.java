@@ -14,11 +14,11 @@ import java.util.Iterator;
 public class ExtraImagesFrame {
 
 
-    public ExtraImagesFrame(Anime anime) {
+    public ExtraImagesFrame(JikanAnime anime) {
         loadImages(anime);
     }
 
-    private void loadImages(Anime anime){
+    private void loadImages(JikanAnime anime){
         JFrame imageFrame = new JFrame(anime.getTitle() + " extra images");
         imageFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         imageFrame.setSize(800,400);
