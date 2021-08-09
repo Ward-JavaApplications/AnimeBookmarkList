@@ -43,7 +43,7 @@ public class NewAnimeFrame{
 
     }
     private void startSyncImageSearch(){
-        Anime anime =  new JaikanSearch().getByIdSync(id);
+        JikanAnime anime =  new JikanSearch().getJikanAnime(id);
         defaultPanel(anime);
         retrieveAnime(anime);
         imagePanel.requestFocus();
@@ -67,7 +67,7 @@ public class NewAnimeFrame{
     }
 
 
-    private void defaultPanel(Anime anime){
+    private void defaultPanel(JikanAnime anime){
 
 
 
@@ -144,7 +144,7 @@ public class NewAnimeFrame{
 
 
     }
-    private CapsuleObject importAnimePanel(String title,Anime anime){
+    private CapsuleObject importAnimePanel(String title,JikanAnime anime){
         JPanel mainPanel = new JPanel(new FlowLayout());
         JLabel priorityLabel = new JLabel("priority:");
         priorityTextField = new JTextField();
@@ -204,7 +204,7 @@ public class NewAnimeFrame{
     }
 
 
-    public void retrieveAnime(Anime anime) {
+    public void retrieveAnime(JikanAnime anime) {
         try {
 
             String animeURL = anime.getImage();
@@ -245,7 +245,7 @@ public class NewAnimeFrame{
                 JLabel genres = new JLabel("The genres are: " + allGenres.toString());
                 JLabel episodeNumber = new JLabel("Amount of episodes: " + anime.getEpisodes());
                 JLabel duration = new JLabel("Anime duration: " + anime.getDuration());
-                Dates airDates = anime.getAired();
+                JikanDates airDates = anime.getAired();
                 Date firstDate = airDates.getFrom();
                 Date lastDate = airDates.getTo();
                 SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");

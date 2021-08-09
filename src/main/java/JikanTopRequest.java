@@ -28,7 +28,7 @@ public class JikanTopRequest {
     }
 
 
-    public void getTopRecommendations(String request, Anime anime){
+    public void getTopRecommendations(String request, JikanAnime anime){
         loadFrameAndPanel("Recommendations for " + anime.getTitle());
         String malButtonRequest = "https://myanimelist.net/anime/"+anime.getId()+"/"+anime.getTitle().replace(" ","_")+"/userrecs";
         addTitleToPanelRecommendations(request,malButtonRequest);
