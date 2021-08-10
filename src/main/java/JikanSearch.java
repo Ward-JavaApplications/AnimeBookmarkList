@@ -58,15 +58,6 @@ public class JikanSearch {
 
     private String connectAndGetJsonExact(String urlLink){
         //https://dzone.com/articles/how-to-parse-json-data-from-a-rest-api-using-simpl
-        Restarter restarter = new Restarter();
-        restarter.setBehaviour(new RestarterBehaviour() {
-            @Override
-            public void restart() {
-                connectAndGetJsonExact(urlLink);
-            }
-        });
-        Thread thread = new Thread(restarter);
-        thread.start();
         try {
             System.out.println(urlLink);
             URL url = new URL(urlLink);
@@ -112,31 +103,4 @@ public class JikanSearch {
     private String makeParsable(String targetString){
         return targetString.replace(" ","+");
     }
-
-    private class Restarter implements Runnable{
-        private RestarterBehaviour behaviour;
-
-        public void setBehaviour(RestarterBehaviour behaviour) {
-            this.behaviour = behaviour;
-        }
-        @Override
-        public void run() {
-            try {
-                Thread.sleep(8 * 1000L);
-                if(!receivedAnswer){
-                    behaviour.restart();
-                }
-            }
-            catch (InterruptedException e){
-                Thread.currentThread().interrupt();
-            }
-
-        }
-    }
-
-    private interface RestarterBehaviour{
-        void restart();
-    }
-
-
 }
