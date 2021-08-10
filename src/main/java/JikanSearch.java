@@ -78,6 +78,7 @@ public class JikanSearch {
             if(responseCode != 200){
                 //request failed
                 Scanner sc = new Scanner(url.openStream());
+                sc.useDelimiter("\\A");
                 StringBuilder json = new StringBuilder();
                 while(sc.hasNextLine()){
                     String line = sc.nextLine();
@@ -90,6 +91,7 @@ public class JikanSearch {
                 receivedAnswer = true;
 
                 Scanner sc = new Scanner(url.openStream());
+                sc.useDelimiter("\\A");
                 StringBuilder json = new StringBuilder();
                 while(sc.hasNext()){
                     json.append(sc.next());
