@@ -33,7 +33,7 @@ public class JikanAnime {
     private int members = 0;
     private int popularity = 0;
     private int favorites = 0;
-    private List<JikanNameable> genres = Collections.emptyList();
+    private List<String> genres = Collections.emptyList();
     private String premiered = "";
     private String background = "";
     private List<JikanNameable> producers = Collections.emptyList();
@@ -47,7 +47,7 @@ public class JikanAnime {
     private List<String> opening = Collections.emptyList();
     @SerializedName("ending_Themes")
     private List<String> ending = Collections.emptyList();
-    private JsonObject related;
+    private ArrayList<AnimeHTMLParser.RelatedAnimeContainer> related;
 
     public int getId() {
         return id;
@@ -105,7 +105,7 @@ public class JikanAnime {
         return favorites;
     }
 
-    public List<JikanNameable> getGenres() {
+    public List<String> getGenres() {
         return genres;
     }
 
@@ -169,11 +169,141 @@ public class JikanAnime {
         return scoredBy;
     }
 
-    public ArrayList<JikanRelated.JikanRelatedContainer> getRelated() {
-        return new JikanRelated(related).getJikanRelated();
+    public ArrayList<AnimeHTMLParser.RelatedAnimeContainer> getRelated() {
+        return related;
     }
 
     public String getTitle() {
         return animeTitle;
+    }
+
+    ///////////////////////////////////////////
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
+
+    public void setJapaneseTitle(String japaneseTitle) {
+        this.japaneseTitle = japaneseTitle;
+    }
+
+    public void setEnglishTitle(String englishTitle) {
+        this.englishTitle = englishTitle;
+    }
+
+    public void setAnimeTitle(String animeTitle) {
+        this.animeTitle = animeTitle;
+    }
+
+    public void setTitleSynonyms(List<JikanNameable> titleSynonyms) {
+        this.titleSynonyms = titleSynonyms;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public void setAiring(boolean airing) {
+        this.airing = airing;
+    }
+
+    public void setSynopsis(String synopsis) {
+        this.synopsis = synopsis;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public void setEpisodes(int episodes) {
+        this.episodes = episodes;
+    }
+
+    public void setRank(int rank) {
+        this.rank = rank;
+    }
+
+    public void setScore(double score) {
+        this.score = score;
+    }
+
+    public void setScoredBy(int scoredBy) {
+        this.scoredBy = scoredBy;
+    }
+
+    public void setAired(JikanDates aired) {
+        this.aired = aired;
+    }
+
+    public void setMembers(int members) {
+        this.members = members;
+    }
+
+    public void setPopularity(int popularity) {
+        this.popularity = popularity;
+    }
+
+    public void setFavorites(int favorites) {
+        this.favorites = favorites;
+    }
+
+    public void setGenres(List<String> genres) {
+        this.genres = genres;
+    }
+
+    public void setPremiered(String premiered) {
+        this.premiered = premiered;
+    }
+
+    public void setBackground(String background) {
+        this.background = background;
+    }
+
+    public void setProducers(List<JikanNameable> producers) {
+        this.producers = producers;
+    }
+
+    public void setLicensors(List<JikanNameable> licensors) {
+        this.licensors = licensors;
+    }
+
+    public void setStudios(List<JikanNameable> studios) {
+        this.studios = studios;
+    }
+
+    public void setRating(String rating) {
+        this.rating = rating;
+    }
+
+    public void setDuration(String duration) {
+        this.duration = duration;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
+    }
+
+    public void setBroadcast(String broadcast) {
+        this.broadcast = broadcast;
+    }
+
+    public void setOpening(List<String> opening) {
+        this.opening = opening;
+    }
+
+    public void setEnding(List<String> ending) {
+        this.ending = ending;
+    }
+
+    public void setRelated(ArrayList<AnimeHTMLParser.RelatedAnimeContainer> related) {
+        this.related = related;
     }
 }
