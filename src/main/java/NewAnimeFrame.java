@@ -44,6 +44,7 @@ public class NewAnimeFrame{
     }
     private void startSyncImageSearch(){
         JikanAnime anime =  new AnimeHTMLParser().getFromID(id);
+        title = anime.getTitle();
         defaultPanel(anime);
         retrieveAnime(anime);
         imagePanel.requestFocus();
