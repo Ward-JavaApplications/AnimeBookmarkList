@@ -16,6 +16,9 @@ public class AnimeHTMLParser {
     public JikanAnime getFromID(int id){
         return readAnimeFromURL("https://myanimelist.net/anime/"+id);
     }
+    public void getFromIDAsync(int id,JikanRetriever parent){
+        parent.retrieveAnime(getFromID(id));
+    }
 
 
     private JikanAnime readAnimeFromURL(String url){

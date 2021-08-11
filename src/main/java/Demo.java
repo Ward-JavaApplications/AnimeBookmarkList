@@ -6,9 +6,9 @@ import java.util.Scanner;
 
 public class Demo {
     public static void main(String[] args) {
-        //new MyGUIManager();
-        int id = 39247;
-        new AnimeHTMLParser().getFromID(1);
+        new MyGUIManager();
+//        int id = 39247;
+//        new AnimeHTMLParser().getFromID(1);
 
     }
 

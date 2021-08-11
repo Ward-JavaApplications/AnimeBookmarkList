@@ -165,7 +165,7 @@ public class AnimeFrame implements JikanRetriever {
                         animeTitleObject.setFavorite(0);
                         break;
                 }
-                parent.refresh();
+                refreshParent();
             }
         });
         JButton copyButton = new JButton();
@@ -220,7 +220,7 @@ public class AnimeFrame implements JikanRetriever {
                 parent.dataBaseManager.setPriorityToZero(animeTitleString);
                 parent.dataBaseManager.deleteFromAiring(animeTitleString);
                 insertFrame.dispose();
-                parent.refresh();
+                refreshParent();
             }
         });
         JButton unwatchedButton = new JButton("Unwatched");
@@ -230,7 +230,7 @@ public class AnimeFrame implements JikanRetriever {
             public void actionPerformed(ActionEvent e) {
                 parent.setTitleStatus("Unwatched", animeTitleString);
                 insertFrame.dispose();
-                parent.refresh();
+                refreshParent();
             }
         });
         JButton watchingButton = new JButton("Watching");
@@ -241,7 +241,7 @@ public class AnimeFrame implements JikanRetriever {
                 parent.setTitleStatus("Watching", animeTitleString);
                 parent.dataBaseManager.insertInAiring(animeTitleString);
                 insertFrame.dispose();
-                parent.refresh();
+                refreshParent();
             }
         });
         statusPanel.add(watchedButton);
@@ -267,7 +267,7 @@ public class AnimeFrame implements JikanRetriever {
                     if(!(priority>=0&&priority<=5)) throw new NumberRangeException(0,5);
                                         parent.changePriority(animeTitleString, priority);
                     insertFrame.dispose();
-                    parent.refresh();
+                    refreshParent();
                 }
                 catch (NumberFormatException numberFormatException)
                 {
@@ -307,7 +307,7 @@ public class AnimeFrame implements JikanRetriever {
                     case 0:
                         parent.deleteAnime(animeTitleString) ;
                         insertFrame.dispose();
-                        parent.refresh();
+                        refreshParent();
                         break;
 
                 }
@@ -336,7 +336,7 @@ public class AnimeFrame implements JikanRetriever {
                         parent.dataBaseManager.insertInDangerZone(animeTitleString);
                         parent.dataBaseManager.deleteAnimeEntry(animeTitleString);
                         insertFrame.dispose();
-                        parent.refresh();
+                        refreshParent();
                         break;
 
                 }
@@ -356,6 +356,11 @@ public class AnimeFrame implements JikanRetriever {
 
 
     }
+
+    public void refreshParent() {
+        parent.refresh();
+    }
+
     public void updateTitle(String newtitle,MyGUIManager parent){
         insertFrame.dispose();
         new AnimeFrame(newtitle,parent);
@@ -473,7 +478,7 @@ public class AnimeFrame implements JikanRetriever {
                             cachePanel.removeAll();
                             SwingUtilities.updateComponentTreeUI(imagePanel);
                             changeNameIfNecessary(anime);
-                            parent.refresh();
+                            refreshParent();
                         }
                     });
                     JButton noButton = new JButton("No");
@@ -492,7 +497,7 @@ public class AnimeFrame implements JikanRetriever {
                             };
                             cachePanel.removeAll();
                             SwingUtilities.updateComponentTreeUI(imagePanel);
-                            parent.refresh();
+                            refreshParent();
 
                         }
                     });
@@ -519,7 +524,7 @@ public class AnimeFrame implements JikanRetriever {
                         };
                         cachePanel.removeAll();
                         SwingUtilities.updateComponentTreeUI(imagePanel);
-                        parent.refresh();
+                        refreshParent();
                     }
                 });
                     cachePanel.add(wrongAnime);
@@ -596,7 +601,7 @@ public class AnimeFrame implements JikanRetriever {
             if (i == 0) {
                 parent.dataBaseManager.changeAnimeTitle(animeTitleString, anime.getTitle());
                 reloadAnimeFrame(anime.getTitle());
-                parent.refresh();
+                refreshParent();
             }
             else reloadAnimeFrame();
         }
@@ -606,12 +611,12 @@ public class AnimeFrame implements JikanRetriever {
     private void reloadAnimeFrame(){
         insertFrame.dispose();
         new AnimeFrame(animeTitleString,parent);
-        parent.refresh();
+        refreshParent();
     }
     private void reloadAnimeFrame(String newtitle){
         insertFrame.dispose();
         new AnimeFrame(newtitle,parent);
-        parent.refresh();
+        refreshParent();
     }
 
 }

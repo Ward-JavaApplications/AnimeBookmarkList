@@ -87,7 +87,7 @@ public class MyGUIManager {
         @Override
         public void actionPerformed(ActionEvent e) {
             AnimeTitle animeTitle = dataBaseManager.getRandomTitle();
-            new AnimeFrame(animeTitle.getTitle(),getParent());
+            new RandomAnimeFrame(animeTitle.getTitle(),getParent());
         }
     });
     searchRandomPanel.add(searchRandomButton);
