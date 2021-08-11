@@ -90,7 +90,7 @@ public class AnimeFrame implements JikanRetriever {
             wasCached = false;
             if (animeTitleObject.getMalID() != 0)
                 new AnimeHTMLParser().getFromIDAsync(animeTitleObject.getMalID(), this);
-            else System.out.println("Wanted to look for new one");//new JikanSearch().getJikanAnimeAsync(animeTitleString,this);
+            else new AnimeHTMLParser().getFromStringAsync(animeTitleString,this);
         }
     }
 

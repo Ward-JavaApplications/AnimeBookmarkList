@@ -19,6 +19,57 @@ public class AnimeHTMLParser {
     public void getFromIDAsync(int id,JikanRetriever parent){
         parent.retrieveAnime(getFromID(id));
     }
+    public JikanAnime getFromString(String targetTitle){
+        JikanBasicAnimeInfo jikanBasicAnimeInfo = readFromAnimeSearch("https://myanimelist.net/anime.php?cat=anime&q="+targetTitle.replace(" ","+"),1).get(0);
+        return getFromID(jikanBasicAnimeInfo.getId());
+
+    }
+    public void getFromStringAsync(String targetTitle,JikanRetriever parent){
+        parent.retrieveAnime(getFromString(targetTitle));
+    }
+
+
+    private ArrayList<JikanBasicAnimeInfo> readFromAnimeSearch(String url,int amountOfResults){
+        ArrayList<JikanBasicAnimeInfo> animeInfos = new ArrayList<>();
+        try{
+            Document document = Jsoup.connect(url).get();
+            Elements elements = document.select("div.js-categories-seasonal").select("tbody>tr");
+            //System.out.println(elements.toString());
+            //first element is a header element therefore we will skip this one
+            for(int index = 1; index <= amountOfResults;index++){
+                Element currentElement = elements.get(index).select("td>div>a").first();
+                String animeURL = currentElement.attr("href");
+                Element imageAndTitleElement = currentElement.select("img").first();
+                String animeName = imageAndTitleElement.attr("alt");
+                String imageURL = imageAndTitleElement.attr("data-src");
+                int id = extractIdFromHyper(animeURL);
+                JikanBasicAnimeInfo jikanBasicAnimeInfo = new JikanBasicAnimeInfo(id,animeName,animeURL,imageURL);
+                animeInfos.add(jikanBasicAnimeInfo);
+            }
+            return animeInfos;
+
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            MyLogger.log(e.getMessage());
+        }
+        return animeInfos;
+    }
+    private int extractIdFromHyper(String url){
+        String markel = "https://myanimelist.net/anime/";
+        url = url.substring(markel.length());
+        int id = 0;
+        for(Character character:url.toCharArray()){
+            try{
+                int i = Integer.parseInt(String.valueOf(character));
+                id = id*10+i;
+            }
+            catch (Exception ignored){
+                return id;
+            }
+        }
+        return id;
+    }
 
 
     private JikanAnime readAnimeFromURL(String url,int id){

@@ -10,6 +10,14 @@ public class JikanBasicAnimeInfo {
     private String url;
     private String image_url;
 
+
+    public JikanBasicAnimeInfo(int malId, String title, String url, String image_url) {
+        this.malId = malId;
+        this.title = title;
+        this.url = url;
+        this.image_url = image_url;
+    }
+
     public int getId() {
         return malId;
     }
@@ -28,6 +36,26 @@ public class JikanBasicAnimeInfo {
 
     public String getUrl() {
         return url;
+    }
+
+    public void setMalId(int malId) {
+        this.malId = malId;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public void setImage_url(String image_url) {
+        this.image_url = image_url;
     }
 
     public class JikanBasicAnimeInfoList{
