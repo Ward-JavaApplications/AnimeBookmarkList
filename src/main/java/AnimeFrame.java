@@ -1,3 +1,5 @@
+import org.jetbrains.annotations.NotNull;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
@@ -86,7 +88,9 @@ public class AnimeFrame implements JikanRetriever {
         }
         else {
             wasCached = false;
-            new JikanSearch().getJikanAnimeAsync(animeTitleString,this);
+            if (animeTitleObject.getMalID() != 0)
+                new AnimeHTMLParser().getFromIDAsync(animeTitleObject.getMalID(), this);
+            else System.out.println("Wanted to look for new one");//new JikanSearch().getJikanAnimeAsync(animeTitleString,this);
         }
     }
 
@@ -383,21 +387,28 @@ public class AnimeFrame implements JikanRetriever {
             final BufferedImage image = ImageIO.read(new URL(animeURL));
             JLabel imageToDraw = new JLabel(new ImageIcon(image));
 
-            JLabel title = new JLabel("The anime found is " + anime.getTitle());
+            JPanel animeTitlePanel = new JPanel(new SpringLayout());
+            animeTitlePanel.setLayout(new BoxLayout(animeTitlePanel,BoxLayout.Y_AXIS));
+            String englishTitle = anime.getEnglishTitle();
+            String japaneseTitle = anime.getJapaneseTitle();
+            for(String titleString: new String[]{englishTitle,japaneseTitle}){
+                if(titleString != null)
+                    animeTitlePanel.add(new JLabel(titleString));
+            }
 
             String synopsis = anime.getSynopsis();
             if(synopsis == null) synopsis = "No synopsis found";
 
             JTextArea description = new JTextArea();
             int safetyCounter = 50;
-            while(safetyCounter > 0){
+            while(safetyCounter > 0) {
 
-                safetyCounter --;
+                safetyCounter--;
 
                 imagePanel = new JPanel(new FlowLayout());
 
-                description  = new JTextArea();
-                description.setSize(insertFrame.getSize().width-18,100);
+                description = new JTextArea();
+                description.setSize(insertFrame.getSize().width - 18, 100);
                 // description.setName("Name found: " + anime.getTitle());
                 description.setText(synopsis);
                 description.setLineWrap(true);
@@ -405,10 +416,10 @@ public class AnimeFrame implements JikanRetriever {
 
 
                 StringBuilder allGenres = new StringBuilder();
-                for(int i = 0; i < anime.getGenres().size()-1;i++){
+                for (int i = 0; i < anime.getGenres().size() - 1; i++) {
                     allGenres.append(anime.getGenres().get(i) + ", ");
                 }
-                allGenres.append(anime.getGenres().get(anime.getGenres().size()-1));
+                allGenres.append(anime.getGenres().get(anime.getGenres().size() - 1));
                 JLabel genres = new JLabel("The genres are: " + allGenres.toString());
                 JLabel episodeNumber = new JLabel("Amount of episodes: " + anime.getEpisodes());
                 JLabel duration = new JLabel("Anime duration: " + anime.getDuration());
@@ -417,13 +428,13 @@ public class AnimeFrame implements JikanRetriever {
                 Date lastDate = airDates.getTo();
                 SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
                 JLabel airDatesLabel;
-                if(lastDate != null) {
+                if (lastDate != null) {
                     airDatesLabel = new JLabel("The anime aired from " + dateFormat.format(firstDate) + " untill " + dateFormat.format(lastDate));
-                }
-                else {
-                    if(firstDate==null) airDatesLabel = new JLabel("Unknown when the anime will start airing");
+                } else {
+                    if (firstDate == null) airDatesLabel = new JLabel("Unknown when the anime will start airing");
 
-                    else airDatesLabel = new JLabel("The anime aired from " + dateFormat.format(firstDate) + " and is still ongoing");
+                    else
+                        airDatesLabel = new JLabel("The anime aired from " + dateFormat.format(firstDate) + " and is still ongoing");
                 }
                 JLabel ratings = new JLabel("The anime got a score of " + anime.getScore() + " and ranks currently " + anime.getRank() + "th");
                 JPanel descriptionPanel = new JPanel(new SpringLayout());
@@ -435,9 +446,7 @@ public class AnimeFrame implements JikanRetriever {
                 descriptionPanel.add(ratings);
 
 
-
-
-                imagePanel.add(title);
+                imagePanel.add(animeTitlePanel);
                 imagePanel.add(description);
                 imagePanel.add(imageToDraw);
                 imagePanel.add(descriptionPanel);
@@ -448,8 +457,8 @@ public class AnimeFrame implements JikanRetriever {
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         int id = anime.getId();
-                        String request = "https://api.jikan.moe/v3/anime/"+id+"/recommendations";
-                        new JikanTopRequest(parent).getTopRecommendations(request,anime);
+                        String request = "https://api.jikan.moe/v3/anime/" + id + "/recommendations";
+                        new JikanTopRequest(parent).getTopRecommendations(request, anime);
 
                     }
                 });
@@ -462,72 +471,61 @@ public class AnimeFrame implements JikanRetriever {
                     }
                 });
                 JPanel buttonPanel = new JPanel(new BorderLayout());
-                buttonPanel.add(loadMoreImagesButton,BorderLayout.EAST);
-                buttonPanel.add(recommendationsButton,BorderLayout.WEST);
+                buttonPanel.add(loadMoreImagesButton, BorderLayout.EAST);
+                buttonPanel.add(recommendationsButton, BorderLayout.WEST);
                 imagePanel.add(buttonPanel);
-                if(!wasCached) {
-                    JPanel cachePanel = new JPanel(new FlowLayout());
-                    JLabel cacheTitleLabel = new JLabel("The anime wasn't confirmed yet, is the anime shown the correct one?");
-                    JButton yesButton = new JButton("Yes");
-                    yesButton.addActionListener(new ActionListener() {
-                        @Override
-                        public void actionPerformed(ActionEvent e) {
 
-                            new MyCacheManager(parent).pushToCache(anime,image);
-                            parent.dataBaseManager.putMalID(animeTitleString,anime.getId());
-                            cachePanel.removeAll();
-                            SwingUtilities.updateComponentTreeUI(imagePanel);
-                            changeNameIfNecessary(anime);
-                            refreshParent();
-                        }
-                    });
-                    JButton noButton = new JButton("No");
-                    noButton.addActionListener(new ActionListener() {
-                        @Override
-                        public void actionPerformed(ActionEvent e) {
-                            new SuggestionFrame(parent, new AnimeTitle(animeTitleString, status, currentPriority)){
-                                @Override
-                                public void saveAnime(AnimeTitle animeTitle,JikanAnime anime) {
-                                    new MyCacheManager(parent).pushToCache(anime,image);
-                                    parent.dataBaseManager.putMalID(animeTitleString,anime.getId());
-                                    changeNameIfNecessary(anime);
-                                    disposeFrame();
-
-                                }
-                            };
-                            cachePanel.removeAll();
-                            SwingUtilities.updateComponentTreeUI(imagePanel);
-                            refreshParent();
-
-                        }
-                    });
-                    cachePanel.add(cacheTitleLabel);
-                    cachePanel.add(yesButton);
-                    cachePanel.add(noButton);
-                    imagePanel.add(cachePanel);
-                }
-                else{
-                    JPanel cachePanel = new JPanel(new SpringLayout());
-                    cachePanel.setLayout(new BoxLayout(cachePanel,BoxLayout.Y_AXIS));
-                    JButton wrongAnime = new JButton("Change bound anime");
-                wrongAnime.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        new SuggestionFrame(parent, new AnimeTitle(animeTitleString, status, currentPriority)){
+                if (!wasCached) {
+                    if (animeTitleObject.getMalID() == 0) {
+                        JPanel cachePanel = new JPanel(new FlowLayout());
+                        JLabel cacheTitleLabel = new JLabel("The anime wasn't confirmed yet, is the anime shown the correct one?");
+                        JButton yesButton = new JButton("Yes");
+                        yesButton.addActionListener(new ActionListener() {
                             @Override
-                            public void saveAnime(AnimeTitle animeTitle,JikanAnime anime) {
-                                new MyCacheManager(parent).pushToCache(anime,image);
-                                parent.dataBaseManager.putMalID(animeTitleString,anime.getId());
+                            public void actionPerformed(ActionEvent e) {
+
+                                new MyCacheManager(parent).pushToCache(anime, image);
+                                parent.dataBaseManager.putMalID(animeTitleString, anime.getId());
+                                cachePanel.removeAll();
+                                SwingUtilities.updateComponentTreeUI(imagePanel);
                                 changeNameIfNecessary(anime);
-                                disposeFrame();
+                                refreshParent();
                             }
-                        };
-                        cachePanel.removeAll();
-                        SwingUtilities.updateComponentTreeUI(imagePanel);
-                        refreshParent();
+                        });
+                        JButton noButton = new JButton("No");
+                        noButton.addActionListener(new ActionListener() {
+                            @Override
+                            public void actionPerformed(ActionEvent e) {
+                                new SuggestionFrame(parent, new AnimeTitle(animeTitleString, status, currentPriority)) {
+                                    @Override
+                                    public void saveAnime(AnimeTitle animeTitle, JikanAnime anime) {
+                                        new MyCacheManager(parent).pushToCache(anime, image);
+                                        parent.dataBaseManager.putMalID(animeTitleString, anime.getId());
+                                        changeNameIfNecessary(anime);
+                                        disposeFrame();
+
+                                    }
+                                };
+                                cachePanel.removeAll();
+                                SwingUtilities.updateComponentTreeUI(imagePanel);
+                                refreshParent();
+
+                            }
+                        });
+                        cachePanel.add(cacheTitleLabel);
+                        cachePanel.add(yesButton);
+                        cachePanel.add(noButton);
+                        imagePanel.add(cachePanel);
                     }
-                });
-                    cachePanel.add(wrongAnime);
+                    else{
+                        new MyCacheManager(parent).pushToCache(anime, image);
+                        JPanel cachePanel = getAlreadyCachedPanel(image);
+                        imagePanel.add(cachePanel);
+                    }
+                }
+
+                else{
+                    JPanel cachePanel = getAlreadyCachedPanel(image);
                     imagePanel.add(cachePanel);
                 }
 
@@ -559,41 +557,32 @@ public class AnimeFrame implements JikanRetriever {
         }
     }
 
-//    private void scrapeForExtras(JikanAnime anime){
-//        System.out.println("Scraping");
-//        MyMalScraperAnime scraperAnime = new MyMalScraperAnime(anime);
-//        ArrayList<MyMalScraperAnime.RelatedAnimeContainer> additionalMaterial = scraperAnime.getRelatedAnime();
-//        JPanel additionalPanel = new JPanel(new SpringLayout());
-//        additionalPanel.setLayout(new BoxLayout(additionalPanel,BoxLayout.Y_AXIS));
-//        String type = "";
-//        JPanel titlePanel = new JPanel(new SpringLayout());
-//        titlePanel.setLayout(new BoxLayout(titlePanel,BoxLayout.Y_AXIS));
-//        for(MyMalScraperAnime.RelatedAnimeContainer animeContainer:additionalMaterial){
-//            if(!type.equals(animeContainer.getType())){
-//                type = animeContainer.getType();
-//                additionalPanel.add(titlePanel);
-//                titlePanel = new JPanel(new SpringLayout());
-//                titlePanel.setLayout(new BoxLayout(titlePanel,BoxLayout.Y_AXIS));
-//                JLabel typeLabel = new JLabel(type);
-//                typeLabel.setFont(typeLabel.getFont().deriveFont(20f));
-//                titlePanel.add(typeLabel);
-//            }
-//            JButton relativeAnimeButton = new JButton();
-//            relativeAnimeButton.setText(animeContainer.getName());
-//            relativeAnimeButton.addActionListener(new ActionListener() {
-//                @Override
-//                public void actionPerformed(ActionEvent e) {
-//                    AnimeSearcher animeSearcher = new AnimeSearcher();
-//                    animeSearcher.setUrl(animeContainer.getUrl());
-//                    animeSearcher.loadBrowser();
-//                }
-//            });
-//            titlePanel.add(relativeAnimeButton);
-//        }
-//        additionalPanel.add(titlePanel);
-//        insertFrame.setContentPane(additionalPanel);
-//        SwingUtilities.updateComponentTreeUI(insertFrame);
-//    }
+    @NotNull
+    private JPanel getAlreadyCachedPanel(BufferedImage image) {
+        JPanel cachePanel = new JPanel(new SpringLayout());
+        cachePanel.setLayout(new BoxLayout(cachePanel,BoxLayout.Y_AXIS));
+        JButton wrongAnime = new JButton("Change bound anime");
+        wrongAnime.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                new SuggestionFrame(parent, new AnimeTitle(animeTitleString, status, currentPriority)){
+                    @Override
+                    public void saveAnime(AnimeTitle animeTitle,JikanAnime anime) {
+                        new MyCacheManager(parent).pushToCache(anime, image);
+                        parent.dataBaseManager.putMalID(animeTitleString,anime.getId());
+                        changeNameIfNecessary(anime);
+                        disposeFrame();
+                    }
+                };
+                cachePanel.removeAll();
+                SwingUtilities.updateComponentTreeUI(imagePanel);
+                refreshParent();
+            }
+        });
+        cachePanel.add(wrongAnime);
+        return cachePanel;
+    }
+
 
     private void changeNameIfNecessary(JikanAnime anime) {
         if(!animeTitleString.equals(anime.getTitle())) {

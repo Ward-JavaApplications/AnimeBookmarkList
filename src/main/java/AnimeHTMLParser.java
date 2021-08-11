@@ -14,18 +14,20 @@ import java.util.Map;
 public class AnimeHTMLParser {
 
     public JikanAnime getFromID(int id){
-        return readAnimeFromURL("https://myanimelist.net/anime/"+id);
+        return readAnimeFromURL("https://myanimelist.net/anime/"+id,id);
     }
     public void getFromIDAsync(int id,JikanRetriever parent){
         parent.retrieveAnime(getFromID(id));
     }
 
 
-    private JikanAnime readAnimeFromURL(String url){
+    private JikanAnime readAnimeFromURL(String url,int id){
 
         try {
             JikanAnime jikanAnime = new JikanAnime();
             Document document = Jsoup.connect(url).get();
+            //id
+            jikanAnime.setId(id);
             //titles
             Map<String,String> titles = getTitles(document);
             jikanAnime.setJapaneseTitle(titles.get("japaneseTitle"));
@@ -43,12 +45,13 @@ public class AnimeHTMLParser {
             jikanAnime.setSynopsis(description);
             //relatedAnime
             getRelatedAnime(document,jikanAnime);
+            return jikanAnime;
 
         }
         catch (Exception e){
             e.printStackTrace();
+            return null;
         }
-        return null;
 
     }
 
