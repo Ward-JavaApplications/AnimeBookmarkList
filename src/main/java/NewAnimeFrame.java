@@ -43,7 +43,7 @@ public class NewAnimeFrame{
 
     }
     private void startSyncImageSearch(){
-        JikanAnime anime =  new JikanSearch().getJikanAnime(id);
+        JikanAnime anime =  new AnimeHTMLParser().getFromID(id);
         defaultPanel(anime);
         retrieveAnime(anime);
         imagePanel.requestFocus();
@@ -177,7 +177,6 @@ public class NewAnimeFrame{
                         parent.dataBaseManager.insertInUnreleased(title, anime.getAired().getFrom().getTime());
                         else parent.dataBaseManager.insertInUnreleased(title, 0L);
                     }
-                    new MyCacheManager(parent).pushToCache(anime,image);
                     parent.dataBaseManager.putMalID(anime.getTitle(),anime.getId());
                     insertFrame.dispose();
                 }

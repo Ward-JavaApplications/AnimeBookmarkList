@@ -7,6 +7,7 @@ public class JikanDates {
     private Date to;
 
     public JikanDates(String dates){
+        boolean twoDates = dates.contains("to");
         dates = dates.replace("to",":");
         StringBuilder dateString = new StringBuilder();
         for(Character character: dates.toCharArray()){
@@ -30,7 +31,10 @@ public class JikanDates {
             }
         }
         try {
-            to = new SimpleDateFormat("MMM dd yyyy").parse(dateString.toString().substring(2));
+            if(twoDates)
+                to = new SimpleDateFormat("MMM dd yyyy").parse(dateString.toString().substring(2));
+            else
+                to = from;
         } catch (ParseException e) {
             String msg = "Couldn't load the dates " + dateString.toString().substring(2);
             new ErrorMessage(msg);

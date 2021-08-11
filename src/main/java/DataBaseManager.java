@@ -683,6 +683,28 @@ public class DataBaseManager {
         }
 
     }
+    public void pushToCache(int id,String gson) {
+
+        Connection conn = null;
+        try {
+            Class.forName("org.sqlite.JDBC");
+            conn = DriverManager.getConnection("jdbc:sqlite:" + "Anime BookmarkList.db");
+
+            String querry = "insert into Cache (mal_id,gson)" + " values (?,?)";
+            PreparedStatement preparedStatement = conn.prepareStatement(querry);
+            preparedStatement.setInt(1, id);
+            preparedStatement.setString(2, gson);
+            preparedStatement.execute();
+            MyLogger.log(preparedStatement.toString());
+            System.out.println(preparedStatement.toString());
+
+            conn.close();
+
+        } catch (Exception e) {
+            new ErrorMessage(e.getMessage());
+            e.printStackTrace();
+        }
+    }
     public void pushToCache(int id,String title,String gson){
 
         Connection conn = null;

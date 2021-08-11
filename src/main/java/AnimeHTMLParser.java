@@ -1,5 +1,7 @@
+import com.google.gson.Gson;
 import org.apache.poi.hssf.record.pivottable.StreamIDRecord;
 import org.apache.poi.ss.usermodel.IgnoredErrorType;
+import org.apache.poi.xssf.binary.XSSFBUtils;
 import org.checkerframework.checker.units.qual.A;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -14,7 +16,10 @@ import java.util.Map;
 public class AnimeHTMLParser {
 
     public JikanAnime getFromID(int id){
-        return readAnimeFromURL("https://myanimelist.net/anime/"+id,id);
+        JikanAnime cached = getIfCached(id);
+        if(cached == null)
+            return readAnimeFromURL("https://myanimelist.net/anime/"+id,id);
+        else return cached;
     }
     public void getFromIDAsync(int id,JikanRetriever parent){
         parent.retrieveAnime(getFromID(id));
@@ -24,8 +29,23 @@ public class AnimeHTMLParser {
         return getFromID(jikanBasicAnimeInfo.getId());
 
     }
+    public ArrayList<JikanAnime> getSuggestions(String targetName,int amount){
+        ArrayList<JikanBasicAnimeInfo> list = readFromAnimeSearch("https://myanimelist.net/anime.php?cat=anime&q="+targetName.replace(" ","+"),amount);
+        ArrayList<JikanAnime> animes = new ArrayList<>();
+        for (JikanBasicAnimeInfo jikanBasicAnimeInfo : list) {
+            animes.add(getFromID(jikanBasicAnimeInfo.getId()));
+        }
+        return animes;
+    }
     public void getFromStringAsync(String targetTitle,JikanRetriever parent){
         parent.retrieveAnime(getFromString(targetTitle));
+    }
+
+    private JikanAnime getIfCached(int id){
+        String jsonAnime = new DataBaseManager().getFromCache(id);
+        Gson gson = new Gson();
+        JikanAnime anime = gson.fromJson(jsonAnime,JikanAnime.class);
+        return anime;
     }
 
 
@@ -96,6 +116,16 @@ public class AnimeHTMLParser {
             jikanAnime.setSynopsis(description);
             //relatedAnime
             getRelatedAnime(document,jikanAnime);
+
+            //push to cash
+            try{
+                Gson gson = new Gson();
+                new DataBaseManager().pushToCache(id,gson.toJson(jikanAnime));
+            }
+            catch (Exception ignoredException)
+            {
+                System.out.println("Couldn't push to cache");
+            }
             return jikanAnime;
 
         }
@@ -186,18 +216,20 @@ public class AnimeHTMLParser {
         Element related = document.select("table.anime_detail_related_anime").first();
         //System.out.println(related.toString());
         Elements typesOfRelated = related.select("tr");
-        for(Element element:typesOfRelated){
-            String type = element.select("td").first().text();
-            Elements titles = element.select("a");
-            for(Element title:titles){
-                if(title.attr("href").startsWith("anime", 1))
-                    relatedAnimeContainer.add(new RelatedAnimeContainer(type,title.attr("href"),title.text()));
+        if(typesOfRelated!=null) {
+            for (Element element : typesOfRelated) {
+                String type = element.select("td").first().text();
+                Elements titles = element.select("a");
+                for (Element title : titles) {
+                    if (title.attr("href").startsWith("anime", 1))
+                        relatedAnimeContainer.add(new RelatedAnimeContainer(type, title.attr("href"), title.text()));
 //                    System.out.println(type  + " has the following");
 //                    System.out.println(title.attr("href"));
 //                    System.out.println(title.text() + " is the name of the reference");
+                }
             }
+            jikanAnime.setRelated(relatedAnimeContainer);
         }
-        jikanAnime.setRelated(relatedAnimeContainer);
 
     }
 

@@ -1,3 +1,4 @@
+import org.imgscalr.Scalr;
 import pw.mihou.jaikan.models.Anime;
 
 import javax.imageio.ImageIO;
@@ -5,6 +6,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.image.BufferedImage;
 import java.net.URL;
 import java.util.ArrayList;
 
@@ -40,12 +42,12 @@ public class SuggestionFrame extends JPanel {
         titleLabel.setFont(titleLabel.getFont().deriveFont(25f));
         titlePanel.add(titleLabel);
         mainPanel.add(titlePanel);
-        ArrayList<JikanBasicAnimeInfo> suggestions = new JikanSearch().getSuggestions(animeTitle.getTitle());
-        for(JikanBasicAnimeInfo anime: suggestions){
+        ArrayList<JikanAnime> suggestions = new AnimeHTMLParser().getSuggestions(animeTitle.getTitle(),5);
+        for(JikanAnime anime: suggestions){
             JPanel animePanel = new JPanel(new SpringLayout());
             animePanel.setLayout(new BoxLayout(animePanel,BoxLayout.Y_AXIS));
             animePanel.add(new JLabel(anime.getTitle()), BorderLayout.PAGE_START);
-            Image image = null;
+            BufferedImage image = null;
             try{
                 image = ImageIO.read(new URL(anime.getImage()));
             }
@@ -54,12 +56,13 @@ public class SuggestionFrame extends JPanel {
                 e.printStackTrace();
                 MyLogger.log(e.getMessage());
             }
-            animePanel.add(new JLabel(new ImageIcon(image)),BorderLayout.LINE_START);
+            BufferedImage scaledImage = Scalr.resize(image,Scalr.Mode.FIT_TO_HEIGHT,250);
+            animePanel.add(new JLabel(new ImageIcon(scaledImage)),BorderLayout.LINE_START);
             animePanel.addMouseListener(new MouseListener() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
                     saveAnime(new AnimeTitle(anime.getTitle(),anime.getId(),animeTitle.getStatus(),animeTitle.getPriority()),
-                            new JikanSearch().getJikanAnime(anime.getId()));
+                        new AnimeHTMLParser().getFromID(anime.getId()));
                     frameToDispose.dispose();
                     //refresh();
                 }

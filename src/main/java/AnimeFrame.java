@@ -484,7 +484,6 @@ public class AnimeFrame implements JikanRetriever {
                             @Override
                             public void actionPerformed(ActionEvent e) {
 
-                                new MyCacheManager(parent).pushToCache(anime, image);
                                 parent.dataBaseManager.putMalID(animeTitleString, anime.getId());
                                 cachePanel.removeAll();
                                 SwingUtilities.updateComponentTreeUI(imagePanel);
@@ -499,7 +498,6 @@ public class AnimeFrame implements JikanRetriever {
                                 new SuggestionFrame(parent, new AnimeTitle(animeTitleString, status, currentPriority)) {
                                     @Override
                                     public void saveAnime(AnimeTitle animeTitle, JikanAnime anime) {
-                                        new MyCacheManager(parent).pushToCache(anime, image);
                                         parent.dataBaseManager.putMalID(animeTitleString, anime.getId());
                                         changeNameIfNecessary(anime);
                                         disposeFrame();
@@ -518,7 +516,6 @@ public class AnimeFrame implements JikanRetriever {
                         imagePanel.add(cachePanel);
                     }
                     else{
-                        new MyCacheManager(parent).pushToCache(anime, image);
                         JPanel cachePanel = getAlreadyCachedPanel(image);
                         imagePanel.add(cachePanel);
                     }
@@ -568,7 +565,6 @@ public class AnimeFrame implements JikanRetriever {
                 new SuggestionFrame(parent, new AnimeTitle(animeTitleString, status, currentPriority)){
                     @Override
                     public void saveAnime(AnimeTitle animeTitle,JikanAnime anime) {
-                        new MyCacheManager(parent).pushToCache(anime, image);
                         parent.dataBaseManager.putMalID(animeTitleString,anime.getId());
                         changeNameIfNecessary(anime);
                         disposeFrame();

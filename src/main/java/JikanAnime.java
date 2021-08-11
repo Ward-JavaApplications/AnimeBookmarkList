@@ -174,7 +174,9 @@ public class JikanAnime {
     }
 
     public String getTitle() {
-        return animeTitle;
+        if(getEnglishTitle() != null) return englishTitle;
+        else if(getJapaneseTitle() !=null) return japaneseTitle;
+        else return "No title was found";
     }
 
     ///////////////////////////////////////////
