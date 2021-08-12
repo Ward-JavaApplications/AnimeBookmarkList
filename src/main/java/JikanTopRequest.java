@@ -16,12 +16,14 @@ import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.net.URI;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Iterator;
 
 public class JikanTopRequest {
     private MyGUIManager parent;
     private JFrame mainFrame;
     private JPanel mainPanel;
+    private JikanAnime jikanAnime;
 
     public JikanTopRequest(MyGUIManager parent){
         this.parent =  parent;
@@ -29,6 +31,7 @@ public class JikanTopRequest {
 
 
     public void getTopRecommendations(String request, JikanAnime anime){
+        this.jikanAnime = anime;
         loadFrameAndPanel("Recommendations for " + anime.getTitle());
         String malButtonRequest = "https://myanimelist.net/anime/"+anime.getId()+"/"+anime.getTitle().replace(" ","_")+"/userrecs";
         addTitleToPanelRecommendations(request,malButtonRequest);
@@ -119,6 +122,7 @@ public class JikanTopRequest {
         JPanel mainPanel = new JPanel(new SpringLayout());
         mainPanel.setLayout(new BoxLayout(mainPanel,BoxLayout.Y_AXIS));
 
+        //TODO         ArrayList<JikanBasicAnimeInfo> animes = new AnimeHTMLParser().getFromTop(request);
         String json = Jaikan.genericRequest(new Endpoint(request));
         MyLogger.log(json);
         JsonElement element = JsonParser.parseString(json);
@@ -194,22 +198,13 @@ public class JikanTopRequest {
         addMalButton(mainPanel,malButtonRequest);
         MyRunnable paneLoader = new MyRunnable(mainPanel);
 
-        String json = Jaikan.genericRequest(new Endpoint(request));
-        MyLogger.log(json);
-        JsonElement element = JsonParser.parseString(json);
-        if (element != null) {
-            JsonObject obj = element.getAsJsonObject();
-            JsonArray pictures = obj.get("recommendations").getAsJsonArray();
-            Iterator<JsonElement> listIterator = pictures.iterator();
+        ArrayList<JikanRecommendationAnime> recommendationAnimes = new AnimeHTMLParser().getRecommendations(jikanAnime);
+            for(JikanRecommendationAnime recommendationAnime:recommendationAnimes) {
 
-
-
-            while (listIterator.hasNext()) {
-                JsonObject anime = listIterator.next().getAsJsonObject();
-                String title = anime.get("title").getAsString();
-                int amountOfRecommenders = anime.get("recommendation_count").getAsInt();
-                String imageURL = anime.get("image_url").getAsString();
-                int id = anime.get("mal_id").getAsInt();
+                String title = recommendationAnime.getTitle();
+                int amountOfRecommenders = recommendationAnime.getRecommendationCount();
+                String imageURL = recommendationAnime.getImageURL();
+                int id = recommendationAnime.getId();
                 JLabel imageLabel = new JLabel();
                 try {
                     BufferedImage image = ImageIO.read(new URL(imageURL));
@@ -253,7 +248,7 @@ public class JikanTopRequest {
                 new Thread(paneLoader).start();
 
             }
-        }
+
     }
 
     public class MyRunnable implements Runnable{

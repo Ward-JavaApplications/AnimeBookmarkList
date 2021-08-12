@@ -47,6 +47,65 @@ public class AnimeHTMLParser {
     public void getFromStringAsync(String targetTitle,JikanRetriever parent){
         parent.retrieveAnime(getFromString(targetTitle));
     }
+    public ArrayList<JikanRecommendationAnime> getRecommendations(JikanAnime anime){
+        ArrayList<JikanRecommendationAnime> animeInfos = new ArrayList<>();
+        String request = "https://myanimelist.net/anime/"+anime.getId()+"/"+anime.getJapaneseTitle().replace(" ","_")+"/userrecs";
+        try {
+            Document document = Jsoup.connect(request).get();
+            Elements recommendations = document.select("div.borderclass>table>tbody>tr>td>div>a.hoverinfo_trigger");
+            for (Element recommendation : recommendations) {
+                String url = recommendation.attr("href");
+                Element imgElement = recommendation.selectFirst("img");
+                String imageURL = imgElement.attr("data-srcset");
+                imageURL = get2xFromImageUrl(imageURL);
+                String title = imgElement.attr("alt").substring(7   );
+                int id = extractIdFromHyper(url);
+                Element recommendationCount = recommendation.parent().parent().parent();
+                String amountOfRecommendationsString = recommendationCount.select("td>div>a.js-similar-recommendations-button>strong").text();
+                int amountOfRecommendations= 0;
+                try{
+                    amountOfRecommendations = Integer.parseInt(amountOfRecommendationsString);
+                }
+                catch (Exception exception){
+                    //we have run out of recommendations
+                    return animeInfos;
+                }
+                Element synopsisElement = recommendationCount.parent().selectFirst("div>div.detail-user-recs-text");
+                String synopsis = synopsisElement.text();
+                animeInfos.add(new JikanRecommendationAnime(synopsis,title,id,url,imageURL,amountOfRecommendations));
+
+            }
+            return animeInfos;
+            //System.out.println(recommendations.toString());
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            MyLogger.log(e.getMessage());
+        }
+        return null;
+
+    }
+
+    public ArrayList<JikanBasicAnimeInfo> getFromTop(String url){
+        return null;
+    }
+
+    private String get2xFromImageUrl(String imageURL){
+        boolean startParsing = false;
+        StringBuilder stringBuilder = new StringBuilder();
+        for (char c : imageURL.toCharArray()) {
+            if (startParsing) {
+                if(c==' ')
+                    return stringBuilder.toString();
+                else
+                    stringBuilder.append(c);
+            }
+            else if(c == ','){
+                startParsing = true;
+            }
+        }
+        return "";
+    }
 
     private JikanAnime getIfCached(int id){
         String jsonAnime = new DataBaseManager().getFromCache(id);
@@ -82,6 +141,7 @@ public class AnimeHTMLParser {
         }
         return animeInfos;
     }
+
     public int extractIdFromHyper(String url){
         String markel = "https://myanimelist.net/anime/";
         url = url.substring(markel.length());

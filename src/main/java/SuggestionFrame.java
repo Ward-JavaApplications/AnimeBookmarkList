@@ -46,7 +46,12 @@ public class SuggestionFrame extends JPanel {
         for(JikanAnime anime: suggestions){
             JPanel animePanel = new JPanel(new SpringLayout());
             animePanel.setLayout(new BoxLayout(animePanel,BoxLayout.Y_AXIS));
-            animePanel.add(new JLabel(anime.getTitle()), BorderLayout.PAGE_START);
+            String englishTitle = anime.getEnglishTitle();
+            if(englishTitle != null && !englishTitle.equals(""))
+                animePanel.add(new JLabel(englishTitle), BorderLayout.PAGE_START);
+            String japaneseTitle = anime.getJapaneseTitle();
+            if(japaneseTitle != null && !japaneseTitle.equals(""))
+                animePanel.add(new JLabel(japaneseTitle), BorderLayout.PAGE_START);
             BufferedImage image = null;
             try{
                 image = ImageIO.read(new URL(anime.getImage()));
