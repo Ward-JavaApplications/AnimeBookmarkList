@@ -323,7 +323,7 @@ public class DataBaseManager {
 
     }
     public ArrayList<AnimeTitle> searchTitleInDB(String title){
-        return getFromDB("Select * from anime where Title like \"%" + title+ "%\"");
+        return getFromDB("Select * from anime where Title like \"%" + title+ "%\" order by Title asc");
     }
     public ArrayList<String> getFromDBDangerZone(String querry){
         Connection conn = null;

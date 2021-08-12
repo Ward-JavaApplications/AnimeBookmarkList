@@ -231,9 +231,9 @@ public class AnimeHTMLParser {
                     if (title.attr("href").startsWith("anime", 1)){
                         relatedAnimeContainer.add(new RelatedAnimeContainer(type,
                                 title.attr("href"), title.text()));
-                        System.out.println(type  + " has the following");
-                        System.out.println(title.attr("href"));
-                        System.out.println(title.text() + " is the name of the reference");
+//                        System.out.println(type  + " has the following");
+//                        System.out.println(title.attr("href"));
+//                        System.out.println(title.text() + " is the name of the reference");
                     }
                 }
             }

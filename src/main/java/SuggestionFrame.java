@@ -56,7 +56,7 @@ public class SuggestionFrame extends JPanel {
                 e.printStackTrace();
                 MyLogger.log(e.getMessage());
             }
-            BufferedImage scaledImage = Scalr.resize(image,Scalr.Mode.FIT_TO_HEIGHT,250);
+            BufferedImage scaledImage = Scalr.resize(image,Scalr.Mode.FIT_TO_HEIGHT,400);
             animePanel.add(new JLabel(new ImageIcon(scaledImage)),BorderLayout.LINE_START);
             animePanel.addMouseListener(new MouseListener() {
                 @Override
