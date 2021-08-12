@@ -521,7 +521,7 @@ public class MyGUIManager {
     }
 
     public void showAllTitlesFavorite(JFrame frame){
-        listToButtons(frame,dataBaseManager.getFromDB("Select * from Anime order by favorite desc"));
+        listToButtons(frame,dataBaseManager.getFromDB("Select * from Anime order by favorite desc,title asc"));
         selectedMainFrame = 3;
 
     }
