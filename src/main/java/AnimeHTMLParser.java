@@ -29,6 +29,13 @@ public class AnimeHTMLParser {
         return getFromID(jikanBasicAnimeInfo.getId());
 
     }
+    public JikanAnime getFromURL(String url){
+        int id = extractIdFromHyper(url);
+        return getFromID(id);
+    }
+    public void getFromURLAsync(String url,JikanRetriever parent){
+        parent.retrieveAnime(getFromURL(url));
+    }
     public ArrayList<JikanAnime> getSuggestions(String targetName,int amount){
         ArrayList<JikanBasicAnimeInfo> list = readFromAnimeSearch("https://myanimelist.net/anime.php?cat=anime&q="+targetName.replace(" ","+"),amount);
         ArrayList<JikanAnime> animes = new ArrayList<>();
@@ -75,7 +82,7 @@ public class AnimeHTMLParser {
         }
         return animeInfos;
     }
-    private int extractIdFromHyper(String url){
+    public int extractIdFromHyper(String url){
         String markel = "https://myanimelist.net/anime/";
         url = url.substring(markel.length());
         int id = 0;
@@ -221,11 +228,13 @@ public class AnimeHTMLParser {
                 String type = element.select("td").first().text();
                 Elements titles = element.select("a");
                 for (Element title : titles) {
-                    if (title.attr("href").startsWith("anime", 1))
-                        relatedAnimeContainer.add(new RelatedAnimeContainer(type, title.attr("href"), title.text()));
-//                    System.out.println(type  + " has the following");
-//                    System.out.println(title.attr("href"));
-//                    System.out.println(title.text() + " is the name of the reference");
+                    if (title.attr("href").startsWith("anime", 1)){
+                        relatedAnimeContainer.add(new RelatedAnimeContainer(type,
+                                title.attr("href"), title.text()));
+                        System.out.println(type  + " has the following");
+                        System.out.println(title.attr("href"));
+                        System.out.println(title.text() + " is the name of the reference");
+                    }
                 }
             }
             jikanAnime.setRelated(relatedAnimeContainer);

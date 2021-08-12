@@ -2,14 +2,12 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
+import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.net.URI;
 import java.net.URL;
@@ -98,7 +96,7 @@ public class AnimeFrame implements JikanRetriever {
     private void loadFrame(){
         insertFrame = new JFrame(animeTitleString);
         insertFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        insertFrame.setSize(600,900);
+        insertFrame.setSize(800,900);
         insertFrame.setLocationRelativeTo(null);
         insertFrame.setVisible(true);
         defaultPanel();
@@ -436,14 +434,62 @@ public class AnimeFrame implements JikanRetriever {
                     else
                         airDatesLabel = new JLabel("The anime aired from " + dateFormat.format(firstDate) + " and is still ongoing");
                 }
-                JLabel ratings = new JLabel("The anime got a score of " + anime.getScore() + " and ranks currently " + anime.getRank() + "th");
+                JLabel score = new JLabel("The anime got a score of " + anime.getScore()    );
+                JLabel ratings = new JLabel( "The ranks currently: Score " + anime.getRank() + "th, Favorites: " + anime.getFavorites()+"th");
+
                 JPanel descriptionPanel = new JPanel(new SpringLayout());
                 descriptionPanel.setLayout(new BoxLayout(descriptionPanel, BoxLayout.Y_AXIS));
                 descriptionPanel.add(genres);
                 descriptionPanel.add(episodeNumber);
                 descriptionPanel.add(duration);
                 descriptionPanel.add(airDatesLabel);
+                descriptionPanel.add(score);
                 descriptionPanel.add(ratings);
+
+                //add related anime
+                if(!anime.getRelated().isEmpty()) {
+                    JLabel relatedHeaderLabel = new JLabel("Related anime");
+                    relatedHeaderLabel.setFont(relatedHeaderLabel.getFont().deriveFont(Font.BOLD));
+                    descriptionPanel.add(relatedHeaderLabel);
+                    String type = "";
+                    for (AnimeHTMLParser.RelatedAnimeContainer relatedAnimeContainer : anime.getRelated()) {
+                        if (!type.equals(relatedAnimeContainer.getType())) {
+                            JLabel typeLabel = new JLabel(relatedAnimeContainer.getType());
+                            typeLabel.setBorder(new EmptyBorder(0, 10, 0, 0));
+                            descriptionPanel.add(typeLabel);
+                        }
+                        JLabel label = new JLabel(relatedAnimeContainer.getName());
+                        label.setBorder(new EmptyBorder(0, 20, 0, 0));
+                        label.addMouseListener(new MouseListener() {
+                            @Override
+                            public void mouseClicked(MouseEvent e) {
+                                new NewAnimeFrame(new AnimeHTMLParser().extractIdFromHyper(relatedAnimeContainer.getUrl()), parent);
+                            }
+
+                            @Override
+                            public void mousePressed(MouseEvent e) {
+
+                            }
+
+                            @Override
+                            public void mouseReleased(MouseEvent e) {
+
+                            }
+
+                            @Override
+                            public void mouseEntered(MouseEvent e) {
+                                label.setForeground(Color.BLUE);
+                            }
+
+                            @Override
+                            public void mouseExited(MouseEvent e) {
+                                label.setForeground(Color.BLACK);
+                            }
+                        });
+                        type = relatedAnimeContainer.getType();
+                        descriptionPanel.add(label);
+                    }
+                }
 
 
                 imagePanel.add(animeTitlePanel);
