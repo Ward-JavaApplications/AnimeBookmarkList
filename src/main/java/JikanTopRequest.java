@@ -199,9 +199,15 @@ public class JikanTopRequest {
         MyRunnable paneLoader = new MyRunnable(mainPanel);
 
         ArrayList<JikanRecommendationAnime> recommendationAnimes = new AnimeHTMLParser().getRecommendations(jikanAnime);
+        if(recommendationAnimes.isEmpty()){
+            JPanel panel =new JPanel(new BorderLayout());
+            panel.add(new JLabel("There were no recommendations",SwingUtilities.CENTER),BorderLayout.CENTER);
+            paneLoader.updatePanel(panel);
+        }
             for(JikanRecommendationAnime recommendationAnime:recommendationAnimes) {
 
                 String title = recommendationAnime.getTitle();
+                String synopsis = recommendationAnime.getSynopsis();
                 int amountOfRecommenders = recommendationAnime.getRecommendationCount();
                 String imageURL = recommendationAnime.getImageURL();
                 int id = recommendationAnime.getId();
@@ -215,10 +221,26 @@ public class JikanTopRequest {
                     e.printStackTrace();
                     imageLabel.setText("Image failed to load");
                 }
-                JPanel animeTitlePanel = new JPanel(new BorderLayout());
-                animeTitlePanel.add(new JLabel(title + " was recommended by " + amountOfRecommenders + " people"),BorderLayout.PAGE_START);
-                animeTitlePanel.add(imageLabel,BorderLayout.LINE_START);
-                animeTitlePanel.addMouseListener(new MouseListener() {
+                JPanel recommendationPanel = new JPanel(new SpringLayout());
+                recommendationPanel.setLayout(new BoxLayout(recommendationPanel,BoxLayout.X_AXIS));
+                JPanel recommendationTextPanel = new JPanel(new BorderLayout());
+                JPanel recommendationImagePanel = new JPanel(new FlowLayout());
+                recommendationImagePanel.add(imageLabel);
+                recommendationTextPanel.add(new JLabel(title),BorderLayout.PAGE_START);
+
+                JTextArea textArea = new JTextArea();
+                textArea.setText(synopsis);
+                textArea.setLineWrap(true);
+                textArea.setWrapStyleWord(true);
+                textArea.setEditable(false);
+                //textArea.setSize(new Dimension(300,500));
+
+                recommendationTextPanel.add(textArea,BorderLayout.CENTER);
+                recommendationTextPanel.add(new JLabel("Recommended by " + amountOfRecommenders + " people"),BorderLayout.PAGE_END);
+
+                recommendationPanel.add(recommendationImagePanel);
+                recommendationPanel.add(recommendationTextPanel);
+                recommendationPanel.addMouseListener(new MouseListener() {
                     @Override
                     public void mouseClicked(MouseEvent e) {
                         new NewAnimeFrame(title,id,parent);
@@ -244,7 +266,7 @@ public class JikanTopRequest {
 
                     }
                 });
-                paneLoader.updatePanel(animeTitlePanel);
+                paneLoader.updatePanel(recommendationPanel);
                 new Thread(paneLoader).start();
 
             }
@@ -268,6 +290,11 @@ public class JikanTopRequest {
         public void run() {
             mainFrame.setContentPane(scrollPane);
             SwingUtilities.updateComponentTreeUI(mainFrame);
+            scrollPane.getHorizontalScrollBar().setValue(scrollPane.getHorizontalScrollBar().getMaximum());
+            scrollPane.getHorizontalScrollBar().setVisible(false);
+            //mainFrame.pack();
+            //scrollPane.createVerticalScrollBar();
+
         }
     }
 
