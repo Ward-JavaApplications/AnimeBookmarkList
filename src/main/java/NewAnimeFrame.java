@@ -213,6 +213,7 @@ public class NewAnimeFrame{
                     }
                     MyGUIManager.dataBaseManager.putMalID(animeTitle,anime.getId());
                     insertFrame.dispose();
+                    parent.refresh();
                 }
                 catch (NumberFormatException numberFormatException)
                 {
