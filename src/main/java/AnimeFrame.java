@@ -12,6 +12,7 @@ import java.awt.image.BufferedImage;
 import java.net.URI;
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 public class AnimeFrame implements JikanRetriever {
@@ -666,13 +667,27 @@ public class AnimeFrame implements JikanRetriever {
 
     private void changeNameIfNecessary(JikanAnime anime) {
         if(!animeTitleString.equals(anime.getTitle())) {
-            int i = JOptionPane.showConfirmDialog(null, "Would you like to change the name " + animeTitleString + " to " + anime.getTitle() + " as well?", "Confirm anime", JOptionPane.YES_NO_OPTION);
-            if (i == 0) {
-                parent.dataBaseManager.changeAnimeTitle(animeTitleString, anime.getTitle());
-                reloadAnimeFrame(anime.getTitle());
+            ArrayList<String> optionsList = new ArrayList<>();
+            String englishTitle = anime.getEnglishTitle();
+            if(englishTitle != null && !englishTitle.equals(""))
+                optionsList.add(englishTitle);
+            String japaneseTitle = anime.getJapaneseTitle();
+            if(japaneseTitle!=null && !japaneseTitle.equals(""))
+                optionsList.add(japaneseTitle);
+            String customTitleString = "Just keep it the same";
+            optionsList.add(customTitleString);
+            String[] options = optionsList.toArray(new String[0]);
+            int choice = JOptionPane.showOptionDialog(null,"Which title would you like to save the anime as?","Select title",JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.QUESTION_MESSAGE,null,options,options[0]);
+            String animeTitle;
+            if(options[choice].equals(customTitleString)){
+                reloadAnimeFrame();
+            }
+            else {
+                animeTitle = options[choice];
+                parent.dataBaseManager.changeAnimeTitle(animeTitleString, animeTitle);
+                reloadAnimeFrame(animeTitle);
                 refreshParent();
             }
-            else reloadAnimeFrame();
         }
 
     }
