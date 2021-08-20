@@ -217,8 +217,9 @@ public class AnimeHTMLParser {
     }
     private void getBorderClass(Elements document,JikanAnime jikanAnime){
         Elements elementsSpaceIt = document.select("div.spaceit");
+        //System.out.println(elementsSpaceIt);
         //episodes
-        String episodes = elementsSpaceIt.get(0).ownText();
+        String episodes = elementsSpaceIt.select(":contains(Episodes)").first().ownText();
         int episodesInt = 0;
         try{
             episodesInt = Integer.parseInt(episodes);
@@ -226,10 +227,10 @@ public class AnimeHTMLParser {
         catch (Exception ignored){}
         jikanAnime.setEpisodes(episodesInt);
         //aired
-        String aired = elementsSpaceIt.get(1).ownText();
+        String aired = elementsSpaceIt.select(":contains(Aired)").first().ownText();
         jikanAnime.setAired(new JikanDates(aired));
         //duration
-        String duration = elementsSpaceIt.get(5).ownText();
+        String duration = elementsSpaceIt.select(":contains(Duration)").first().ownText();
         jikanAnime.setDuration(duration);
         //genres
         List<String> genresList = new ArrayList<>();
