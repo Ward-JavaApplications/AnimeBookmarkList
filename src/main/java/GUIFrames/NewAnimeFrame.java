@@ -21,6 +21,7 @@ import java.awt.image.BufferedImage;
 import java.net.URI;
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 public class NewAnimeFrame{
@@ -29,7 +30,7 @@ public class NewAnimeFrame{
     private MyGUIManager parent;
     private JPanel imagePanel;
     private JPanel mainPanel;
-    private JLabel titleLabel;
+    private JLabel titleLabelEnglish;
     private NewAnimeFrame animeFrameParent;
     private JTextField priorityTextField;
     private int id;
@@ -86,7 +87,10 @@ public class NewAnimeFrame{
         JPanel statusPanel = new JPanel(new FlowLayout());
 
         JPanel titleLabelPannel = new JPanel(new BorderLayout());
-        titleLabel = new JLabel(anime.getTitle(), SwingUtilities.CENTER);
+        JPanel titlesInLanguagesPanel = new JPanel(new SpringLayout());
+        titlesInLanguagesPanel.setLayout(new BoxLayout(titlesInLanguagesPanel,BoxLayout.Y_AXIS));
+        titleLabelEnglish = new JLabel(anime.getEnglishTitle(), SwingUtilities.CENTER);
+        JLabel titleLabelJapanese = new JLabel(anime.getJapaneseTitle(),SwingUtilities.CENTER);
         JButton copyButton = new JButton();
         try {
             Image img = ImageIO.read(getClass().getResource("../images/copy icon.png"));
@@ -134,7 +138,9 @@ public class NewAnimeFrame{
             }
         });
 
-        titleLabelPannel.add(titleLabel,BorderLayout.CENTER);
+        titlesInLanguagesPanel.add(titleLabelJapanese);
+        titlesInLanguagesPanel.add(titleLabelEnglish);
+        titleLabelPannel.add(titlesInLanguagesPanel,BorderLayout.CENTER);
         titleLabelPannel.add(copyButton,BorderLayout.EAST);
         titleLabelPannel.add(malButton,BorderLayout.WEST);
         titlePanel.add(insertAnimePanel,BorderLayout.SOUTH);
@@ -177,17 +183,38 @@ public class NewAnimeFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
+
+                    ArrayList<String> optionsList = new ArrayList<>();
+                    String englishTitle = anime.getEnglishTitle();
+                    if(englishTitle != null && !englishTitle.equals(""))
+                        optionsList.add(englishTitle);
+                    String japaneseTitle = anime.getJapaneseTitle();
+                    if(japaneseTitle!=null && !japaneseTitle.equals(""))
+                        optionsList.add(japaneseTitle);
+                    String customTitleString = "Custom Title";
+                    optionsList.add(customTitleString);
+                    String[] options = optionsList.toArray(new String[0]);
+                    int choice = JOptionPane.showOptionDialog(null,"Which title would you like to save the anime as?","Select title",JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.QUESTION_MESSAGE,null,options,options[0]);
+                    String animeTitle;
+                    if(options[choice].equals(customTitleString)){
+                        animeTitle = JOptionPane.showInputDialog("Custom title for the anime");
+                        if(animeTitle == null || animeTitle.equals("")) return;
+                    }
+                    else {
+                        animeTitle = options[choice];
+                    }
+
                     int priority = Integer.parseInt(priorityTextField.getText());
                     if(!(priority>=0&&priority<=5)) throw new NumberRangeException(0,5);
-                    if(!(parent.dataBaseManager.getFromDB("select * from anime where title = \""+title+"\"").isEmpty())) throw new TitleAlreadyPresentException();
+                    if(!(MyGUIManager.dataBaseManager.getFromDB("select * from anime where title = \""+animeTitle+"\"").isEmpty())) throw new TitleAlreadyPresentException();
                     boolean released = (anime.getAired().getFrom() != null) && anime.getAired().getFrom().getTime() < new Date().getTime();
-                    parent.insertNewAnimeInDB(new AnimeTitle(title,"Unwatched",priority,released));
+                    parent.insertNewAnimeInDB(new AnimeTitle(animeTitle,"Unwatched",priority,released));
                     if(!released){
                         if(anime.getAired().getFrom() != null)
-                        parent.dataBaseManager.insertInUnreleased(title, anime.getAired().getFrom().getTime());
-                        else parent.dataBaseManager.insertInUnreleased(title, 0L);
+                        MyGUIManager.dataBaseManager.insertInUnreleased(animeTitle, anime.getAired().getFrom().getTime());
+                        else MyGUIManager.dataBaseManager.insertInUnreleased(animeTitle, 0L);
                     }
-                    parent.dataBaseManager.putMalID(anime.getTitle(),anime.getId());
+                    MyGUIManager.dataBaseManager.putMalID(animeTitle,anime.getId());
                     insertFrame.dispose();
                 }
                 catch (NumberFormatException numberFormatException)

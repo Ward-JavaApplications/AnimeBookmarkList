@@ -87,8 +87,12 @@ public class AnimeHTMLParser {
         return null;
 
     }
-
     public ArrayList<JikanBasicAnimeInfo> getFromTop(String url){
+        System.out.println(url);
+        return null;
+    }
+
+    public ArrayList<JikanBasicAnimeInfo> getFromTopSeasonal(String url){
         try {
             Document document = Jsoup.connect(url).get();
             ArrayList<JikanBasicAnimeInfo> jikanBasicAnimeInfos = new ArrayList<>();

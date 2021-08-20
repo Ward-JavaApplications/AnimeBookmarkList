@@ -1,7 +1,6 @@
 package GUIFrames;
 
 import Exceptions.ErrorMessage;
-import GUIFrames.NewAnimeFrame;
 import JikanContainers.JikanAnime;
 import JikanContainers.JikanBasicAnimeInfo;
 import JikanContainers.JikanRecommendationAnime;
@@ -128,7 +127,7 @@ public class JikanTopRequest {
         JPanel mainPanel = new JPanel(new SpringLayout());
         mainPanel.setLayout(new BoxLayout(mainPanel,BoxLayout.Y_AXIS));
 
-        ArrayList<JikanContainers.JikanBasicAnimeInfo> animes = new AnimeHTMLParser().getFromTop(request);
+        ArrayList<JikanContainers.JikanBasicAnimeInfo> animes = new AnimeHTMLParser().getFromTopSeasonal(request);
         if(animes!=null && !animes.isEmpty()) {
             for (JikanBasicAnimeInfo anime : animes) {
                 String title = anime.getTitle();
@@ -299,6 +298,8 @@ public class JikanTopRequest {
 
     private JPanel addTitlesToPanel(JFrame mainFrame, JPanel mainPanel, String requestFirstHalf, String requestSecondHalf, int pageNumber, String request) {
         String json = Jaikan.genericRequest(new Endpoint(request));
+        //TODO Arraylist from html request
+        new AnimeHTMLParser().getFromTop(request);
         MyLogger.log(json);
         JsonElement element = JsonParser.parseString(json);
         if (element != null) {
