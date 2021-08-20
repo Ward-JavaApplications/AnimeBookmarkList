@@ -436,15 +436,32 @@ public class AnimeFrame implements JikanRetriever {
                 JikanDates airDates = anime.getAired();
                 Date firstDate = airDates.getFrom();
                 Date lastDate = airDates.getTo();
+                boolean isntReleasedYet = (firstDate == null) || (firstDate.after(new Date()));
                 SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
                 JLabel airDatesLabel;
-                if (lastDate != null) {
-                    airDatesLabel = new JLabel("The anime aired from " + dateFormat.format(firstDate) + " untill " + dateFormat.format(lastDate));
-                } else {
-                    if (firstDate == null) airDatesLabel = new JLabel("Unknown when the anime will start airing");
+                if(airDates.isOnlyMonth()) dateFormat = new SimpleDateFormat("MM/yyyy");
+                if(isntReleasedYet){
+                    if(lastDate!=null){
+                        airDatesLabel = new JLabel("The anime will be airing from " + dateFormat.format(firstDate) + " until " + dateFormat.format(lastDate));
+                    }
+                    else {
+                        if (firstDate == null)
+                            airDatesLabel = new JLabel("Unknown when the anime will start airing");
+                        else
+                            airDatesLabel = new JLabel("The anime will air from " + dateFormat.format(firstDate));
 
-                    else
-                        airDatesLabel = new JLabel("The anime aired from " + dateFormat.format(firstDate) + " and is still ongoing");
+                    }
+                }
+                else {
+
+                    if (lastDate != null) {
+                        airDatesLabel = new JLabel("The anime aired from " + dateFormat.format(firstDate) + " until " + dateFormat.format(lastDate));
+                    } else {
+                        if (firstDate == null) airDatesLabel = new JLabel("Unknown when the anime will start airing");
+
+                        else
+                            airDatesLabel = new JLabel("The anime aired from " + dateFormat.format(firstDate) + " and is still ongoing");
+                    }
                 }
                 JLabel score = new JLabel("The anime got a score of " + anime.getScore()    );
                 JLabel ratings = new JLabel( "The anime ranks currently: Score " + anime.getRank() + "th, Popularity: " + anime.getPopularity()+"th");
