@@ -295,6 +295,27 @@ public class AnimeFrame implements JikanRetriever {
         priorityPanel.add(priorityTextField);
         priorityPanel.add(priorityButton);
 
+        JButton watchListButton = new JButton();
+        int malID = animeTitleObject.getMalID();
+        if(malID != 0) {
+            boolean isOnWatchList = MyGUIManager.dataBaseManager.isOnCheckList(malID);
+            if(isOnWatchList) {
+                watchListButton = new JButton("Remove from watchList");
+                watchListButton.addActionListener(action -> {
+                    MyGUIManager.dataBaseManager.deleteFromBootlist(malID);
+                    reloadAnimeFrame();
+                });
+            }
+            else {
+                watchListButton = new JButton("Add to watchList");
+                watchListButton.addActionListener(a -> {
+                    MyGUIManager.dataBaseManager.addToCheckOnBootList(malID);
+                    reloadAnimeFrame();
+                });
+            }
+            priorityPanel.add(watchListButton);
+        }
+
         JButton changeTitleButton = new JButton("Change title");
         changeTitleButton.addActionListener(new ActionListener() {
             @Override

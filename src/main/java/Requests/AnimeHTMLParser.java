@@ -23,6 +23,9 @@ public class AnimeHTMLParser {
             return readAnimeFromURL("https://myanimelist.net/anime/"+id,id);
         else return cached;
     }
+    public JikanAnime getFromIDNoCache(int id){
+        return readAnimeFromURL("https://myanimelist.net/anime/"+id,id);
+    }
     public void getFromIDAsync(int id, JikanRetriever parent){
         parent.retrieveAnime(getFromID(id));
     }

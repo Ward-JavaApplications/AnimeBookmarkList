@@ -1,10 +1,7 @@
 package Managers;
 
 import Exceptions.ErrorMessage;
-import JikanContainers.AiringAnime;
-import JikanContainers.AnimeTitle;
-import JikanContainers.StatsContainerPriority;
-import JikanContainers.StatsContainerStatus;
+import JikanContainers.*;
 import Managers.MyLogger;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -776,9 +773,88 @@ public class DataBaseManager {
             e.printStackTrace();
         }
     }
+    public void deleteFromBootlist(int id){
+        try{
+            Class.forName("org.sqlite.JDBC");
+            String querry = "delete from CheckOnBoot where mal_id = " + id;
+            MyLogger.log(querry);
+            System.out.println(querry);
+            Connection conn = DriverManager.getConnection("jdbc:sqlite:" + "Anime BookmarkList.db");
+            Statement stat = conn.createStatement();
+            stat.executeUpdate(querry);
+            conn.close();
+        }
+        catch (Exception e){
+            new ErrorMessage(e.getMessage());
+            e.printStackTrace();
+        }
+    }
+    public void addToCheckOnBootList(int id){
+        try{
+            Class.forName("org.sqlite.JDBC");
+            String querry = "insert into CheckOnBoot (mal_id,lastChecked) values(?,?)";
+            MyLogger.log(querry);
+            System.out.println(querry);
+            Connection conn = DriverManager.getConnection("jdbc:sqlite:" + "Anime BookmarkList.db");
+            PreparedStatement preparedStatement = conn.prepareStatement(querry);
+            preparedStatement.setInt(1,id);
+            preparedStatement.setLong(2,new Date().getTime());
+            preparedStatement.execute();
+            MyLogger.log(preparedStatement.toString());
+            conn.close();
+        }
+        catch (Exception e){
+            new ErrorMessage(e.getMessage());
+            e.printStackTrace();
+        }
+        }
+        public ArrayList<AnimeTitle> getCheckListAlf(){
+         String query = "select * \n" +
+                 "from Anime\n" +
+                 "inner join CheckOnBoot\n" +
+                 "on Anime.mal_id = CheckOnBoot.mal_id\n" +
+                 "order by Anime.Title ASC";
+         return getFromDB(query);
+        }
 
 
-}
+        public ArrayList<AnimeTitle> getCheckListAsArray(){
+        String query = "select * \n" +
+                "from Anime\n" +
+                "inner join CheckOnBoot\n" +
+                "on Anime.mal_id = CheckOnBoot.mal_id\n" +
+                "order by CheckOnBoot.lastChecked ASC";
+        return getFromDB(query);
+        }
+        public boolean isOnCheckList(int id){
+            Connection conn = null;
+            try {
+                Class.forName("org.sqlite.JDBC");
+                conn = DriverManager.getConnection("jdbc:sqlite:" + "Anime BookmarkList.db");
+
+                String querry = "select * from CheckOnBoot where mal_id = " + id;
+                Statement statement = conn.createStatement();
+                ResultSet resultSet = statement.executeQuery(querry);
+                if(resultSet.isClosed()) {
+                    conn.close();
+                    return false;
+                }
+                int newId = resultSet.getInt(1);
+                conn.close();
+                return newId != 0;
+            }
+            catch (Exception e) {
+                new ErrorMessage(e.getMessage());
+                e.printStackTrace();
+                return false;
+            }
+        }
+    }
+
+
+
+
+
 
 
 

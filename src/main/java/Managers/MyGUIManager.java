@@ -17,16 +17,16 @@ import java.util.Locale;
 public class MyGUIManager {
 
     public static DataBaseManager dataBaseManager = new DataBaseManager();
-    private int selectedMainFrame; //0=alpahbetical, 1 = priority, 2 = status, 3 = favorite, 4 = search
+    private int selectedMainFrame; //0=alpahbetical, 1 = priority, 2 = status, 3 = favorite, 4 = search, 5 = watchList
     private String searchTerm;
     private JFrame mainFrame;
     private int scrollPanelPosition = 0;
     private String userTargetString;
     private JScrollPane mainScrollPane;
     public MyGUIManager(){
-        startGUI();
+
     }
-    private void startGUI(){
+    public void startGUI(){
         mainFrame = new JFrame("Anime BookmarkList");
         mainFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         mainFrame.setSize(500,500);
@@ -125,6 +125,11 @@ public class MyGUIManager {
             }
         });
         loadAiringPanel.add(loadFavoriteButton);
+        JButton loadCheckOnBootList = new JButton("Load the list to be checked on boot");
+        loadCheckOnBootList.addActionListener(a-> {
+            showAllCheckListTitles(frame);
+        });
+        loadAiringPanel.add(loadCheckOnBootList);
 
         JPanel loadStatsPanel = new JPanel();
         JButton loadStatsButton = new JButton("Load stats");
@@ -168,6 +173,12 @@ public class MyGUIManager {
         frame.setContentPane(mainMenuPanel);
         SwingUtilities.updateComponentTreeUI(frame);
     }
+
+    private JScrollPane showAllCheckListTitles(JFrame frame) {
+        selectedMainFrame = 5;
+        return listToButtons(frame,dataBaseManager.getCheckListAlf());
+    }
+
     private void loadDangerZoneMenu(){
         JFrame dangerZoneFrame = new JFrame("DangerZone");
         dangerZoneFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -557,6 +568,11 @@ public class MyGUIManager {
             case 4:
                 searchForTitle(getSearchTerm(),mainFrame);
                 break;
+            case 5:
+                jScrollPane = showAllCheckListTitles(mainFrame);
+                jScrollPane.getVerticalScrollBar().setValue(getScrollPanelPosition());
+                break;
+
         }
     }
 
