@@ -6,6 +6,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 public class JikanAnime {
@@ -77,6 +78,19 @@ public class JikanAnime {
 
     public String getType() {
         return type;
+    }
+
+    public boolean getCheckRegularly(){
+        Date from = aired.getFrom();
+        Date to = aired.getTo();
+        Date now = new Date();
+        if(from == null){
+            return true;
+        }
+        else{
+            return to.after(now);
+        }
+
     }
 
     public int getEpisodes() {

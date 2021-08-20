@@ -1,4 +1,4 @@
-package GUIFrames;
+package Managers;
 
 import Exceptions.ErrorMessage;
 import JikanContainers.AiringAnime;
@@ -16,6 +16,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class DataBaseManager {
     public DataBaseManager(){
@@ -689,40 +690,21 @@ public class DataBaseManager {
         }
 
     }
-    public void pushToCache(int id,String gson) {
+    public void pushToCache(int id,String gson,boolean checkRegularly){
 
         Connection conn = null;
         try {
             Class.forName("org.sqlite.JDBC");
             conn = DriverManager.getConnection("jdbc:sqlite:" + "Anime BookmarkList.db");
 
-            String querry = "insert into Cache (mal_id,gson)" + " values (?,?)";
-            PreparedStatement preparedStatement = conn.prepareStatement(querry);
-            preparedStatement.setInt(1, id);
-            preparedStatement.setString(2, gson);
-            preparedStatement.execute();
-            MyLogger.log(preparedStatement.toString());
-            System.out.println(preparedStatement.toString());
-
-            conn.close();
-
-        } catch (Exception e) {
-            new ErrorMessage(e.getMessage());
-            e.printStackTrace();
-        }
-    }
-    public void pushToCache(int id,String title,String gson){
-
-        Connection conn = null;
-        try {
-            Class.forName("org.sqlite.JDBC");
-            conn = DriverManager.getConnection("jdbc:sqlite:" + "Anime BookmarkList.db");
-
-            String querry = "insert into Cache (mal_id,title,gson,image)" + " values (?,?,?,?)";
+            String querry = "insert into Cache (mal_id,gson,date_cached,checkRegularly)" + " values (?,?,?,?)";
             PreparedStatement preparedStatement = conn.prepareStatement(querry);
             preparedStatement.setInt(1,id);
-            preparedStatement.setString(2,title);
-            preparedStatement.setString(3,gson);
+            preparedStatement.setString(2,gson);
+            preparedStatement.setLong(3,new Date().getTime());
+            int booleanInt = 0;
+            if(checkRegularly) booleanInt = 1;
+            preparedStatement.setInt(4,booleanInt);
             preparedStatement.execute();
             MyLogger.log(preparedStatement.toString());
             System.out.println(preparedStatement.toString());
@@ -742,15 +724,32 @@ public class DataBaseManager {
             Class.forName("org.sqlite.JDBC");
             conn = DriverManager.getConnection("jdbc:sqlite:" + "Anime BookmarkList.db");
 
-            String querry = "select Gson from Cache where mal_id = " + id;
+            String querry = "select * from Cache where mal_id = " + id;
             Statement statement = conn.createStatement();
             ResultSet resultSet = statement.executeQuery(querry);
-            if(resultSet.isClosed()) return null;
-            String gson = resultSet.getString(1);
-            MyLogger.log(querry);
-            System.out.println(querry);
-
+            if(resultSet.isClosed()) {
+                conn.close();
+                return null;
+            }
+            String gson = resultSet.getString(2);
+            Long time = resultSet.getLong(3);
+            int checkRegularlyInt = resultSet.getInt(4);
+            boolean checkRegularly = checkRegularlyInt == 1;
+            Date now = new Date();
             conn.close();
+            if(checkRegularly){
+                if(now.getTime()-time>1000*60*60*24*5){
+                    //after 10 days
+                    deleteFromCache(id);
+                    return null;
+                }
+            }
+            else{
+                if(now.getTime()-time> 1000L *60*60*24*30){
+                    deleteFromCache(id);
+                    return null;
+                }
+            }
             return gson;
 
         }
@@ -760,28 +759,21 @@ public class DataBaseManager {
             return null;
         }
     }
-    public String getFromCache(String name){
-        Connection conn = null;
-        try {
-            Class.forName("org.sqlite.JDBC");
-            conn = DriverManager.getConnection("jdbc:sqlite:" + "Anime BookmarkList.db");
 
-            String querry = "Select Gson from Cache where title = \"" + name + "\"";
-            Statement statement = conn.createStatement();
-            ResultSet resultSet = statement.executeQuery(querry);
-            if (resultSet.isClosed()) return null;
-            String gson = resultSet.getString(1);
+    public void deleteFromCache(int id){
+        try{
+            Class.forName("org.sqlite.JDBC");
+            String querry = "delete from Cache where mal_id = " + id;
             MyLogger.log(querry);
             System.out.println(querry);
-
+            Connection conn = DriverManager.getConnection("jdbc:sqlite:" + "Anime BookmarkList.db");
+            Statement stat = conn.createStatement();
+            stat.executeUpdate(querry);
             conn.close();
-            return gson;
-
         }
-        catch (Exception e) {
+        catch (Exception e){
             new ErrorMessage(e.getMessage());
             e.printStackTrace();
-            return null;
         }
     }
 

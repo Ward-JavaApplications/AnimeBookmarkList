@@ -1,7 +1,8 @@
 package Requests;
 
-import GUIFrames.DataBaseManager;
+import Managers.DataBaseManager;
 import JikanContainers.*;
+import Managers.MyCacheManager;
 import Managers.MyLogger;
 import com.google.gson.Gson;
 import org.jsoup.Jsoup;
@@ -15,7 +16,6 @@ import java.util.List;
 import java.util.Map;
 
 public class AnimeHTMLParser {
-
     public JikanAnime getFromID(int id){
         JikanAnime cached = getIfCached(id);
         if(cached == null)
@@ -188,7 +188,7 @@ public class AnimeHTMLParser {
             //push to cash
             try{
                 Gson gson = new Gson();
-                new DataBaseManager().pushToCache(id,gson.toJson(jikanAnime));
+                new MyCacheManager().pushToCache(jikanAnime);
             }
             catch (Exception ignoredException)
             {

@@ -16,7 +16,7 @@ import java.util.Locale;
 
 public class MyGUIManager {
 
-    public DataBaseManager dataBaseManager = new DataBaseManager();
+    public static DataBaseManager dataBaseManager = new DataBaseManager();
     private int selectedMainFrame; //0=alpahbetical, 1 = priority, 2 = status, 3 = favorite, 4 = search
     private String searchTerm;
     private JFrame mainFrame;

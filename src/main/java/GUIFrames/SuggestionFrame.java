@@ -110,7 +110,7 @@ public class SuggestionFrame extends JPanel {
     }
     public void saveAnime(AnimeTitle animeTitle,JikanAnime anime) {
         parent.insertNewAnimeInDB(animeTitle);
-        new MyCacheManager(parent).pushToCache(anime,null);
+        new MyCacheManager().pushToCache(anime);
     }
     public void disposeFrame(){
         mainFrame.dispose();

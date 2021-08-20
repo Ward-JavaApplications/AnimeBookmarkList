@@ -2,6 +2,7 @@ package GUIFrames;
 
 import JikanContainers.StatsContainerPriority;
 import JikanContainers.StatsContainerStatus;
+import Managers.DataBaseManager;
 
 import javax.swing.*;
 

@@ -89,7 +89,7 @@ public class AnimeFrame implements JikanRetriever {
     }
 
     private void startAsyncImageSearch(){
-        MyCacheManager cacheManager = new MyCacheManager(parent);
+        MyCacheManager cacheManager = new MyCacheManager();
         JikanAnime cachedAnime = cacheManager.getFromCache(animeTitleObject.getMalID());
         if(cachedAnime != null){
             wasCached = true;
