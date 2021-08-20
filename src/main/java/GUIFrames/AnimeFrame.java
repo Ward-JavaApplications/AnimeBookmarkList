@@ -10,7 +10,6 @@ import Managers.MyCacheManager;
 import Managers.MyGUIManager;
 import Managers.MyLogger;
 import Requests.AnimeHTMLParser;
-import Requests.JikanTopRequest;
 import org.jetbrains.annotations.NotNull;
 
 import javax.imageio.ImageIO;

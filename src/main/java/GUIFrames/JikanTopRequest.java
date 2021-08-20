@@ -1,4 +1,4 @@
-package Requests;
+package GUIFrames;
 
 import Exceptions.ErrorMessage;
 import GUIFrames.NewAnimeFrame;
@@ -6,6 +6,7 @@ import JikanContainers.JikanAnime;
 import JikanContainers.JikanRecommendationAnime;
 import Managers.MyGUIManager;
 import Managers.MyLogger;
+import Requests.AnimeHTMLParser;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -299,6 +300,7 @@ public class JikanTopRequest {
             SwingUtilities.updateComponentTreeUI(mainFrame);
             scrollPane.getHorizontalScrollBar().setValue(scrollPane.getHorizontalScrollBar().getMaximum());
             scrollPane.getHorizontalScrollBar().setVisible(false);
+            scrollPane.getVerticalScrollBar().setValue(scrollPane.getVerticalScrollBar().getMinimum());
             //mainFrame.pack();
             //scrollPane.createVerticalScrollBar();
 

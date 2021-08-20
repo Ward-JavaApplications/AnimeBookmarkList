@@ -3,7 +3,6 @@ package GUIFrames;
 import Exceptions.ErrorMessage;
 import Managers.MyGUIManager;
 import Managers.MyLogger;
-import Requests.JikanTopRequest;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;

@@ -2,7 +2,6 @@ package GUIFrames;
 
 import Exceptions.ErrorMessage;
 import Managers.MyGUIManager;
-import Requests.JikanTopRequest;
 
 import javax.swing.*;
 import java.awt.*;
