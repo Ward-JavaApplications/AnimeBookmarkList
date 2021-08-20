@@ -460,7 +460,7 @@ public class AnimeFrame implements JikanRetriever {
                 descriptionPanel.add(ratings);
 
                 //add related anime
-                if(!anime.getRelated().isEmpty()) {
+                if(anime.getRelated() !=null && !anime.getRelated().isEmpty()) {
                     JLabel relatedHeaderLabel = new JLabel("Related anime");
                     relatedHeaderLabel.setFont(relatedHeaderLabel.getFont().deriveFont(Font.BOLD));
                     descriptionPanel.add(relatedHeaderLabel);
