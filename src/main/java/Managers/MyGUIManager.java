@@ -17,7 +17,8 @@ import java.util.Locale;
 public class MyGUIManager {
 
     public DataBaseManager dataBaseManager = new DataBaseManager();
-    private int selectedMainFrame; //0=alpahbetical, 1 = priority, 2 = status 3 = favorite
+    private int selectedMainFrame; //0=alpahbetical, 1 = priority, 2 = status, 3 = favorite, 4 = search
+    private String searchTerm;
     private JFrame mainFrame;
     String userTargetString;
     public MyGUIManager(){
@@ -239,8 +240,10 @@ public class MyGUIManager {
         listToButtonsDangerZone(frame,dataBaseManager.getDangerZone());
     }
     private void searchAnimeMenu(){
+        selectedMainFrame = 4;
         new SearchAnimeFrame(this);
     }
+
     public void searchForTitle(String title,JFrame frame){
         ArrayList<AnimeTitle> animes = dataBaseManager.searchTitleInDB(title);
         listToButtons(frame,animes);
@@ -542,10 +545,21 @@ public class MyGUIManager {
             case 3:
                 showAllTitlesFavorite(mainFrame);
                 break;
+            case 4:
+                searchForTitle(getSearchTerm(),mainFrame);
+                break;
         }
     }
 
     public JFrame getMainFrame() {
         return mainFrame;
+    }
+
+    public String getSearchTerm() {
+        return searchTerm;
+    }
+
+    public void setSearchTerm(String searchTerm) {
+        this.searchTerm = searchTerm;
     }
 }

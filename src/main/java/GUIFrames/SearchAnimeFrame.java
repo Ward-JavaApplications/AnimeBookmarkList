@@ -59,6 +59,7 @@ public class SearchAnimeFrame {
     }
 
     private void nameConfirmed(JFrame mainFrame) {
+        parent.setSearchTerm(searchField.getText());
         parent.searchForTitle(searchField.getText(),parent.getMainFrame());
         mainFrame.dispose();
     }
