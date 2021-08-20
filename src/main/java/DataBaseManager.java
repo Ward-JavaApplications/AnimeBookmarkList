@@ -844,6 +844,52 @@ public class DataBaseManager {
                 return false;
             }
         }
+        public boolean isInAnime(int id){
+            Connection conn = null;
+            try {
+                Class.forName("org.sqlite.JDBC");
+                conn = DriverManager.getConnection("jdbc:sqlite:" + "Anime BookmarkList.db");
+
+                String querry = "select mal_id from Anime where mal_id = " + id;
+                Statement statement = conn.createStatement();
+                ResultSet resultSet = statement.executeQuery(querry);
+                if(resultSet.isClosed()) {
+                    conn.close();
+                    return false;
+                }
+                int newId = resultSet.getInt(1);
+                conn.close();
+                return newId != 0;
+            }
+            catch (Exception e) {
+                new ErrorMessage(e.getMessage());
+                e.printStackTrace();
+                return false;
+            }
+        }
+    public String getTitleFromID(int id){
+        Connection conn = null;
+        try {
+            Class.forName("org.sqlite.JDBC");
+            conn = DriverManager.getConnection("jdbc:sqlite:" + "Anime BookmarkList.db");
+
+            String querry = "select Title from Anime where mal_id = " + id;
+            Statement statement = conn.createStatement();
+            ResultSet resultSet = statement.executeQuery(querry);
+            if(resultSet.isClosed()) {
+                conn.close();
+                return null;
+            }
+            String title = resultSet.getString(1);
+            conn.close();
+            return title;
+        }
+        catch (Exception e) {
+            new ErrorMessage(e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
+    }
     }
 
 

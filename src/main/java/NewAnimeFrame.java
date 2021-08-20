@@ -24,21 +24,30 @@ public class NewAnimeFrame{
     private int id;
     private BufferedImage image;
     public NewAnimeFrame(String animeTitle, int id, MyGUIManager parent){
-        this.parent = parent;
-        this.title = animeTitle;
-        this.animeFrameParent = this;
-        this.id = id;
-        loadFrame();
-        startSyncImageSearch();
+        if(isAnimeAlreadyInDataBase(id)) new AnimeFrame(MyGUIManager.dataBaseManager.getTitleFromID(id),parent);
+        else {
+            this.parent = parent;
+            this.title = animeTitle;
+            this.animeFrameParent = this;
+            this.id = id;
+            loadFrame();
+            startSyncImageSearch();
+        }
 
     }
     public NewAnimeFrame(int id, MyGUIManager parent){
-        this.parent = parent;
-        this.animeFrameParent = this;
-        this.id = id;
-        loadFrame();
-        startSyncImageSearch();
+        if(isAnimeAlreadyInDataBase(id)) new AnimeFrame(MyGUIManager.dataBaseManager.getTitleFromID(id),parent);
+        else {
+            this.parent = parent;
+            this.animeFrameParent = this;
+            this.id = id;
+            loadFrame();
+            startSyncImageSearch();
+        }
 
+    }
+    private boolean isAnimeAlreadyInDataBase(int id){
+        return MyGUIManager.dataBaseManager.isInAnime(id);
     }
     private void startSyncImageSearch(){
         JikanAnime anime =  new AnimeHTMLParser().getFromID(id);

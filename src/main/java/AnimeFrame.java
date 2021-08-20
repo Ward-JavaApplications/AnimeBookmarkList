@@ -689,6 +689,7 @@ public class AnimeFrame implements JikanRetriever {
                 refreshParent();
             }
         }
+        else reloadAnimeFrame();
 
     }
 
