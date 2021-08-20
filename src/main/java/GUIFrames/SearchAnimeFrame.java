@@ -44,18 +44,23 @@ public class SearchAnimeFrame {
         JLabel searchLabel = new JLabel("Type the name in the box below, better to type less than wrong");
         searchPanel.add(searchLabel);
         searchField = new JTextField();
+        searchField.addActionListener(action -> nameConfirmed(mainFrame));
         searchPanel.add(searchField);
         JButton searchButton = new JButton("Search");
         searchButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                parent.searchForTitle(searchField.getText(),parent.getMainFrame());
-                mainFrame.dispose();
+                nameConfirmed(mainFrame);
 
             }
         });
         searchPanel.add(searchButton);
         return searchPanel;
+    }
+
+    private void nameConfirmed(JFrame mainFrame) {
+        parent.searchForTitle(searchField.getText(),parent.getMainFrame());
+        mainFrame.dispose();
     }
 
 }
