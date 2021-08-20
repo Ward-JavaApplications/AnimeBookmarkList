@@ -3,6 +3,7 @@ package GUIFrames;
 import Exceptions.ErrorMessage;
 import GUIFrames.NewAnimeFrame;
 import JikanContainers.JikanAnime;
+import JikanContainers.JikanBasicAnimeInfo;
 import JikanContainers.JikanRecommendationAnime;
 import Managers.MyGUIManager;
 import Managers.MyLogger;
@@ -48,14 +49,11 @@ public class JikanTopRequest {
     }
     public void getSeasonAnime(String frameTitle,String year,String season){
         String malButtonRequest = "https://myanimelist.net/anime/season/" + year + "/" + season;
-        String request = "https://api.jikan.moe/v3/season/" + year + "/" + season;
-
-
         loadFrameAndPanel(frameTitle);
 
         addMalButton(mainPanel,malButtonRequest);
 
-        mainPanel.add(addTitlesToPanelSeasonal(request,malButtonRequest));
+        mainPanel.add(addTitlesToPanelSeasonal(malButtonRequest,malButtonRequest));
         JScrollPane scrollPane = new JScrollPane(mainPanel);
         scrollPane.getVerticalScrollBar().setUnitIncrement(30);
         mainFrame.setContentPane(scrollPane);
@@ -130,38 +128,28 @@ public class JikanTopRequest {
         JPanel mainPanel = new JPanel(new SpringLayout());
         mainPanel.setLayout(new BoxLayout(mainPanel,BoxLayout.Y_AXIS));
 
-        //TODO         ArrayList<JikanContainers.JikanBasicAnimeInfo> animes = new AnimeHTMLParser().getFromTop(request);
-        String json = Jaikan.genericRequest(new Endpoint(request));
-        MyLogger.log(json);
-        JsonElement element = JsonParser.parseString(json);
-        if (element != null) {
-            JsonObject obj = element.getAsJsonObject();
-            JsonArray pictures = obj.get("anime").getAsJsonArray();
-            Iterator<JsonElement> listIterator = pictures.iterator();
-            boolean wasLegitSearch = false;
-            while (listIterator.hasNext()) {
-                wasLegitSearch = true;
-                JsonObject anime = listIterator.next().getAsJsonObject();
-                String title = anime.get("title").getAsString();
-                String imageURL = anime.get("image_url").getAsString();
-                int id = anime.get("mal_id").getAsInt();
+        ArrayList<JikanContainers.JikanBasicAnimeInfo> animes = new AnimeHTMLParser().getFromTop(request);
+        if(animes!=null && !animes.isEmpty()) {
+            for (JikanBasicAnimeInfo anime : animes) {
+                String title = anime.getTitle();
+                String imageURL = anime.getImage();
+                int id = anime.getId();
                 JLabel imageLabel = new JLabel();
                 try {
                     BufferedImage image = ImageIO.read(new URL(imageURL));
                     imageLabel.setIcon(new ImageIcon(image));
-                }
-                catch (Exception e){
+                } catch (Exception e) {
                     MyLogger.log(e.getMessage());
                     e.printStackTrace();
                     imageLabel.setText("Image failed to load");
                 }
                 JPanel animeTitlePanel = new JPanel(new BorderLayout());
-                animeTitlePanel.add(new JLabel(title),BorderLayout.PAGE_START);
-                animeTitlePanel.add(imageLabel,BorderLayout.LINE_START);
+                animeTitlePanel.add(new JLabel(title), BorderLayout.PAGE_START);
+                animeTitlePanel.add(imageLabel, BorderLayout.LINE_START);
                 animeTitlePanel.addMouseListener(new MouseListener() {
                     @Override
                     public void mouseClicked(MouseEvent e) {
-                        new NewAnimeFrame(title,id,parent);
+                        new NewAnimeFrame(title, id, parent);
                     }
 
                     @Override
@@ -188,11 +176,12 @@ public class JikanTopRequest {
 
 
             }
-            if(!wasLegitSearch){
-                mainPanel = new JPanel(new BorderLayout());
-                mainPanel.add(new JLabel("The requested season was not present in the database"),BorderLayout.CENTER);
-            }
+//            if(!wasLegitSearch){
+//                mainPanel = new JPanel(new BorderLayout());
+//                mainPanel.add(new JLabel("The requested season was not present in the database"),BorderLayout.CENTER);
+//            }
         }
+
         else{
             mainPanel = new JPanel(new BorderLayout());
             mainPanel.add(new JLabel("The requested season was not present in the database"),BorderLayout.CENTER);

@@ -10,6 +10,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -88,7 +89,27 @@ public class AnimeHTMLParser {
     }
 
     public ArrayList<JikanBasicAnimeInfo> getFromTop(String url){
-        return null;
+        try {
+            Document document = Jsoup.connect(url).get();
+            ArrayList<JikanBasicAnimeInfo> jikanBasicAnimeInfos = new ArrayList<>();
+            Elements animeElements = document.select("div.js-seasonal-anime");
+            for (Element animeElement : animeElements) {
+                String title = animeElement.select("h2.h2_anime_title").text();
+                Elements hyperlinksElement = animeElement.select("div.image>a");
+                String urlString = hyperlinksElement.attr("href");
+                String imageURL = hyperlinksElement.select("img").attr("src");
+                if(imageURL == null || imageURL.equals("")){
+                    imageURL = hyperlinksElement.select("img").attr("data-src");
+                }
+                int id = extractIdFromHyper(urlString);
+                jikanBasicAnimeInfos.add(new JikanBasicAnimeInfo(id,title,urlString,imageURL));
+            }
+            return jikanBasicAnimeInfos;
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
     }
 
     private String get2xFromImageUrl(String imageURL){
