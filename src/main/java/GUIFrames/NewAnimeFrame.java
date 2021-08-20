@@ -267,7 +267,7 @@ public class NewAnimeFrame{
 
                     else airDatesLabel = new JLabel("The anime aired from " + dateFormat.format(firstDate) + " and is still ongoing");
                 }
-                JLabel ratings = new JLabel("The anime got a score of " + anime.getScore() + " and ranks currently " + anime.getRank() + "th");
+                JLabel ratings = new JLabel( "The anime ranks currently: Score " + anime.getRank() + "th, Popularity: " + anime.getPopularity()+"th");
                 JPanel descriptionPanel = new JPanel(new SpringLayout());
                 descriptionPanel.setLayout(new BoxLayout(descriptionPanel, BoxLayout.Y_AXIS));
                 descriptionPanel.add(genres);
