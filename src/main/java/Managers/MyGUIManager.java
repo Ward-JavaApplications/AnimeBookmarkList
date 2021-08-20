@@ -20,7 +20,9 @@ public class MyGUIManager {
     private int selectedMainFrame; //0=alpahbetical, 1 = priority, 2 = status, 3 = favorite, 4 = search
     private String searchTerm;
     private JFrame mainFrame;
-    String userTargetString;
+    private int scrollPanelPosition = 0;
+    private String userTargetString;
+    private JScrollPane mainScrollPane;
     public MyGUIManager(){
         startGUI();
     }
@@ -310,18 +312,18 @@ public class MyGUIManager {
         dataBaseManager.insertInDB(anime);
 
     }
-    private void showAllTitlesPriority(JFrame frame){
+    private JScrollPane showAllTitlesPriority(JFrame frame){
         ArrayList<AnimeTitle> animeList = dataBaseManager.getDBPriority();
-        listToButtons(frame,animeList);
+        return listToButtons(frame,animeList);
     }
-    private void showAllTitlesStatus(JFrame frame){
+    private JScrollPane showAllTitlesStatus(JFrame frame){
         ArrayList<AnimeTitle> animeList = dataBaseManager.getDBStatus();
-        listToButtons(frame, animeList);
+        return listToButtons(frame, animeList);
     }
 
-    private void showAllTitlesAlphabetical(JFrame frame) {
+    private JScrollPane showAllTitlesAlphabetical(JFrame frame) {
         ArrayList<AnimeTitle> animeList = dataBaseManager.getDBAlphabetical();
-        listToButtons(frame, animeList);
+        return listToButtons(frame, animeList);
     }
 
     private void listToButtonsDangerZone(JFrame frame, ArrayList<String> animeList){
@@ -362,7 +364,7 @@ public class MyGUIManager {
         frame.setContentPane(mainPanel);
         SwingUtilities.updateComponentTreeUI(frame);
     }
-    private void listToButtons(JFrame frame, ArrayList<AnimeTitle> animeList) {
+    private JScrollPane listToButtons(JFrame frame, ArrayList<AnimeTitle> animeList) {
         ArrayList<JButton> buttons = new ArrayList<>(animeList.size());
         JPanel mainPanel = new JPanel(new SpringLayout());
         mainPanel.setLayout(new BoxLayout(mainPanel,BoxLayout.Y_AXIS));
@@ -412,6 +414,7 @@ public class MyGUIManager {
             b.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
+                    setScrollPanelPosition(mainScrollPane.getVerticalScrollBar().getValue());
                     animeWasClicked(b.getText());
                 }
             });
@@ -420,11 +423,12 @@ public class MyGUIManager {
             panel.add(b);
 
         }
-        JScrollPane scrollPane = new JScrollPane(panel);
-        scrollPane.getVerticalScrollBar().setUnitIncrement(30);
-        mainPanel.add(scrollPane);
+        mainScrollPane = new JScrollPane(panel);
+        mainScrollPane.getVerticalScrollBar().setUnitIncrement(30);
+        mainPanel.add(mainScrollPane);
         frame.setContentPane(mainPanel);
         SwingUtilities.updateComponentTreeUI(frame);
+        return mainScrollPane;
     }
 
     private Color getButtonColor(AnimeTitle target){
@@ -524,26 +528,31 @@ public class MyGUIManager {
         dataBaseManager.changePriority(priority,animeName);
     }
 
-    public void showAllTitlesFavorite(JFrame frame){
-        listToButtons(frame,dataBaseManager.getFromDB("Select * from Anime order by favorite desc,title asc"));
+    public JScrollPane showAllTitlesFavorite(JFrame frame){
         selectedMainFrame = 3;
+        return listToButtons(frame,dataBaseManager.getFromDB("Select * from Anime order by favorite desc,title asc"));
 
     }
 
     public void refresh(){
+        JScrollPane jScrollPane;
         switch (selectedMainFrame)
         {
             case 0:
-                showAllTitlesAlphabetical(mainFrame);
+                jScrollPane = showAllTitlesAlphabetical(mainFrame);
+                jScrollPane.getVerticalScrollBar().setValue(getScrollPanelPosition());
                 break;
             case 1:
-                showAllTitlesPriority(mainFrame);
+                jScrollPane = showAllTitlesPriority(mainFrame);
+                jScrollPane.getVerticalScrollBar().setValue(getScrollPanelPosition());
                 break;
             case 2:
-                showAllTitlesStatus(mainFrame);
+                jScrollPane = showAllTitlesStatus(mainFrame);
+                jScrollPane.getVerticalScrollBar().setValue(getScrollPanelPosition());
                 break;
             case 3:
-                showAllTitlesFavorite(mainFrame);
+                jScrollPane = showAllTitlesFavorite(mainFrame);
+                jScrollPane.getVerticalScrollBar().setValue(getScrollPanelPosition());
                 break;
             case 4:
                 searchForTitle(getSearchTerm(),mainFrame);
@@ -561,5 +570,13 @@ public class MyGUIManager {
 
     public void setSearchTerm(String searchTerm) {
         this.searchTerm = searchTerm;
+    }
+
+    public int getScrollPanelPosition() {
+        return scrollPanelPosition;
+    }
+
+    public void setScrollPanelPosition(int scrollPanelPosition) {
+        this.scrollPanelPosition = scrollPanelPosition;
     }
 }
